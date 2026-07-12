@@ -1,0 +1,23 @@
+# Salt Services
+
+> Salt Services is a marketing and AI implementation agency based in Kodak, Tennessee, serving small businesses across East Tennessee — Sevierville, Pigeon Forge, Gatlinburg, Knoxville, Maryville, Dandridge, and beyond. Services: web design, SEO and AEO (answer engine optimization), Google and Meta advertising, CRM implementation, and AI implementation. Phone: (866) 721-7258. Email: info@saltservicesusa.com. The name comes from Matthew 5:13.
+
+## Services
+
+- [Web design](https://www.saltservicesusa.com/services/web-design/): Hand-built, fast-loading websites structured to rank on Google and get cited by AI search; build-and-own or monthly plans.
+- [SEO & AEO](https://www.saltservicesusa.com/services/seo-aeo/): Monthly program — three genuinely unique pages a month targeting real searches, with client approval before publishing.
+- [Digital advertising](https://www.saltservicesusa.com/services/digital-advertising/): Google Ads and Meta campaign management with call/conversion tracking tied to the client's CRM.
+- [CRM implementation](https://www.saltservicesusa.com/services/crm-implementation/): Pipeline setup, lead capture, missed-call text-back, automated follow-up, migration, and training.
+- [AI implementation](https://www.saltservicesusa.com/services/ai-implementation/): AI that answers missed calls and messages, qualifies leads, drafts follow-ups, and books appointments — with guardrails and human handoff.
+- [All services](https://www.saltservicesusa.com/services/): How the five services work as one lead pipeline.
+
+## Service areas
+
+- [Sevierville, TN](https://www.saltservicesusa.com/service-areas/sevierville/): Marketing for tourist-facing and year-round Sevierville businesses.
+- [Knoxville, TN](https://www.saltservicesusa.com/service-areas/knoxville/): Neighborhood-level digital marketing for the Knoxville metro.
+- [All service areas](https://www.saltservicesusa.com/service-areas/): Kodak home base and the East Tennessee towns served.
+
+## Company
+
+- [About](https://www.saltservicesusa.com/about/): The story and values behind Salt Services, and the Matthew 5:13 name.
+- [Contact](https://www.saltservicesusa.com/contact/): Phone, email, and the Step One lead form.

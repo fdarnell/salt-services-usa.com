@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "salt-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8000", "--directory", "/Users/franklin/Downloads/salt-services-usa.com"],
+      "port": 8000
+    }
+  ]
+}

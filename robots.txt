@@ -1,0 +1,21 @@
+# saltservicesusa.com — all crawlers welcome, including AI crawlers.
+
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://www.saltservicesusa.com/sitemap.xml

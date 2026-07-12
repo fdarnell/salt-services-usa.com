@@ -1,0 +1,29 @@
+{
+  "comment": "Single source of truth for business facts. The HTML is generated from _build/ — if a fact changes, update it here AND in _build/gen.py (BIZ dict), regenerate, then grep the old value across all pages to confirm nothing was missed.",
+  "name": "Salt Services",
+  "legal_name": "Salt Services",
+  "tagline": "Marketing & AI implementation for East Tennessee",
+  "phone_display": "(866) 721-7258",
+  "phone_tel": "+18667217258",
+  "email": "info@saltservicesusa.com",
+  "address": {
+    "type": "service-area-only",
+    "city": "Kodak",
+    "state": "TN",
+    "country": "US",
+    "note": "No street address shown on the site by owner's choice."
+  },
+  "service_area": ["Kodak", "Sevierville", "Pigeon Forge", "Gatlinburg", "Knoxville", "Maryville", "Dandridge"],
+  "domain": "https://www.saltservicesusa.com",
+  "hours": "Weekdays, Eastern time (TODO: confirm exact hours with owner)",
+  "google_business_profile": "TODO: claim/confirm GBP and add review link to footer",
+  "social": {},
+  "coraline": {
+    "iframe_src": "https://link.coraline-communication.com/widget/form/zyKiFm4AGJG3S3zoRrAQ",
+    "form_id": "zyKiFm4AGJG3S3zoRrAQ",
+    "embed_js": "https://link.coraline-communication.com/js/form_embed.js",
+    "form_name": "Website | Step One Lead Form",
+    "form_height": 2085
+  },
+  "name_origin": "Matthew 5:13"
+}
