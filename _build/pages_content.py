@@ -585,9 +585,6 @@ PAGES = [
         "path": "/", "nav": "home",
         "title": "Salt Services | Marketing & AI Agency in Kodak, TN",
         "desc": "Marketing and AI implementation for East Tennessee small businesses — websites, Google & Meta ads, CRM, SEO and AEO. Call (866) 721-7258.",
-        "extra_head": '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
-                      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
-                      '<link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Space+Mono&display=swap" rel="stylesheet">\n',
         "jsonld": [faq_ld(HOME_FAQS)],
         "body": HOME_BODY,
     },

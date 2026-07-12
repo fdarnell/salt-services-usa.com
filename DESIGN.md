@@ -1,0 +1,34 @@
+# Salt Services — Design System
+
+Derived with the ui-ux-pro-max design skill (github.com/nextlevelbuilder/ui-ux-pro-max-skill), pattern: **Trust & Authority + Conversion** (navy/grey corporate, accent reserved for CTAs). All tokens live in the `:root` block of `css/style.css` — rebranding is a one-block edit.
+
+## Tokens
+
+| Group | Values |
+|-------|--------|
+| Brand | navy `#132844`, navy-soft `#1d3a63`, amber accent `#e9a13b` (CTAs only) |
+| Text | ink `#1f2a38` headings, body `#3c4a5d`, muted `#5b6b81` (all WCAG AA verified) |
+| Dark surfaces | hairline `rgba(255,255,255,.08)`, top-edge sheen `rgba(255,255,255,.06)` |
+| Spacing | 8px rhythm: `--space-1` (4px) … `--space-16` (64px) |
+| Radius | 6 / 10 / 16px |
+| Elevation | `--shadow-1/2/3`, navy-tinted; cards rest at 1, hover to 2 |
+| Motion | 150ms fast / 250ms standard, ease `cubic-bezier(.16,1,.3,1)`; all animation behind `prefers-reduced-motion` |
+| Z-index | header 50, callbar 60, cursor fx 9998/9999 |
+
+## Typography
+
+- **Headings:** Syne 700/800 (Google Fonts, `display=swap`, preconnected) — site-wide for consistency; hero uses 800 uppercase.
+- **Body:** system-ui stack (fast, no extra weight).
+- **Mono labels** (hero kicker, HUD): Space Mono.
+- Syne runs wide: headings hyphenate below 640px (`hyphens:auto`) so long words like "implementation" never cause horizontal scroll.
+
+## Signature elements
+
+- Particle-morph hero (Weblove Template 20): 14k grains, sphere → SALT → ring, amber sparks, corner HUD. Desktop-only; gradient fallback for mobile/reduced-motion/crawlers.
+- Salt-sprinkle SVG divider under section headings.
+- Amber signature cursor (dot + trailing ring + ripple), desktop-only, reduced-motion-safe.
+- CTA buttons: amber glow on hover, press-scale feedback.
+
+## Rules honored (from the skill's checklist)
+
+One primary CTA per screen; SVG icons only (no emoji); 4.5:1 contrast everywhere; visible focus rings; 44px+ touch targets; no horizontal scroll 320–1920px; reduced-motion respected; semantic tokens, no raw hex in components.
