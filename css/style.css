@@ -122,11 +122,11 @@ a:hover { color: var(--navy); }
 }
 .hero-3d .wrap { position: relative; z-index: 2; width: 100%; }
 .hero-3d h1 {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: 'Syne', system-ui, sans-serif;
   text-transform: uppercase;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1.02;
-  font-size: clamp(2.5rem, 6.4vw, 5.5rem);
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
   max-width: 14ch;
 }
 .hero-3d h1 .accent { color: var(--accent); }
@@ -143,6 +143,19 @@ a:hover { color: var(--navy); }
 #hero-scene.on { opacity: 1; }
 #hero-scene canvas { width: 100%; height: 100%; display: block; }
 
+/* Swarm HUD (Template 20) — corner labels, only shown once the scene runs */
+.hero-hud {
+  display: none;
+  position: absolute; z-index: 2;
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: #8fa3c0;
+}
+.hero-3d.scene-on .hero-hud { display: block; }
+.hero-hud.b1 { bottom: 26px; left: 32px; }
+.hero-hud.b2 { bottom: 26px; right: 32px; text-align: right; }
+.hero-hud #shape { color: var(--accent); }
+
 /* Staggered reveal (Template 05) */
 @media (prefers-reduced-motion: no-preference) {
   .reveal {
@@ -157,18 +170,17 @@ a:hover { color: var(--navy); }
 body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 #wlDot, #wlRing {
   position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
-  mix-blend-mode: difference;
 }
-#wlDot { width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: translate(-50%,-50%); }
+#wlDot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); transform: translate(-50%,-50%); }
 #wlRing {
   width: 36px; height: 36px; border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,.85); transform: translate(-50%,-50%);
+  border: 1.5px solid rgba(233,161,59,.9); transform: translate(-50%,-50%);
   transition: width .25s ease, height .25s ease;
 }
 .wlRipple {
   position: fixed; pointer-events: none; z-index: 9998;
-  width: 8px; height: 8px; border-radius: 50%; border: 2px solid #fff;
-  mix-blend-mode: difference; transform: translate(-50%,-50%);
+  width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--accent);
+  transform: translate(-50%,-50%);
   animation: wlrip .55s ease-out forwards;
 }
 @keyframes wlrip { to { width: 70px; height: 70px; opacity: 0; } }

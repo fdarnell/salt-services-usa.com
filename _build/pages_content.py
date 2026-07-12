@@ -65,6 +65,8 @@ HOME_FAQS = [
 
 HOME_BODY = f"""<section class="hero hero-3d">
   <div id="hero-scene" aria-hidden="true"></div>
+  <span class="hero-hud b1" aria-hidden="true">Now forming: <span id="shape">SPHERE</span> &middot; cursor repels</span>
+  <span class="hero-hud b2" aria-hidden="true">N = 14,000</span>
   <div class="wrap">
     <span class="hero-kicker reveal" style="animation-delay:.2s">Marketing &amp; AI implementation &middot; Kodak, TN</span>
     <h1 class="reveal" style="animation-delay:.4s">Get found.<br>Get <span class="accent">answered</span>.<br>Get more leads.</h1>
@@ -77,10 +79,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
   </div>
 </section>
 <script type="importmap">
-{{ "imports": {{
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-}} }}
+{{ "imports": {{ "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" }} }}
 </script>
 <script type="module" src="/js/hero3d.js"></script>
 
@@ -588,7 +587,7 @@ PAGES = [
         "desc": "Marketing and AI implementation for East Tennessee small businesses — websites, Google & Meta ads, CRM, SEO and AEO. Call (866) 721-7258.",
         "extra_head": '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
                       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
-                      '<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Space+Mono&display=swap" rel="stylesheet">\n',
+                      '<link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Space+Mono&display=swap" rel="stylesheet">\n',
         "jsonld": [faq_ld(HOME_FAQS)],
         "body": HOME_BODY,
     },

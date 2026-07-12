@@ -7,7 +7,7 @@
 A 12-page website (plus a branded error page) designed to do three jobs, in this order:
 
 1. **Get found** — by Google searches and by AI assistants (ChatGPT, Claude, Perplexity) when people ask for marketing help in East Tennessee.
-2. **Load fast** — the whole site is hand-built code with no bloat. Pages weigh less than a single photo on most competitors' sites. The one deliberate exception: the home page's interactive 3D hero (a chrome knot that follows the cursor) loads a 3D engine on desktop. It's worth the wow — and it's skipped entirely on phones, for visitors who prefer reduced motion, and by search/AI crawlers, so it costs nothing where it matters most.
+2. **Load fast** — the whole site is hand-built code with no bloat. Pages weigh less than a single photo on most competitors' sites. The one deliberate exception: the home page's interactive 3D hero (14,000 salt-grain particles that morph between a sphere, the word "SALT", and a ring — and scatter away from the cursor) loads a 3D engine on desktop. It's worth the wow — and it's skipped entirely on phones, for visitors who prefer reduced motion, and by search/AI crawlers, so it costs nothing where it matters most.
 3. **Convert visitors** — every page funnels to the Step One lead form or a phone call. Leads land in Coraline automatically.
 
 ## Which search each page targets

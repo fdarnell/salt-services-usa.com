@@ -11,7 +11,7 @@ Static marketing site for Salt Services (Kodak, TN). Plain HTML/CSS/JS — no fr
 | Business facts reference | `site.config.json` |
 | Styles (colors in the `:root` block at the top) | `css/style.css` |
 | Mobile menu + Coraline form loader | `js/main.js` |
-| 3D hero scene (home page, desktop only) | `js/hero3d.js` — Three.js from CDN; skipped on mobile, reduced-motion, and no-WebGL |
+| 3D hero scene (home page, desktop only) | `js/hero3d.js` — 14k-particle morph (sphere → SALT → ring), Three.js from CDN; skipped on mobile, reduced-motion, and no-WebGL |
 | Signature cursor (site-wide, desktop only) | `js/cursor.js` |
 | SEO roadmap for the monthly program | `content-plan.md` |
 
