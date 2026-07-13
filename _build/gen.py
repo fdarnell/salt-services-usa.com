@@ -14,7 +14,13 @@ Enforced by construction:
 - BreadcrumbList JSON-LD generated from "crumbs" (never hand-written)
 - Duplicate titles/descriptions refuse to build
 """
-import json, pathlib, sys, datetime
+import hashlib, json, pathlib, sys, datetime
+
+# cache-buster: short hash of the stylesheet, appended as ?v= to its link,
+# so browsers always pick up CSS changes immediately after a deploy
+CSS_VERSION = hashlib.md5(
+    (pathlib.Path(__file__).parent.parent / "css" / "style.css").read_bytes()
+).hexdigest()[:8]
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
@@ -88,7 +94,7 @@ HEAD = """<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css?v={css_v}">
 {extra_head}{jsonld}
 </head>
 <body>
@@ -277,7 +283,7 @@ def build(spec, seen_titles, seen_descs, outdir="."):
         '<script type="application/ld+json">' + json.dumps(l, ensure_ascii=False) + "</script>"
         for l in lds)
     html = HEAD.format(title=spec["title"], desc=spec["desc"], url=url,
-                       domain=DOMAIN, jsonld=jsonld,
+                       domain=DOMAIN, jsonld=jsonld, css_v=CSS_VERSION,
                        extra_head=spec.get("extra_head", ""))
     html += header(spec.get("nav", ""))
     if crumbs_html:
