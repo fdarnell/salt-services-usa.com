@@ -51,7 +51,7 @@ if (mount &&
       const c2 = cv.getContext('2d');
       c2.fillStyle = '#000'; c2.fillRect(0, 0, cw, ch);
       c2.fillStyle = '#fff';
-      c2.font = `800 ${word.length > 6 ? 150 : 190}px Syne, sans-serif`;
+      c2.font = `600 ${word.length > 6 ? 150 : 190}px Fraunces, Georgia, serif`;
       c2.textAlign = 'center'; c2.textBaseline = 'middle';
       c2.fillText(word, cw / 2, ch / 2);
       const px = c2.getImageData(0, 0, cw, ch).data, pts2 = [];

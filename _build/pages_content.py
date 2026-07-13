@@ -69,7 +69,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
   <span class="hero-hud b2" aria-hidden="true">N = 14,000</span>
   <div class="wrap">
     <span class="hero-kicker reveal" style="animation-delay:.2s">Marketing &amp; AI implementation &middot; Kodak, TN</span>
-    <h1 class="reveal" style="animation-delay:.4s">Get found.<br>Get <span class="accent">answered</span>.<br>Get more leads.</h1>
+    <h1 class="reveal" style="animation-delay:.4s">Get found.<br>Get <span class="accent">answered</span>.<br>Get more leads.</h1><!-- accent word renders italic serif amber -->
     <p class="lead reveal" style="animation-delay:.6s">Salt Services is a marketing and AI implementation agency in Kodak, Tennessee. We build websites that rank on Google and get cited by AI, run ads that pay for themselves, and set up CRMs and AI so no lead ever slips through the cracks.</p>
     <p class="reveal" style="animation-delay:.8s">
       <a class="btn btn-accent" href="/contact/">Get your free growth plan</a>
@@ -130,15 +130,18 @@ HOME_BODY = f"""<section class="hero hero-3d">
     </div>
     <ul class="card-grid">
       <li class="card">
-        <h3>1. Tell us about your business</h3>
+        <span class="step-num" aria-hidden="true">01</span>
+        <h3>Tell us about your business</h3>
         <p>Fill out the Step One form below — it takes about five minutes and asks the questions we'd ask on a first call anyway.</p>
       </li>
       <li class="card">
-        <h3>2. Get a real plan, free</h3>
+        <span class="step-num" aria-hidden="true">02</span>
+        <h3>Get a real plan, free</h3>
         <p>We look at your market, your competition, and your current web presence, then walk you through what we'd do and what it costs. Keep the plan either way.</p>
       </li>
       <li class="card">
-        <h3>3. Watch the pipeline fill</h3>
+        <span class="step-num" aria-hidden="true">03</span>
+        <h3>Watch the pipeline fill</h3>
         <p>We build, you approve, and every lead lands in your CRM where you can see it. No guessing whether the marketing is working.</p>
       </li>
     </ul>
@@ -162,7 +165,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
 SERVICES_HUB_BODY = f"""<section class="section">
   <div class="wrap">
     <div class="section-head">
-      <h1>Marketing services built to work as one system</h1>
+      <h1>Marketing services built to work as <em>one system</em></h1>
       {SPRINKLE}
       <p>Most agencies sell you a website <em>or</em> ads <em>or</em> SEO and leave you to glue it together. We build the whole pipeline: a site that ranks, ads that fill it with visitors, a CRM that catches every lead, and AI that responds before your competitors wake up.</p>
     </div>
@@ -197,7 +200,7 @@ CRM_FAQS = [
 
 CRM_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>CRM implementation for small businesses</h1>
+    <h1>CRM implementation for <em>small businesses</em></h1>
     {SPRINKLE}
     <p>Right now, your leads probably live in five places: missed calls, text threads, a Facebook inbox, somebody's email, and a legal pad by the register. Every one of those is a place where a paying customer can quietly disappear. A CRM puts every lead in one pipeline where nothing gets forgotten — and we do the part nobody has time for: setting it up so it actually works.</p>
 
@@ -241,7 +244,7 @@ AI_FAQS = [
 
 AI_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>AI implementation for small businesses</h1>
+    <h1><em>AI</em> implementation for small businesses</h1>
     {SPRINKLE}
     <p>Forget the hype for a minute. For a local business, AI is useful for one plain reason: it answers in seconds, at 2 a.m., on a Sunday, while you're on a ladder. Speed wins leads — the first business to respond usually gets the job — and AI is how a small team responds first every single time.</p>
 
@@ -284,7 +287,7 @@ ADS_FAQS = [
 
 ADS_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>Google &amp; Meta ads management in East Tennessee</h1>
+    <h1>Google &amp; Meta ads management in <em>East Tennessee</em></h1>
     {SPRINKLE}
     <p>Paid ads are the fastest way to put your business in front of people who are ready to buy — and the fastest way to burn money if nobody's watching the account. We run Google and Meta campaigns for East Tennessee businesses with one rule: every dollar gets tracked all the way to a lead in your CRM, so "is it working?" always has a real answer.</p>
 
@@ -323,7 +326,7 @@ WEB_FAQS = [
 
 WEB_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>Web design for local businesses</h1>
+    <h1>Web design for <em>local businesses</em></h1>
     {SPRINKLE}
     <p>Your website has two jobs: get found, and get the phone to ring. Pretty matters — you should be proud to put the URL on your truck — but pretty is third on the list. We hand-build fast, lean sites structured so Google can rank them, AI assistants can cite them, and a visitor on a phone in a parking lot can call you in two taps.</p>
 
@@ -363,7 +366,7 @@ SEO_FAQS = [
 
 SEO_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>SEO and AEO services in East Tennessee</h1>
+    <h1>SEO and <em>AEO</em> services in East Tennessee</h1>
     {SPRINKLE}
     <p>SEO is how your business shows up when someone searches Google. AEO — answer engine optimization — is how you show up when someone asks ChatGPT or another AI assistant for a recommendation instead. Same goal, new referee. We do both at once, because the pages that win them are built the same way: specific, useful, and honest.</p>
 
@@ -395,7 +398,7 @@ SEO_BODY = f"""<section class="section">
 AREAS_BODY = f"""<section class="section">
   <div class="wrap">
     <div class="section-head">
-      <h1>Serving East Tennessee, from Kodak out</h1>
+      <h1>Serving East Tennessee, <em>from Kodak out</em></h1>
       {SPRINKLE}
       <p>Salt Services is based in Kodak, right where Sevier, Knox, and Jefferson counties meet — which puts most of East Tennessee within a half-hour handshake. Websites and SEO work travels anywhere, but this is home, and these are the markets we know street by street.</p>
     </div>
@@ -434,7 +437,7 @@ SEV_FAQS = [
 
 SEV_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>Marketing agency serving Sevierville, TN</h1>
+    <h1>Marketing agency serving <em>Sevierville, TN</em></h1>
     {SPRINKLE}
     <p>Sevierville sits in a strange, wonderful market: a county seat of under twenty thousand people that hosts millions of visitors a year on their way to Pigeon Forge, Gatlinburg, and the Smokies. That means two completely different customers — tourists planning from a cabin or a couch three states away, and locals who live here year-round — and most Sevierville businesses need to win both. We're fifteen minutes up Highway 66 in Kodak, and this is the market we know best.</p>
 
@@ -472,7 +475,7 @@ KNOX_FAQS = [
 
 KNOX_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>Digital marketing for Knoxville businesses</h1>
+    <h1>Digital marketing for <em>Knoxville</em> businesses</h1>
     {SPRINKLE}
     <p>Knoxville is where East Tennessee's customers are — nearly a million people across the metro — and where its competition is. You're not up against four other plumbers like you would be in Dandridge; you're up against fifty, plus the private-equity rollups with billboards on I-40. Competing here on volume is a rich company's game. Competing on <em>specificity</em> is ours.</p>
 
@@ -499,7 +502,7 @@ KNOX_BODY = f"""<section class="section">
 # ============================================================ ABOUT
 ABOUT_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>The story behind Salt Services</h1>
+    <h1>The <em>story</em> behind Salt Services</h1>
     {SPRINKLE}
     <p>Salt Services started with something our founder noticed growing up in an entrepreneurial family: the businesses that marketed themselves grew, and the ones that didn't — even the genuinely better ones — stayed stuck. The good-at-the-work business losing to the good-at-being-found business never sat right. Salt Services exists to fix that mismatch for small businesses in East Tennessee.</p>
     <!-- TODO: founder name, photo, and year founded — awaiting owner confirmation -->
@@ -527,7 +530,7 @@ ABOUT_BODY = f"""<section class="section">
 CONTACT_BODY = f"""<section class="section">
   <div class="wrap">
     <div class="section-head">
-      <h1>Let's talk about growing your business</h1>
+      <h1>Let's talk about <em>growing</em> your business</h1>
       {SPRINKLE}
       <p>Three ways to reach us — pick whichever you'd actually use. The form gives us the most to work with, so if you want a real plan on the first call, start there.</p>
     </div>
@@ -565,7 +568,7 @@ CONTACT_BODY = f"""<section class="section">
 # ============================================================ 404
 NOTFOUND_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>This page wandered off the trail</h1>
+    <h1>This page <em>wandered off</em> the trail</h1>
     {SPRINKLE}
     <p>The address you followed doesn't exist on our site — the page may have moved, or the link had a typo. No harm done. Here's where you probably meant to go:</p>
     <ul>

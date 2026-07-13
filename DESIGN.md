@@ -6,8 +6,9 @@ Derived with the ui-ux-pro-max design skill (github.com/nextlevelbuilder/ui-ux-p
 
 | Group | Values |
 |-------|--------|
-| Brand | navy `#132844`, navy-soft `#1d3a63`, amber accent `#e9a13b` (CTAs only) |
-| Text | ink `#1f2a38` headings, body `#3c4a5d`, muted `#5b6b81` (all WCAG AA verified) |
+| Brand | deep navy `#0d1a2f`, elevated `#16294a`, darkest `#081222`, amber accent `#e9a13b` (CTAs + accent words only) |
+| Light surfaces | warm ivory `#f5f3ed`, deep ivory `#ece9e0`, bone cards `#fbfaf6` |
+| Text | ink `#14233c` headings, body `#33415a`, muted `#54637a` (all WCAG AA verified) |
 | Dark surfaces | hairline `rgba(255,255,255,.08)`, top-edge sheen `rgba(255,255,255,.06)` |
 | Spacing | 8px rhythm: `--space-1` (4px) … `--space-16` (64px) |
 | Radius | 6 / 10 / 16px |
@@ -15,19 +16,20 @@ Derived with the ui-ux-pro-max design skill (github.com/nextlevelbuilder/ui-ux-p
 | Motion | 150ms fast / 250ms standard, ease `cubic-bezier(.16,1,.3,1)`; all animation behind `prefers-reduced-motion` |
 | Z-index | header 50, callbar 60, cursor fx 9998/9999 |
 
-## Typography
+## Typography (editorial — influenced by americanfireplaces + mtnlandscapers)
 
-- **Headings:** Syne 700/800 (Google Fonts, `display=swap`, preconnected) — site-wide for consistency; hero uses 800 uppercase.
-- **Body:** system-ui stack (fast, no extra weight).
-- **Mono labels** (hero kicker, HUD): Space Mono.
-- Syne runs wide: headings hyphenate below 640px (`hyphens:auto`) so long words like "implementation" never cause horizontal scroll.
+- **Headings:** Fraunces 500/600 serif (Google Fonts, `display=swap`, preconnected), tight tracking. Every h1 carries one *italic amber accent word* (`<em>`), echoing the reference sites.
+- **Body:** Instrument Sans 400–700.
+- **Mono labels** (hero kicker with em-dash flourishes, HUD, footer column headings): Space Mono.
+- Headings hyphenate below 640px (`hyphens:auto`) so long words never cause horizontal scroll.
 
 ## Signature elements
 
-- Particle-morph hero (Weblove Template 20): 14k grains, sphere → SALT → ring, amber sparks, corner HUD. Desktop-only; gradient fallback for mobile/reduced-motion/crawlers.
+- Particle-morph hero (Weblove Template 20): 14k grains, sphere → SALT (serif Fraunces letterforms) → ring, amber sparks, corner HUD. Desktop-only; gradient fallback for mobile/reduced-motion/crawlers.
 - Salt-sprinkle SVG divider under section headings.
 - Amber signature cursor (dot + trailing ring + ripple), desktop-only, reduced-motion-safe.
-- CTA buttons: amber glow on hover, press-scale feedback.
+- Pill CTA buttons: amber glow on hover, press-scale feedback.
+- Numbered process steps: italic serif amber numerals (01/02/03) with hairline underline.
 
 ## Rules honored (from the skill's checklist)
 
