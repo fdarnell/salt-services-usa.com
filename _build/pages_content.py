@@ -94,6 +94,15 @@ HOME_BODY = f"""<section class="hero hero-3d">
   </div>
 </section>
 
+<section class="section section-alt">
+  <div class="wrap prose">
+    <h2>Where do your customers actually look for you now?</h2>
+    {SPRINKLE}
+    <p>Two places. Google, same as the last twenty years — and AI assistants, which is newer than most marketing playbooks. When somebody in Sevier County needs a plumber, a cabin cleaner, or a dentist, they either search and call whoever ranks, or they ask ChatGPT and call whoever it names. Either way, most of the decision happens before the phone ever rings.</p>
+    <p>That's the whole reason our services look the way they do. The <a href="/services/web-design/">website</a> and the monthly <a href="/services/seo-aeo/">SEO and AEO pages</a> win the searches and the AI citations. <a href="/services/digital-advertising/">Ads</a> buy the top spot while the free rankings compound. And the <a href="/services/crm-implementation/">CRM</a> and <a href="/services/ai-implementation/">AI follow-up</a> make sure a lead that took months to earn doesn't die in a voicemail box.</p>
+  </div>
+</section>
+
 <section class="section section-navy">
   <div class="wrap">
     <div class="section-head">
@@ -151,15 +160,68 @@ HOME_BODY = f"""<section class="hero hero-3d">
 <section class="section">
   <div class="wrap">
     <div class="section-head">
+      <h2>Who we're built for</h2>
+      {SPRINKLE}
+      <p>The pipeline is the same everywhere — website, visibility, follow-up. What changes is the local knowledge, and East Tennessee is the part we know cold.</p>
+    </div>
+    <ul class="card-grid">
+      <li class="card">
+        <h3>Tourism &amp; hospitality</h3>
+        <p>Cabin companies, attractions, and restaurants on the corridors from Sevierville to Gatlinburg. Seasonal ad budgets, direct bookings, and pages that win trip-planning searches.</p>
+      </li>
+      <li class="card">
+        <h3>Home-service trades</h3>
+        <p>HVAC, plumbing, roofing, landscaping. Local search is the whole game here, and missed-call text-back rescues the jobs that used to go to whoever answered second.</p>
+      </li>
+      <li class="card">
+        <h3>Health &amp; wellness</h3>
+        <p>Dentists, chiropractors, therapists, med spas. Booking-first websites, review momentum, and follow-up that fills the calendar without burdening the front desk.</p>
+      </li>
+      <li class="card">
+        <h3>Professional services</h3>
+        <p>Law, accounting, insurance, real estate. Trust-first sites and neighborhood-level SEO, because nobody hires a professional from a thin, slow web page.</p>
+      </li>
+      <li class="card">
+        <h3>Retail &amp; local shops</h3>
+        <p>From Parkway storefronts to Knoxville boutiques. Google Maps presence, social advertising, and a site that answers the question every visitor has: is it worth the drive?</p>
+      </li>
+      <li class="card">
+        <h3>Not on the list?</h3>
+        <p>If your customers search for what you do — and they do — the same pipeline applies. <a href="/contact/">Tell us what you run</a> and we'll tell you honestly whether we can help.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head">
       <h2>Where we work</h2>
       {SPRINKLE}
       <p>Based in Kodak, serving businesses across East Tennessee: <a href="/service-areas/sevierville/">Sevierville</a>, <a href="/service-areas/knoxville/">Knoxville</a>, Pigeon Forge, Gatlinburg, Maryville, Dandridge, and beyond. Websites and SEO clients come from anywhere. See all <a href="/service-areas/">service areas</a>.</p>
+      <p>Kodak puts us fifteen minutes from Sevierville's Parkway, about twenty-five from downtown Knoxville, and roughly the same from Dandridge's courthouse square — close enough to meet every client face to face, and far enough into the county to know what a small-town budget actually looks like.</p>
     </div>
   </div>
 </section>
-""" + faq_html(HOME_FAQS) + coraline_section(
-    "Start with five minutes of honest questions",
-    "The Step One form tells us enough to come back with real recommendations instead of a canned pitch.")
+
+<section class="section">
+  <div class="wrap prose">
+    <h2>Promises we'll put in writing</h2>
+    {SPRINKLE}
+    <p>A young agency doesn't get to lean on a twenty-year track record, so we lean on terms instead:</p>
+    <ul class="checklist">
+      {check_li("A flat, written quote before any work starts — no hourly meter, no surprise line items")}
+      {check_li("You own your ad accounts and your data, and on the buyout option, your website outright")}
+      {check_li("Every new page ships on a private preview link you approve before it goes live")}
+      {check_li("A monthly report in plain English: what got done, what it cost, what it produced")}
+      {check_li("If we think you shouldn't buy something, we say so — including our own services")}
+    </ul>
+  </div>
+</section>
+""" + faq_html(HOME_FAQS) + cta_band(
+    "Ready for step one?",
+    "The Step One form takes about five minutes, and it gets you a real growth plan — free, whether or not you hire us.",
+    "Fill out the Step One form", "/contact/#form")
 
 # ============================================================ SERVICES HUB
 SERVICES_HUB_BODY = f"""<section class="section">
