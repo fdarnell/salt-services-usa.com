@@ -6,9 +6,9 @@ Derived with the ui-ux-pro-max design skill (github.com/nextlevelbuilder/ui-ux-p
 
 | Group | Values |
 |-------|--------|
-| Brand | deep navy `#0d1a2f`, elevated `#16294a`, darkest `#081222`, amber accent `#e9a13b` (CTAs + accent words only) |
+| Brand | deep violet `#180f2f`, elevated `#2b1d52`, darkest `#0e081f`, amber accent `#e9a13b` (CTAs + accent words only) |
 | Light surfaces | warm ivory `#f5f3ed`, deep ivory `#ece9e0`, bone cards `#fbfaf6` |
-| Text | ink `#14233c` headings, body `#33415a`, muted `#54637a` (all WCAG AA verified) |
+| Text | ink `#201439` headings, body `#3d3357`, muted `#635a7d` (all WCAG AA verified) |
 | Dark surfaces | hairline `rgba(255,255,255,.08)`, top-edge sheen `rgba(255,255,255,.06)` |
 | Spacing | 8px rhythm: `--space-1` (4px) … `--space-16` (64px) |
 | Radius | 6 / 10 / 16px |
