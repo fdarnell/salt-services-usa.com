@@ -28,7 +28,7 @@ The remaining towns (Pigeon Forge, Gatlinburg, Maryville, Dandridge, and more) a
 ## Where the conversion elements sit, and why
 
 - **Phone number**: top-right of every page, and a sticky call bar on phones — thumb-reachable without scrolling.
-- **Step One form**: bottom of every service and city page, top of the contact page. It loads lazily (only when a visitor scrolls to it) so it never slows the page down.
+- **Step One form**: lives on the contact page only, loaded lazily so it never slows the page down. Every other page ends in a call-to-action band that links straight to it (`/contact/#form`) — one clear conversion path instead of a heavy form repeated on every page.
 - **Trust signals**: the "young agency, honest about it" positioning, plain-cost answers in every FAQ, and the Matthew 5:13 story on the About page.
 
 ## Launch checklist (in order)

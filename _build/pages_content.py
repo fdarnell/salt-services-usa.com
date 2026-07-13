@@ -6,7 +6,7 @@ from gen import (SPRINKLE, icon, check_li, coraline_section, faq_html, faq_ld,
 PHONE = BIZ["phone_display"]
 TEL = BIZ["phone_tel"]
 
-def cta_band(heading, blurb, btn_text="Get your free growth plan", btn_href="/contact/"):
+def cta_band(heading, blurb, btn_text="Get your free growth plan", btn_href="/contact/#form"):
     return f"""<section class="section section-navy cta-band">
   <div class="wrap">
     <div>
@@ -288,7 +288,7 @@ CRM_BODY = f"""<section class="section">
     <p>A CRM catches leads; it doesn't create them. That's what your <a href="/services/web-design/">website</a>, <a href="/services/seo-aeo/">SEO</a>, and <a href="/services/digital-advertising/">ad campaigns</a> are for. And once the pipeline is full, <a href="/services/ai-implementation/">AI</a> can work it faster than any human — answering new leads in seconds and drafting follow-ups your team just approves. We build all of it, which is exactly why the pieces fit.</p>
   </div>
 </section>
-""" + faq_html(CRM_FAQS, "CRM questions, answered straight") + coraline_section(
+""" + faq_html(CRM_FAQS, "CRM questions, answered straight") + cta_band(
     "Stop losing leads you already paid for",
     "Tell us how leads reach you today and we'll show you where they're leaking — before you spend a dollar on new marketing.")
 
@@ -331,7 +331,7 @@ AI_BODY = f"""<section class="section">
     <p>AI needs somewhere to put the leads it catches and a record of every conversation it has. That's a <a href="/services/crm-implementation/">CRM</a> — and if you don't have one yet, we implement both together so the whole thing works on day one. It's the same pipeline your <a href="/services/web-design/">website</a> feeds.</p>
   </div>
 </section>
-""" + faq_html(AI_FAQS, "The AI questions every owner asks") + coraline_section(
+""" + faq_html(AI_FAQS, "The AI questions every owner asks") + cta_band(
     "Find out what AI could handle for you",
     "Tell us where your team loses the most time — we'll tell you honestly whether AI can take it, and what that would cost.")
 
@@ -370,7 +370,7 @@ ADS_BODY = f"""<section class="section">
     <p>Enough to get real data, and not a dollar more until the data says so. The honest minimum varies by industry — a click costs a lot more for a Knoxville roofer than a Dandridge boutique — so we'd rather give you a real number on the call than print a fake one here. And if your budget genuinely can't buy enough clicks to matter, we'll say so and point you at <a href="/services/seo-aeo/">SEO</a> instead. Ads only work as hard as the page they land on and the follow-up behind it — which is why we also build <a href="/services/web-design/">landing pages</a> and <a href="/services/crm-implementation/">CRM pipelines</a>, and why <a href="/services/ai-implementation/">AI</a> answering your leads in seconds makes the same ad budget close more jobs.</p>
   </div>
 </section>
-""" + faq_html(ADS_FAQS, "Straight answers about paid ads") + coraline_section(
+""" + faq_html(ADS_FAQS, "Straight answers about paid ads") + cta_band(
     "Get an honest read on your ad budget",
     "Tell us your market and your monthly number. We'll tell you what it can realistically buy — even if the answer is \"don't run ads yet.\"")
 
@@ -410,7 +410,7 @@ WEB_BODY = f"""<section class="section">
     <p>A great site with no visitors is a billboard in the woods. Once the foundation is up, <a href="/services/seo-aeo/">monthly SEO and AEO</a> grows the searches it can win, <a href="/services/digital-advertising/">Google and Meta ads</a> buy traffic while the SEO compounds, and a <a href="/services/crm-implementation/">CRM</a> makes sure every lead the site produces gets an answer — instantly, if you add <a href="/services/ai-implementation/">AI</a>.</p>
   </div>
 </section>
-""" + faq_html(WEB_FAQS, "Website questions owners ask us") + coraline_section(
+""" + faq_html(WEB_FAQS, "Website questions owners ask us") + cta_band(
     "Get a website quote without a sales pitch",
     "Tell us about your business and your current site, if you have one. We'll come back with both prices — build-and-own and monthly — in writing.")
 
@@ -452,7 +452,7 @@ SEO_BODY = f"""<section class="section">
     <p>Publishing great pages on a slow, tangled website is pouring good water into a cracked well. If your current site can't support the program, we'll tell you before taking your money — <a href="/services/web-design/">rebuilding the foundation</a> first is cheaper than paying for SEO that can't work. And every lead the rankings produce should land in a <a href="/services/crm-implementation/">CRM</a>, or you're winning searches just to lose the follow-up.</p>
   </div>
 </section>
-""" + faq_html(SEO_FAQS, "SEO and AEO, without the snake oil") + coraline_section(
+""" + faq_html(SEO_FAQS, "SEO and AEO, without the snake oil") + cta_band(
     "See what searches you're missing",
     "Tell us your business and your towns. We'll look at what your customers search for, what you currently win, and send back the honest gap.")
 
@@ -519,7 +519,7 @@ SEV_BODY = f"""<section class="section">
     <p>We serve all of Sevier County from here — <a href="/service-areas/">Pigeon Forge, Gatlinburg, Seymour</a>, and the communities between.</p>
   </div>
 </section>
-""" + faq_html(SEV_FAQS, "Sevierville questions we get asked") + coraline_section(
+""" + faq_html(SEV_FAQS, "Sevierville questions we get asked") + cta_band(
     "Talk to a marketing team fifteen minutes away",
     "Tell us about your Sevierville business and we'll come back with a plan built for this market — tourist season, off season, and everything between.")
 
@@ -557,7 +557,7 @@ KNOX_BODY = f"""<section class="section">
     <p>When a customer has fifty choices, they don't wait for a callback — they just dial the next listing. Speed is the cheapest advantage in a crowded market: a <a href="/services/crm-implementation/">CRM</a> that catches every lead and <a href="/services/ai-implementation/">AI</a> that responds in seconds means you win the jobs your slower competitors already paid to attract. Pair that with a <a href="/services/web-design/">site built to convert</a> and <a href="/services/seo-aeo/">content that compounds</a>, and the size of the market starts working for you instead of against you.</p>
   </div>
 </section>
-""" + faq_html(KNOX_FAQS, "Knoxville marketing, asked and answered") + coraline_section(
+""" + faq_html(KNOX_FAQS, "Knoxville marketing, asked and answered") + cta_band(
     "Bring us your Knoxville market and we'll find the gap",
     "Tell us your industry and your part of town. We'll come back with the specific searches and neighborhoods we'd attack first — that plan is free either way.")
 
