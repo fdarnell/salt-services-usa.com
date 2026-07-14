@@ -29,6 +29,7 @@ The remaining towns (Pigeon Forge, Gatlinburg, Maryville, Dandridge, and more) a
 
 - **Phone number**: top-right of every page, and a sticky call bar on phones — thumb-reachable without scrolling.
 - **Step One form**: lives on the contact page only, loaded lazily so it never slows the page down. Every other page ends in a call-to-action band that links straight to it (`/contact/#form`) — one clear conversion path instead of a heavy form repeated on every page.
+- **Coraline chat widget**: on every page, bottom-right. It loads a moment after the page renders (or on first scroll/tap) so it costs nothing on page speed, and on phones it sits above the call bar instead of covering it. Chats land in Coraline.
 - **Trust signals**: the "young agency, honest about it" positioning, plain-cost answers in every FAQ, and the Matthew 5:13 story on the About page.
 
 ## Launch checklist (in order)

@@ -12,6 +12,42 @@
     });
   }
 
+  /* ----- Coraline chat widget (site-wide) -----
+     Deferred: injected 2.5s after page load, or on first interaction,
+     whichever comes first — so the widget never blocks rendering. */
+  var chatLoaded = false;
+  function loadChat() {
+    if (chatLoaded) return;
+    chatLoaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://widgets.leadconnectorhq.com/loader.js';
+    s.setAttribute('data-resources-url', 'https://widgets.leadconnectorhq.com/chat-widget/loader.js');
+    s.setAttribute('data-widget-id', '6a559752c02522215a5d3d5b');
+    document.body.appendChild(s);
+    liftChatAboveCallbar();
+  }
+
+  /* On phones the sticky call bar owns the bottom edge; nudge the chat
+     launcher (inside the widget's shadow DOM) up so they don't overlap. */
+  function liftChatAboveCallbar() {
+    var tries = 0;
+    var timer = setInterval(function () {
+      var w = document.querySelector('chat-widget');
+      if (w && w.shadowRoot) {
+        var st = document.createElement('style');
+        st.textContent = '@media (max-width: 640px) { .lc_text-widget, .lc_text-widget--bubble { bottom: 88px !important; } }';
+        w.shadowRoot.appendChild(st);
+        clearInterval(timer);
+      } else if (++tries > 40) {
+        clearInterval(timer);
+      }
+    }, 300);
+  }
+  window.addEventListener('load', function () { setTimeout(loadChat, 2500); });
+  ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (ev) {
+    window.addEventListener(ev, loadChat, { once: true, passive: true });
+  });
+
   /* ----- Coraline form lazy-loader -----
      The raw Coraline embed is a ~2085px iframe plus an external script —
      the heaviest thing on any page. We show a styled placeholder and inject
