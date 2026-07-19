@@ -58,7 +58,7 @@ HOME_FAQS = [
     ("Do you only work with businesses near Kodak?",
      "East Tennessee is home turf — Kodak, Sevierville, Pigeon Forge, Gatlinburg, Knoxville, Maryville, Dandridge — and we like meeting clients face to face. Websites, SEO, and ad management travel well though, so we take on clients outside the area too."),
     ("How much does marketing with Salt Services cost?",
-     "It depends on what you need, so we won't print a made-up number here. After the Step One form and a short call, you get a written quote with a flat price and exactly what it covers. If we think you don't need something, we'll say so."),
+     "It depends on what you need, so we won't print a made-up number here. After the inquiry form and a short call, you get a written quote with a flat price and exactly what it covers. If we think you don't need something, we'll say so."),
     ("Why is the company called Salt Services?",
      "The name comes from Matthew 5:13 — \"you are the salt of the earth.\" We started this agency to help small businesses salt up their web presence and their cash flow. The story is on our about page."),
 ]
@@ -184,7 +184,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
       <li class="card">
         <span class="step-num" aria-hidden="true">01</span>
         <h3>Tell us about your business</h3>
-        <p>Fill out the Step One form below — it takes about five minutes and asks the questions we'd ask on a first call anyway.</p>
+        <p>Fill out the inquiry form — it takes about two minutes and asks just enough for us to do real homework before we call.</p>
       </li>
       <li class="card">
         <span class="step-num" aria-hidden="true">02</span>
@@ -263,8 +263,8 @@ HOME_BODY = f"""<section class="hero hero-3d">
 </section>
 """ + faq_html(HOME_FAQS) + cta_band(
     "Ready for step one?",
-    "The Step One form takes about five minutes, and it gets you a real growth plan — free, whether or not you hire us.",
-    "Fill out the Step One form", "/contact/#form")
+    "The inquiry form takes about two minutes, and it gets you a real growth plan — free, whether or not you hire us.",
+    "Fill out the inquiry form", "/contact/#form")
 
 # ============================================================ SERVICES HUB
 SERVICES_HUB_BODY = f"""<section class="section">
@@ -868,7 +868,7 @@ CONTACT_BODY = f"""<section class="section">
   </div>
 </section>
 """ + coraline_section(
-    "The Step One form — five minutes, zero obligation",
+    "The inquiry form — two minutes, zero obligation",
     "Answer a few questions about your business and your goals. We'll review your web presence and your market before we ever get on the phone, so the first conversation is already about specifics.",
     aside="""<h3>What happens after you submit</h3>
       <ol>
@@ -1137,7 +1137,7 @@ PAGES = [
     {
         "path": "/contact/", "nav": "contact",
         "title": "Contact Salt Services | (866) 721-7258 | Kodak, TN",
-        "desc": "Call (866) 721-7258, email info@saltservicesusa.com, or start with our five-minute lead form. Based in Kodak, serving all of East Tennessee.",
+        "desc": "Call (866) 721-7258, email info@saltservicesusa.com, or start with our two-minute inquiry form. Based in Kodak, serving all of East Tennessee.",
         "crumbs": [["Home", "/"], ["Contact", "/contact/"]],
         "body": CONTACT_BODY,
     },

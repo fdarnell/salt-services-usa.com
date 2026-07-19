@@ -19,11 +19,11 @@
   "google_business_profile": "TODO: claim/confirm GBP and add review link to footer",
   "social": {},
   "coraline": {
-    "iframe_src": "https://link.coraline-communication.com/widget/form/zyKiFm4AGJG3S3zoRrAQ",
-    "form_id": "zyKiFm4AGJG3S3zoRrAQ",
+    "iframe_src": "https://link.coraline-communication.com/widget/form/ZG2GvC7Xk9bF3bCMCEB1",
+    "form_id": "ZG2GvC7Xk9bF3bCMCEB1",
     "embed_js": "https://link.coraline-communication.com/js/form_embed.js",
-    "form_name": "Website | Step One Lead Form",
-    "form_height": 2085,
+    "form_name": "Website | Inquiry Form",
+    "form_height": 770,
     "chat_widget_id": "6a559752c02522215a5d3d5b",
     "chat_widget_note": "Injected site-wide by js/main.js, deferred until page load + 2.5s or first interaction"
   },
