@@ -33,6 +33,7 @@ Ongoing SEO/AEO program: **3 new pages per month**, each genuinely unique (no sw
 | 27 | Guide: How to get more Google reviews | /guides/get-more-google-reviews/ | how to get more google reviews | auxiliary | Month 5 | Planned |
 
 | 28 | Our work (portfolio) | /work/ | (proof page) | core | Added July 2026 | Live |
+| 29 | Coraline product page | /coraline/ | coraline crm (brand + product) | core | Added July 2026 | Live |
 
 Notes for future installments:
 - As Search Console accumulates rankings data for portfolio clients, individual /work/ entries graduate into full case-study pages (e.g. /work/mountain-landscapers/) with real numbers — these count as auxiliary pages in the monthly cadence.

@@ -152,6 +152,7 @@ FOOTER = f"""</main>
           <li><a href="/services/digital-advertising/">Digital advertising</a></li>
           <li><a href="/services/web-design/">Web design</a></li>
           <li><a href="/services/seo-aeo/">SEO &amp; AEO</a></li>
+          <li><a href="/coraline/">Coraline CRM</a></li>
         </ul>
       </div>
       <div>

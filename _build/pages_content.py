@@ -322,7 +322,7 @@ CRM_BODY = f"""<section class="section">
     </ul>
 
     <h2>Which CRM do you set up?</h2>
-    <p>Our go-to platform is Coraline, the all-in-one CRM we run our own business on — calls, texts, email, pipelines, and automation in one place, priced for small businesses rather than enterprise sales teams. Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
+    <p>Our go-to platform is <a href="/coraline/">Coraline</a>, the all-in-one CRM we run our own business on — calls, texts, email, pipelines, and automation in one place, priced for small businesses rather than enterprise sales teams. Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
 
     <h2>How long does implementation take?</h2>
     <p>A standard setup takes weeks, not months. We start with the piece that recovers revenue fastest — usually lead capture and missed-call text-back — so the system starts paying for itself while the rest is still being built.</p>
@@ -344,7 +344,7 @@ AI_FAQS = [
     ("What if the AI gives a customer a wrong answer?",
      "We build guardrails for exactly this. The AI only answers from information you've approved, and anything outside its lane — pricing edge cases, complaints, emergencies — gets routed to a person immediately. You review transcripts, and its answers tighten up over time."),
     ("Do we need to buy new software for this?",
-     "Usually not. Most of what we implement runs inside the CRM, which you likely need anyway. If you're already set up on Coraline or similar, AI is an upgrade to what you have, not another subscription to babysit."),
+     "Usually not. Most of what we implement runs inside the CRM, which you likely need anyway. If you're already set up on a platform like our own Coraline, AI is an upgrade to what you have, not another subscription to babysit."),
 ]
 
 AI_BODY = f"""<section class="section">
@@ -603,6 +603,129 @@ KNOX_BODY = f"""<section class="section">
 """ + faq_html(KNOX_FAQS, "Knoxville marketing, asked and answered") + cta_band(
     "Bring us your Knoxville market and we'll find the gap",
     "Tell us your industry and your part of town. We'll come back with the specific searches and neighborhoods we'd attack first — that plan is free either way.")
+
+# ============================================================ CORALINE
+CORALINE_CHECKOUT = "https://coraline.saltservicesusa.com"
+
+CORALINE_FAQS = [
+    ("Do I have to set Coraline up myself?",
+     "No — that's the point of buying it from us. Every Coraline plan can come with our implementation: pipelines built for how you sell, your contacts migrated, automations wired, and your team trained. You log in to a working system, not an empty one."),
+    ("Do I need Coraline to work with Salt Services?",
+     "No. Our web design, SEO, and advertising work stands on its own. Coraline is simply the platform we recommend when a client needs a CRM, because it's the one we run our own business on and can support the deepest."),
+    ("What's actually different between the three plans?",
+     "Starter is the full core platform for a single account. Unlimited removes the ceilings — unlimited contacts and users — and adds a branded desktop app. Pro adds the operator tools: email, phone, and text rebilling, split testing, agent reporting, and advanced API access."),
+    ("Will Coraline work with my existing website?",
+     "Yes. Coraline's forms, chat, and booking calendars embed into any site — including sites we didn't build. If we built yours, the wiring is already our standard practice."),
+]
+
+CORALINE_BODY = f"""<section class="hero">
+  <div class="wrap">
+    <span class="hero-kicker">Coraline &middot; the platform behind our client work</span>
+    <h1>One login for your <span class="accent">whole</span> pipeline.</h1>
+    {SPRINKLE}
+    <p class="lead">Coraline is the all-in-one CRM and marketing platform we run our own business on and implement for clients: lead capture, pipelines, booking, text and email automation, and an AI conversation bot — in one place, priced for small businesses.</p>
+    <p>
+      <a class="btn btn-accent" href="{CORALINE_CHECKOUT}">Sign up for Coraline</a>
+      <a class="btn btn-ghost" href="/contact/#form">Talk to us first</a>
+    </p>
+    <p class="hero-note">Not sure which plan fits? Start with the form and we'll tell you honestly — including if the answer is the cheapest one.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>What's inside</h2>
+      {SPRINKLE}
+      <p>Most businesses run this stack as four or five separate subscriptions that don't talk to each other. Coraline is the same stack as one system.</p>
+    </div>
+    <ul class="card-grid">
+      <li class="card">{icon('crm')}
+        <h3>Leads &amp; pipelines</h3>
+        <p>Every lead from your website, ads, and Google profile lands in one pipeline — tracked from first contact to closed job.</p>
+      </li>
+      <li class="card">{icon('ads')}
+        <h3>Marketing automation</h3>
+        <p>Text and email follow-up sequences, review requests, and appointment reminders that run themselves.</p>
+      </li>
+      <li class="card">{icon('map')}
+        <h3>Online booking</h3>
+        <p>Calendars your customers book directly, synced to your team, with reminders that cut no-shows.</p>
+      </li>
+      <li class="card">{icon('ai')}
+        <h3>AI conversation bot</h3>
+        <p>Answers missed calls and website chats in seconds, qualifies the lead, and books the appointment — with a human handoff.</p>
+      </li>
+      <li class="card">{icon('web')}
+        <h3>Website &amp; funnel builder</h3>
+        <p>Landing pages and funnels with split testing on the Pro plan — or keep the site you have and just embed the forms.</p>
+      </li>
+      <li class="card">{icon('seo')}
+        <h3>Reporting</h3>
+        <p>Contact management, social calendar, agent reporting, and API access — so you can see what's working without exporting spreadsheets.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Plans and pricing</h2>
+      {SPRINKLE}
+      <p>Flat monthly pricing, no per-seat surprises. Every plan links to the same secure checkout.</p>
+    </div>
+    <ul class="card-grid">
+      <li class="card price-card">
+        <h3>Starter</h3>
+        <p class="price-tag">$197<span class="per">/month</span></p>
+        <p class="price-note">The core platform, single account.</p>
+        <ul class="checklist">
+          {check_li("Lead capture, pipelines, and contact management")}
+          {check_li("Text and email marketing automation")}
+          {check_li("Online booking and calendars")}
+          {check_li("Website and funnel builder")}
+        </ul>
+        <a class="btn btn-navy" href="{CORALINE_CHECKOUT}">Choose Starter</a>
+      </li>
+      <li class="card price-card price-featured">
+        <span class="price-badge">Our recommendation</span>
+        <h3>Unlimited</h3>
+        <p class="price-tag">$297<span class="per">/month</span></p>
+        <p class="price-note">Everything in Starter, without ceilings.</p>
+        <ul class="checklist">
+          {check_li("Unlimited contacts and users")}
+          {check_li("Branded desktop app on your own domain")}
+          {check_li("Everything in Starter, unrestricted")}
+        </ul>
+        <a class="btn btn-accent" href="{CORALINE_CHECKOUT}">Choose Unlimited</a>
+      </li>
+      <li class="card price-card">
+        <h3>Pro</h3>
+        <p class="price-tag">$497<span class="per">/month</span></p>
+        <p class="price-note">Everything in Unlimited, plus operator tools.</p>
+        <ul class="checklist">
+          {check_li("Email, phone, and text rebilling")}
+          {check_li("Split testing and agent reporting")}
+          {check_li("Advanced API access")}
+        </ul>
+        <a class="btn btn-navy" href="{CORALINE_CHECKOUT}">Choose Pro</a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap prose">
+    <h2>Software plus the people who set it up</h2>
+    {SPRINKLE}
+    <p>Plenty of platforms can do what Coraline does on paper. What makes it work in practice is implementation — and that's the difference between buying Coraline from a website and buying it from us. We <a href="/services/crm-implementation/">build your pipelines, migrate your contacts, and train your team</a>, wire in <a href="/services/ai-implementation/">AI that answers in seconds</a>, and stay fifteen minutes away when you'd rather talk across a table. The software comes with a team.</p>
+  </div>
+</section>
+""" + faq_html(CORALINE_FAQS, "Coraline questions, answered") + cta_band(
+    "Ready to run your business from one login?",
+    f"Sign up and we'll take it from there — or call {PHONE} and we'll help you pick a plan.",
+    "Sign up for Coraline", CORALINE_CHECKOUT)
 
 # ============================================================ OUR WORK
 def work_entry(href, img, alt, name, blurb):
@@ -871,6 +994,26 @@ PAGES = [
                               "/service-areas/knoxville/"),
                    faq_ld(KNOX_FAQS)],
         "body": KNOX_BODY,
+    },
+    {
+        "path": "/coraline/", "nav": "",
+        "title": "Coraline | All-in-One CRM from Salt Services",
+        "desc": "Coraline is the CRM and marketing platform behind our client work — pipelines, automation, booking, and AI chat. Plans from $197/month, set up by us.",
+        "crumbs": [["Home", "/"], ["Coraline", "/coraline/"]],
+        "jsonld": [{
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "Coraline",
+            "description": "All-in-one CRM and marketing platform: lead capture, pipelines, text and email automation, online booking, website builder, and AI conversation bot.",
+            "brand": {"@type": "Brand", "name": "Coraline"},
+            "url": "https://www.saltservicesusa.com/coraline/",
+            "offers": [
+                {"@type": "Offer", "name": "Starter", "price": "197.00", "priceCurrency": "USD", "url": CORALINE_CHECKOUT},
+                {"@type": "Offer", "name": "Unlimited", "price": "297.00", "priceCurrency": "USD", "url": CORALINE_CHECKOUT},
+                {"@type": "Offer", "name": "Pro", "price": "497.00", "priceCurrency": "USD", "url": CORALINE_CHECKOUT},
+            ],
+        }, faq_ld(CORALINE_FAQS)],
+        "body": CORALINE_BODY,
     },
     {
         "path": "/work/", "nav": "work",
