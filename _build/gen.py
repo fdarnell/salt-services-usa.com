@@ -180,8 +180,11 @@ FOOTER = f"""</main>
 </html>
 """
 
-def coraline_section(heading, blurb):
-    """Lazy-loading Coraline form section — used on contact + bottoms of service/city pages."""
+def coraline_section(heading, blurb, aside=""):
+    """Lazy-loading Coraline form section (contact page). Optional aside sits
+    beside the form on desktop — objection-handling at the moment of hesitation."""
+    aside_open = '<div class="coraline-cols"><div>' if aside else ""
+    aside_close = f'</div><aside class="form-aside">{aside}</aside></div>' if aside else ""
     return f"""<section class="section" id="form">
   <div class="wrap">
     <div class="section-head">
@@ -189,7 +192,7 @@ def coraline_section(heading, blurb):
       {SPRINKLE}
       <p>{blurb}</p>
     </div>
-    <div class="coraline-form"
+    {aside_open}<div class="coraline-form"
          data-iframe-src="{CORALINE['iframe_src']}"
          data-embed-js="{CORALINE['embed_js']}"
          data-form-id="{CORALINE['form_id']}"
@@ -201,7 +204,7 @@ def coraline_section(heading, blurb):
         <button type="button" class="coraline-form__load-btn">Open the form</button>
         <noscript><p>Our form needs JavaScript. You can also call {BIZ['phone_display']} or email {BIZ['email']}.</p></noscript>
       </div>
-    </div>
+    </div>{aside_close}
     <p class="hero-note">Rather talk? Call <a href="tel:{BIZ['phone_tel']}">{BIZ['phone_display']}</a> — you'll get a person, not a phone tree.</p>
   </div>
 </section>

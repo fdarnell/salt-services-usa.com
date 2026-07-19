@@ -291,6 +291,34 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 .section-navy .card h3 { color: #fff; }
 .section-navy .card p { color: var(--on-brand); }
 
+/* ---------- Recent work (portfolio) ---------- */
+.work-card { padding: 0; overflow: hidden; }
+.work-card > a { display: block; color: inherit; text-decoration: none; height: 100%; }
+.work-card img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--line); }
+.work-card .work-body { padding: 1.2rem 1.4rem 1.4rem; }
+.work-card h3 { margin-bottom: 0.25em; }
+.work-card .work-body p { color: var(--body); font-size: 0.95rem; margin: 0 0 0.5rem; }
+.work-card .card-link { font-weight: 600; }
+.work-card.work-cta > a { display: flex; flex-direction: column; justify-content: center; padding: 1.75rem; }
+
+/* ---------- Contact form + aside columns ---------- */
+.coraline-cols {
+  display: grid; grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 2.5rem; align-items: start;
+}
+.form-aside {
+  background: var(--card-bone); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: 1.6rem 1.6rem 1.2rem;
+  box-shadow: var(--shadow-1);
+}
+.form-aside h3 { margin-bottom: 0.8em; }
+.form-aside ol { margin: 0 0 1rem; padding-left: 1.2rem; }
+.form-aside li { margin-bottom: 0.8rem; font-size: 0.97rem; }
+.form-aside .aside-note { font-size: 0.9rem; color: var(--muted); margin: 0; }
+@media (max-width: 900px) {
+  .coraline-cols { grid-template-columns: 1fr; }
+}
+
 /* ---------- Checklist / feature list ---------- */
 .checklist { list-style: none; padding: 0; margin: 0 0 1.25rem; }
 .checklist li { padding-left: 1.9rem; position: relative; margin-bottom: 0.6rem; }

@@ -72,10 +72,10 @@ HOME_BODY = f"""<section class="hero hero-3d">
     <h1 class="reveal" style="animation-delay:.4s">Get found.<br>Get <span class="accent">answered</span>.<br>Get more leads.</h1><!-- accent word renders italic serif amber -->
     <p class="lead reveal" style="animation-delay:.6s">Salt Services is a marketing and AI implementation agency in Kodak, Tennessee. We build websites that rank on Google and get cited by AI, run ads that pay for themselves, and set up CRMs and AI so no lead ever slips through the cracks.</p>
     <p class="reveal" style="animation-delay:.8s">
-      <a class="btn btn-accent" href="/contact/">Get your free growth plan</a>
+      <a class="btn btn-accent" href="/contact/#form">Get your free growth plan</a>
       <a class="btn btn-ghost" href="tel:{TEL}">Call {PHONE}</a>
     </p>
-    <p class="hero-note reveal" style="animation-delay:1s">The first call is a conversation, not a pitch. Tell us what you're trying to grow and we'll tell you what we'd do about it.</p>
+    <p class="hero-note reveal" style="animation-delay:1s">The plan is a real audit — we review your website, your Google profile, and your top competitor, then tell you exactly what we'd fix. Free, and yours to keep either way.</p>
   </div>
 </section>
 <script type="importmap">
@@ -126,6 +126,75 @@ HOME_BODY = f"""<section class="hero hero-3d">
       <li class="card">
         <h3>Reports you can actually read</h3>
         <p>Every month you'll know what got done, what it cost, and what it produced — in plain English, not a 40-page PDF of charts nobody opens.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Recent work</h2>
+      {SPRINKLE}
+      <p>We're a young agency, so instead of telling you our work is good, here it is — live sites you can click on right now.</p>
+    </div>
+    <ul class="card-grid">
+      <li class="card work-card">
+        <a href="https://americanfireplaces.vercel.app/" target="_blank" rel="noopener">
+          <img src="/images/work/american-fireplaces.webp" alt="American Fireplaces website — dark, ember-lit hero reading 'Gather around something extraordinary'" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>American Fireplaces</h3>
+            <p>A cinematic brand site for a Sevierville hearth showroom that has warmed the Smokies since 1990.</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>
+      <li class="card work-card">
+        <a href="https://mtnlandscapers.vercel.app/" target="_blank" rel="noopener">
+          <img src="/images/work/mountain-landscapers.webp" alt="Mountain Landscapers website — deep green hero with serif headline 'Landscaping Sevierville'" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>Mountain Landscapers</h3>
+            <p>Landscape design and hardscapes, built page by page to win Sevier County searches.</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>
+      <li class="card work-card">
+        <a href="https://downtown-river-rentals.vercel.app/" target="_blank" rel="noopener">
+          <img src="/images/work/downtown-river-rentals.webp" alt="Downtown River Rentals website — cottage porch photo under 'Vacation Homes in Pigeon Forge'" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>Downtown River Rentals</h3>
+            <p>A direct-booking site for Pigeon Forge vacation cottages — bookings without the platform commission.</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>
+      <li class="card work-card">
+        <a href="https://ahappyhost.vercel.app/" target="_blank" rel="noopener">
+          <img src="/images/work/a-happy-host.webp" alt="A Happy Host website — concierge services hero with qualified workers and five-star rating stats" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>A Happy Host</h3>
+            <p>Concierge services for short-term rental owners across the Smokies.</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>
+      <li class="card work-card">
+        <a href="https://smoky-mountain-espresso.vercel.app/" target="_blank" rel="noopener">
+          <img src="/images/work/smoky-mountain-espresso.webp" alt="Smoky Mountain Espresso website — warm coffee shop home page for Sevierville" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>Smoky Mountain Espresso</h3>
+            <p>A warm, fast site for a Sevierville coffee shop and the locals who keep it busy.</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>
+      <li class="card work-card work-cta">
+        <a href="/contact/#form">
+          <h3>Your business here</h3>
+          <p>This is the same pipeline we'd build for you — designed, written, and wired into your CRM.</p>
+          <span class="card-link">Get your free growth plan &rsaquo;</span>
+        </a>
       </li>
     </ul>
   </div>
@@ -617,15 +686,14 @@ CONTACT_BODY = f"""<section class="section">
 </section>
 """ + coraline_section(
     "The Step One form — five minutes, zero obligation",
-    "Answer a few questions about your business and your goals. We'll review your web presence and your market before we ever get on the phone, so the first conversation is already about specifics.") + f"""
-<section class="section section-alt">
-  <div class="wrap prose">
-    <h2>What happens after you submit</h2>
-    <p>First, a real person reads it — usually the same day. Second, we do our homework: your current site, your Google profile, your competition, what your customers search for. Third, we get on a call and walk you through what we found and what we'd do about it, with a flat written quote. If we're not the right fit, we'll say so and tell you what to do anyway. That plan is yours to keep either way.</p>
-    <p>We work with businesses across <a href="/service-areas/sevierville/">Sevierville</a>, <a href="/service-areas/knoxville/">Knoxville</a>, and the rest of <a href="/service-areas/">East Tennessee</a>.</p>
-  </div>
-</section>
-"""
+    "Answer a few questions about your business and your goals. We'll review your web presence and your market before we ever get on the phone, so the first conversation is already about specifics.",
+    aside="""<h3>What happens after you submit</h3>
+      <ol>
+        <li><strong>A real person reads it</strong> — usually the same day.</li>
+        <li><strong>We do our homework:</strong> your current site, your Google profile, your competition, what your customers search for.</li>
+        <li><strong>You get a call and a flat written quote.</strong> Not the right fit? We'll say so, and tell you what to do anyway. The plan is yours to keep either way.</li>
+      </ol>
+      <p class="aside-note">We work with businesses across <a href="/service-areas/sevierville/">Sevierville</a>, <a href="/service-areas/knoxville/">Knoxville</a>, and the rest of <a href="/service-areas/">East Tennessee</a>.</p>""")
 
 # ============================================================ 404
 NOTFOUND_BODY = f"""<section class="section">
