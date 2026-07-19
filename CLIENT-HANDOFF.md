@@ -22,6 +22,7 @@ A 12-page website (plus a branded error page) designed to do three jobs, in this
 | SEO & AEO | "SEO services East Tennessee", "what is AEO" |
 | Sevierville | "marketing agency Sevierville TN" |
 | Knoxville | "digital marketing Knoxville" |
+| Our work | (proof page — live client sites; graduates to case studies as rankings data arrives) |
 
 The remaining towns (Pigeon Forge, Gatlinburg, Maryville, Dandridge, and more) arrive at 3 pages per month — the full schedule is in `content-plan.md`. This is the same monthly program Salt Services sells, practiced on its own site.
 

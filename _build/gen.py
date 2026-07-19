@@ -103,6 +103,7 @@ HEAD = """<!DOCTYPE html>
 
 NAV_ITEMS = [("home", "/", "Home"),
              ("services", "/services/", "Services"),
+             ("work", "/work/", "Our work"),
              ("areas", "/service-areas/", "Service areas"),
              ("about", "/about/", "About"),
              ("contact", "/contact/", "Contact")]
@@ -159,6 +160,7 @@ FOOTER = f"""</main>
           <li><a href="/service-areas/sevierville/">Sevierville</a></li>
           <li><a href="/service-areas/knoxville/">Knoxville</a></li>
           <li><a href="/service-areas/">All service areas</a></li>
+          <li><a href="/work/">Our work</a></li>
           <li><a href="/about/">About us</a></li>
           <li><a href="/contact/">Contact</a></li>
         </ul>

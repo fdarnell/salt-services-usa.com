@@ -300,6 +300,7 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 .work-card .work-body p { color: var(--body); font-size: 0.95rem; margin: 0 0 0.5rem; }
 .work-card .card-link { font-weight: 600; }
 .work-card.work-cta > a { display: flex; flex-direction: column; justify-content: center; padding: 1.75rem; }
+.work-more { margin-top: 2rem; }
 
 /* ---------- Contact form + aside columns ---------- */
 .coraline-cols {
@@ -416,7 +417,7 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
   .card-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 860px) {
+@media (max-width: 940px) {
   .nav-toggle { display: block; order: 10; }
   .site-nav {
     display: none;

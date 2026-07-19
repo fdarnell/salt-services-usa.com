@@ -169,54 +169,8 @@ HOME_BODY = f"""<section class="hero hero-3d">
           </div>
         </a>
       </li>
-      <li class="card work-card">
-        <a href="https://www.ahappyhost.com/" target="_blank" rel="noopener">
-          <img src="/images/work/a-happy-host.webp" alt="A Happy Host website — concierge services hero with qualified workers and five-star rating stats" width="640" height="400" loading="lazy">
-          <div class="work-body">
-            <h3>A Happy Host</h3>
-            <p>Concierge services for short-term rental owners across the Smokies.</p>
-            <span class="card-link">Visit the live site &rsaquo;</span>
-          </div>
-        </a>
-      </li>
-      <li class="card work-card">
-        <a href="https://smoky-mountain-espresso.vercel.app/" target="_blank" rel="noopener">
-          <img src="/images/work/smoky-mountain-espresso.webp" alt="Smoky Mountain Espresso website — warm coffee shop home page for Sevierville" width="640" height="400" loading="lazy">
-          <div class="work-body">
-            <h3>Smoky Mountain Espresso</h3>
-            <p>A warm, fast site for a Sevierville coffee shop and the locals who keep it busy.</p>
-            <span class="card-link">Visit the live site &rsaquo;</span>
-          </div>
-        </a>
-      </li>
-      <li class="card work-card">
-        <a href="https://www.cpaservicessevierville.com/" target="_blank" rel="noopener">
-          <img src="/images/work/sevier-cpas.webp" alt="Sevier CPAs website — courthouse photo behind 'Local CPA and Accounting Services here in Sevierville'" width="640" height="400" loading="lazy">
-          <div class="work-body">
-            <h3>Sevier CPAs</h3>
-            <p>Tax, bookkeeping, and accounting in Sevierville — a trust-first site for a numbers-first firm.</p>
-            <span class="card-link">Visit the live site &rsaquo;</span>
-          </div>
-        </a>
-      </li>
-      <li class="card work-card">
-        <a href="https://www.colorteccoatings.com/" target="_blank" rel="noopener">
-          <img src="/images/work/colortec-coatings.webp" alt="Colortec Powder Coating website — technician spraying a part in the coating booth" width="640" height="400" loading="lazy">
-          <div class="work-body">
-            <h3>Colortec Powder Coating</h3>
-            <p>Powder coating and sandblasting for East Tennessee, from single car parts to industrial runs.</p>
-            <span class="card-link">Visit the live site &rsaquo;</span>
-          </div>
-        </a>
-      </li>
-      <li class="card work-card work-cta">
-        <a href="/contact/#form">
-          <h3>Your business here</h3>
-          <p>This is the same pipeline we'd build for you — designed, written, and wired into your CRM.</p>
-          <span class="card-link">Get your free growth plan &rsaquo;</span>
-        </a>
-      </li>
     </ul>
+    <p class="work-more"><a class="btn btn-navy" href="/work/">See all our work</a></p>
   </div>
 </section>
 
@@ -650,6 +604,92 @@ KNOX_BODY = f"""<section class="section">
     "Bring us your Knoxville market and we'll find the gap",
     "Tell us your industry and your part of town. We'll come back with the specific searches and neighborhoods we'd attack first — that plan is free either way.")
 
+# ============================================================ OUR WORK
+def work_entry(href, img, alt, name, blurb):
+    return f"""<li class="card work-card">
+        <a href="{href}" target="_blank" rel="noopener">
+          <img src="/images/work/{img}.webp" alt="{alt}" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>{name}</h3>
+            <p>{blurb}</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>"""
+
+WORK_ENTRIES = "".join([
+    work_entry("https://americanfireplaces.vercel.app/", "american-fireplaces",
+        "American Fireplaces website — dark, ember-lit hero reading 'Gather around something extraordinary'",
+        "American Fireplaces",
+        "A Sevierville hearth showroom that has warmed the Smokies since 1990 needed a site that felt like standing in front of one of their fireplaces. We built a cinematic brand experience — ember particles included — around their story, their process, and their brands."),
+    work_entry("https://www.mtnlandscapers.com/", "mountain-landscapers",
+        "Mountain Landscapers website — deep green hero with serif headline 'Landscaping Sevierville'",
+        "Mountain Landscapers",
+        "Landscape design, hardscapes, and grounds care for the Smoky Mountain foothills. The site is organized page by page around the searches Sevier County homeowners actually type, from retaining walls to outdoor living."),
+    work_entry("https://downtown-river-rentals.vercel.app/", "downtown-river-rentals",
+        "Downtown River Rentals website — cottage porch photo under 'Vacation Homes in Pigeon Forge'",
+        "Downtown River Rentals",
+        "Vacation cottages a short walk from the Pigeon Forge Parkway. The site has one job: direct bookings that skip the booking platforms and their commission."),
+    work_entry("https://www.ahappyhost.com/", "a-happy-host",
+        "A Happy Host website — concierge services hero for short-term rental owners",
+        "A Happy Host",
+        "A services hub for the short-term rental owners who keep the Smokies' cabins running — cleaning, concierge, and project work, presented so owners can act fast."),
+    work_entry("https://smoky-mountain-espresso.vercel.app/", "smoky-mountain-espresso",
+        "Smoky Mountain Espresso website — warm coffee shop home page for Sevierville",
+        "Smoky Mountain Espresso",
+        "A Sevierville coffee shop with regulars to match. Fast, warm, and built to show up when travelers on the Parkway corridor search for coffee worth stopping for."),
+    work_entry("https://www.cpaservicessevierville.com/", "sevier-cpas",
+        "Sevier CPAs website — courthouse photo behind 'Local CPA and Accounting Services here in Sevierville'",
+        "Sevier CPAs",
+        "Tax prep, bookkeeping, and accounting for Sevier County. Professional-services sites live or die on trust, so this one leads with credentials, clarity, and a straight path to a conversation."),
+    work_entry("https://www.colorteccoatings.com/", "colortec-coatings",
+        "Colortec Powder Coating website — technician spraying a part in the coating booth",
+        "Colortec Powder Coating",
+        "Sandblasting and powder coating out of Sevierville, serving everyone from gearheads with a single part to industrial contractors with a full run. A working site for a working shop."),
+])
+
+WORK_LD = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Client websites built by Salt Services",
+    "itemListElement": [
+        {"@type": "ListItem", "position": i + 1, "name": n, "url": u}
+        for i, (n, u) in enumerate([
+            ("American Fireplaces", "https://americanfireplaces.vercel.app/"),
+            ("Mountain Landscapers", "https://www.mtnlandscapers.com/"),
+            ("Downtown River Rentals", "https://downtown-river-rentals.vercel.app/"),
+            ("A Happy Host", "https://www.ahappyhost.com/"),
+            ("Smoky Mountain Espresso", "https://smoky-mountain-espresso.vercel.app/"),
+            ("Sevier CPAs", "https://www.cpaservicessevierville.com/"),
+            ("Colortec Powder Coating", "https://www.colorteccoatings.com/"),
+        ])
+    ],
+}
+
+WORK_BODY = f"""<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h1>Our work, live and <em>clickable</em></h1>
+      {SPRINKLE}
+      <p>Every site below belongs to a real client and is live right now — click through and judge for yourself. Most are here in Sevier County, because that's home turf; we build for clients well beyond it too.</p>
+    </div>
+    <ul class="card-grid two">
+      {WORK_ENTRIES}
+    </ul>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap prose">
+    <h2>How these sites get built</h2>
+    {SPRINKLE}
+    <p>Every one of them follows the same playbook we'd use for you: hand-built code that loads fast, a page for every service and town that matters, copy written in the owner's voice, and structure that Google can rank and AI assistants can cite. The details are on our <a href="/services/web-design/">web design</a> and <a href="/services/seo-aeo/">SEO &amp; AEO</a> pages.</p>
+    <p>And a promise about this page: as our monthly SEO program stacks up real rankings data for these clients, these entries will grow into full case studies with numbers — searches won, calls produced. We'd rather show you results than adjectives, and we'd rather wait for real ones than invent them.</p>
+  </div>
+</section>
+""" + cta_band("Want yours on this page?",
+               f"Tell us about your business and we'll show you exactly what we'd build — and what it would take to rank. Or call {PHONE}.")
+
 # ============================================================ ABOUT
 ABOUT_BODY = f"""<section class="section">
   <div class="wrap prose">
@@ -831,6 +871,14 @@ PAGES = [
                               "/service-areas/knoxville/"),
                    faq_ld(KNOX_FAQS)],
         "body": KNOX_BODY,
+    },
+    {
+        "path": "/work/", "nav": "work",
+        "title": "Our Work — Live Client Sites | Salt Services",
+        "desc": "Real client websites, live and clickable — tourism, trades, CPA, coffee. Built by Salt Services in Kodak, TN for businesses across East Tennessee.",
+        "crumbs": [["Home", "/"], ["Our work", "/work/"]],
+        "jsonld": [WORK_LD],
+        "body": WORK_BODY,
     },
     {
         "path": "/about/", "nav": "about",

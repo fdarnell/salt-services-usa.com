@@ -19,5 +19,6 @@
 
 ## Company
 
+- [Our work](https://www.saltservicesusa.com/work/): Live client websites built by Salt Services — tourism, trades, professional services, and retail across East Tennessee.
 - [About](https://www.saltservicesusa.com/about/): The story and values behind Salt Services, and the Matthew 5:13 name.
 - [Contact](https://www.saltservicesusa.com/contact/): Phone, email, and the Step One lead form.

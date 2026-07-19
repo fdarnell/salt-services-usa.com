@@ -32,7 +32,10 @@ Ongoing SEO/AEO program: **3 new pages per month**, each genuinely unique (no sw
 | 26 | Guide: Website cost for small business in TN | /guides/website-cost-small-business/ | how much does a small business website cost | auxiliary | Month 5 | Planned |
 | 27 | Guide: How to get more Google reviews | /guides/get-more-google-reviews/ | how to get more google reviews | auxiliary | Month 5 | Planned |
 
+| 28 | Our work (portfolio) | /work/ | (proof page) | core | Added July 2026 | Live |
+
 Notes for future installments:
+- As Search Console accumulates rankings data for portfolio clients, individual /work/ entries graduate into full case-study pages (e.g. /work/mountain-landscapers/) with real numbers — these count as auxiliary pages in the monthly cadence.
 - A dedicated Kodak city page is intentionally omitted — the homepage targets Kodak; adding a near-duplicate would cannibalize it.
 - Every new city page must pass the uniqueness test (cover the city name — could a local still tell which town it's about?). No shared paragraphs, FAQs, or heading skeletons.
 - Each installment: build pages, link them FROM 2-3 existing pages, add to sitemap.xml + llms.txt + service-areas hub, verify, ship on a preview branch for approval.
