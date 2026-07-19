@@ -878,6 +878,110 @@ CONTACT_BODY = f"""<section class="section">
       </ol>
       <p class="aside-note">We work with businesses across <a href="/service-areas/sevierville/">Sevierville</a>, <a href="/service-areas/knoxville/">Knoxville</a>, and the rest of <a href="/service-areas/">East Tennessee</a>.</p>""")
 
+# ============================================================ LEGAL PAGES
+PRIVACY_BODY = f"""<section class="section">
+  <div class="wrap prose">
+    <h1>Privacy policy</h1>
+    {SPRINKLE}
+    <p><em>Effective July 18, 2026</em></p>
+    <p>This policy describes how Salt Services ("we," "us"), a marketing agency based in Kodak, Tennessee, collects and uses information through saltservicesusa.com and our related services. Short version: we collect what you send us so we can respond and do our work, we don't sell it, and we don't share your mobile number with anyone for their marketing.</p>
+
+    <h2>Information you give us</h2>
+    <p>When you fill out a form, start a chat, call, email, or sign up for Coraline, you may provide your name, email address, phone number, business name, address, and details about your business and goals. We use this to respond to you, prepare recommendations and quotes, provide services you've engaged us for, and communicate with you about them.</p>
+
+    <h2>Information collected automatically</h2>
+    <p>Like nearly every website, our hosting provider (Vercel) keeps standard server logs, which include IP addresses, browser type, and pages requested. Our chat and form widgets (provided by our CRM platform) may set functional cookies so a conversation can continue across pages. We do not currently run advertising trackers or third-party ad pixels on this site. Fonts and a graphics library are loaded from content-delivery networks (Google Fonts, jsDelivr), which receive your IP address as a technical necessity of serving the files.</p>
+
+    <h2>Text messaging (SMS) terms</h2>
+    <p>If you provide your phone number, you consent to receive calls and text messages from us about your inquiry and our services. Message frequency varies; message and data rates may apply. Reply STOP at any time to opt out of texts, or HELP for help. <strong>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes.</strong> Opt-in data and consent are not shared with any third party.</p>
+
+    <h2>How we share information</h2>
+    <p>We share information only with service providers who help us operate — our CRM and communications platform (Coraline, built on LeadConnector/HighLevel infrastructure), our hosting provider (Vercel), and similar processors bound to use it only on our behalf — or when the law requires it, or as part of a business transfer. We do not sell personal information, and we do not share it with anyone for their own marketing.</p>
+
+    <h2>Cookies and your choices</h2>
+    <p>The cookies on this site are functional (chat and form continuity), not advertising cookies. You can block or delete cookies in your browser settings; the site will still work, though chat conversations may not persist across visits.</p>
+
+    <h2>Retention and security</h2>
+    <p>We keep contact and client records for as long as we have a business need — responding to your inquiry, serving you as a client, and meeting our legal and accounting obligations — and we use reasonable technical and organizational safeguards to protect them. No method of transmission or storage is completely secure, and we can't guarantee absolute security.</p>
+
+    <h2>Children</h2>
+    <p>This site is for businesses and is not directed to children under 13. We do not knowingly collect personal information from children.</p>
+
+    <h2>Your rights</h2>
+    <p>You may request a copy of the personal information we hold about you, ask us to correct it, or ask us to delete it, by emailing <a href="mailto:{BIZ['email']}">{BIZ['email']}</a> or calling <a href="tel:{TEL}">{PHONE}</a>. We honor such requests regardless of where you live, subject to records we're required to keep.</p>
+
+    <h2>Third-party links</h2>
+    <p>Our site links to other websites — including client websites in our portfolio and the Coraline sign-up service — which have their own privacy practices. This policy covers only saltservicesusa.com.</p>
+
+    <h2>Changes and contact</h2>
+    <p>If we change this policy, we'll update it here with a new effective date. Questions: <a href="mailto:{BIZ['email']}">{BIZ['email']}</a>, <a href="tel:{TEL}">{PHONE}</a>, Salt Services, Kodak, TN.</p>
+  </div>
+</section>
+"""
+
+TERMS_BODY = f"""<section class="section">
+  <div class="wrap prose">
+    <h1>Terms of service</h1>
+    {SPRINKLE}
+    <p><em>Effective July 18, 2026</em></p>
+    <p>These terms govern your use of saltservicesusa.com and set the baseline for how Salt Services ("we," "us") does business. By using this site, you accept them. If you sign a service agreement or proposal with us, that signed document controls wherever it differs from these terms.</p>
+
+    <h2>What we do</h2>
+    <p>Salt Services provides marketing services — website design, SEO and AEO, digital advertising management, CRM implementation, and AI implementation — and offers subscriptions to Coraline, our CRM and marketing platform. The specifics of any engagement (scope, price, timeline, deliverables) are defined in the written quote or agreement for that engagement, not on this website.</p>
+
+    <h2>No guarantee of results</h2>
+    <p>Marketing outcomes depend on factors nobody fully controls — search engines change algorithms, advertising costs fluctuate, markets shift. We commit to doing the work we agree to, skillfully and on schedule. We do not guarantee specific rankings, traffic, lead volume, or revenue, and nothing on this site is a promise of specific results. Examples of client work shown on this site illustrate what we build; every business and market is different.</p>
+
+    <h2>Coraline subscriptions</h2>
+    <p>Coraline plans are billed as described at sign-up through our checkout at coraline.saltservicesusa.com. The pricing, billing cycle, and cancellation terms presented at checkout govern your subscription. Coraline is built on third-party infrastructure, and its availability depends in part on those providers; we'll always do our part to keep your account running and your data accessible.</p>
+
+    <h2>Intellectual property</h2>
+    <p>The content of this website — text, design, graphics, and code — belongs to Salt Services and may not be copied for commercial use without permission. Ownership of client deliverables (websites, content, campaigns) is defined in each client's agreement. Client names and screenshots shown in our portfolio are used to describe our own work; the underlying businesses and their trademarks belong to their owners.</p>
+
+    <h2>Acceptable use</h2>
+    <p>Don't misuse this site: no attempts to breach security, scrape at abusive volume, submit forms with false identities, or use our contact channels to spam us or others. AI systems are welcome to read and cite this site; that's what it's for.</p>
+
+    <h2>Disclaimers and limitation of liability</h2>
+    <p>This website and its content are provided "as is," without warranties of any kind, express or implied, including fitness for a particular purpose. To the maximum extent permitted by law, Salt Services will not be liable for indirect, incidental, consequential, or punitive damages arising from your use of this site, and our total liability arising out of any engagement is limited to the amounts you paid us for that engagement in the twelve months before the claim arose. Some jurisdictions don't allow certain limitations, so parts of this section may not apply to you.</p>
+
+    <h2>Indemnification</h2>
+    <p>If you use our site or services in violation of these terms or the law and it gets us sued, you agree to defend and indemnify us against the resulting claims and costs.</p>
+
+    <h2>Governing law and disputes</h2>
+    <p>These terms are governed by the laws of the State of Tennessee, without regard to conflict-of-law rules. Any dispute arising from these terms or your use of this site will be brought in the state or federal courts serving Sevier County, Tennessee, and you consent to their jurisdiction. Before either of us files anything, we agree to try first to resolve the dispute with a direct, good-faith conversation — it's cheaper and it usually works.</p>
+
+    <h2>Changes and contact</h2>
+    <p>We may update these terms; the version posted here with the latest effective date is the one in force. If any provision is found unenforceable, the rest remain in effect. Questions: <a href="mailto:{BIZ['email']}">{BIZ['email']}</a>, <a href="tel:{TEL}">{PHONE}</a>, Salt Services, Kodak, TN.</p>
+  </div>
+</section>
+"""
+
+A11Y_BODY = f"""<section class="section">
+  <div class="wrap prose">
+    <h1>Accessibility statement</h1>
+    {SPRINKLE}
+    <p><em>Last reviewed July 18, 2026</em></p>
+    <p>Salt Services wants every visitor to be able to use this website, including people who rely on assistive technology. We build toward the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA and treat accessibility as part of construction, not an add-on.</p>
+
+    <h2>What we've built in</h2>
+    <ul class="checklist">
+      {check_li("Color contrast at or above the 4.5:1 AA standard, verified programmatically for every text/background pair")}
+      {check_li("Full keyboard navigation with visible focus indicators and a skip-to-content link")}
+      {check_li("Semantic HTML landmarks, one heading hierarchy per page, and descriptive alt text on images")}
+      {check_li("Motion respect: animations, the 3D home graphic, and the custom cursor all disable automatically for visitors with reduced-motion enabled")}
+      {check_li("Readable defaults: 17px base text, generous line height, no text locked inside images")}
+      {check_li("Touch targets sized for real hands, and a layout tested from 320px phones to large desktops")}
+    </ul>
+
+    <h2>Known limitations</h2>
+    <p>Our contact form and chat are provided by a third-party platform and load inside their own frames; we've configured them for accessibility but don't control every detail of their markup. If either gives you trouble, every page lists our phone and email — you'll reach the same people either way.</p>
+
+    <h2>Tell us if something's in your way</h2>
+    <p>If any part of this site is difficult for you to use, we want to know and we'll fix what we can, promptly. Call <a href="tel:{TEL}">{PHONE}</a> or email <a href="mailto:{BIZ['email']}">{BIZ['email']}</a> and tell us what happened and what browser or assistive technology you were using.</p>
+  </div>
+</section>
+"""
+
 # ============================================================ 404
 NOTFOUND_BODY = f"""<section class="section">
   <div class="wrap prose">
@@ -1036,6 +1140,27 @@ PAGES = [
         "desc": "Call (866) 721-7258, email info@saltservicesusa.com, or start with our five-minute lead form. Based in Kodak, serving all of East Tennessee.",
         "crumbs": [["Home", "/"], ["Contact", "/contact/"]],
         "body": CONTACT_BODY,
+    },
+    {
+        "path": "/privacy-policy/", "nav": "",
+        "title": "Privacy Policy | Salt Services",
+        "desc": "How Salt Services collects and uses information: what you send us, what's automatic, SMS terms, cookies, sharing, retention, and your rights.",
+        "crumbs": [["Home", "/"], ["Privacy policy", "/privacy-policy/"]],
+        "body": PRIVACY_BODY,
+    },
+    {
+        "path": "/terms-of-service/", "nav": "",
+        "title": "Terms of Service | Salt Services",
+        "desc": "The terms that govern use of saltservicesusa.com and Salt Services engagements: scope, results, Coraline subscriptions, liability, and Tennessee law.",
+        "crumbs": [["Home", "/"], ["Terms of service", "/terms-of-service/"]],
+        "body": TERMS_BODY,
+    },
+    {
+        "path": "/accessibility/", "nav": "",
+        "title": "Accessibility Statement | Salt Services",
+        "desc": "Our WCAG 2.1 AA commitment: verified contrast, keyboard navigation, reduced-motion support, known limitations, and how to report a barrier.",
+        "crumbs": [["Home", "/"], ["Accessibility", "/accessibility/"]],
+        "body": A11Y_BODY,
     },
     {
         "path": "/404.html", "nav": "",

@@ -169,6 +169,7 @@ FOOTER = f"""</main>
     </div>
     <div class="footer-legal">
       <span>&copy; 2026 Salt Services. All rights reserved.</span>
+      <span><a href="/privacy-policy/">Privacy policy</a> &middot; <a href="/terms-of-service/">Terms of service</a> &middot; <a href="/accessibility/">Accessibility</a></span>
       <span>Kodak, Tennessee &middot; <a href="tel:{BIZ['phone_tel']}">{BIZ['phone_display']}</a></span>
     </div>
   </div>
