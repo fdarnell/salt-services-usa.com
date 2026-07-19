@@ -136,7 +136,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
     <div class="section-head">
       <h2>Recent work</h2>
       {SPRINKLE}
-      <p>We're a young agency, so instead of telling you our work is good, here it is — live sites you can click on right now.</p>
+      <p>We're a young agency, so instead of telling you our work is good, here it is — live sites you can click on right now. These are the local ones; we build for clients well beyond Sevier County too.</p>
     </div>
     <ul class="card-grid">
       <li class="card work-card">
@@ -150,7 +150,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
         </a>
       </li>
       <li class="card work-card">
-        <a href="https://mtnlandscapers.vercel.app/" target="_blank" rel="noopener">
+        <a href="https://www.mtnlandscapers.com/" target="_blank" rel="noopener">
           <img src="/images/work/mountain-landscapers.webp" alt="Mountain Landscapers website — deep green hero with serif headline 'Landscaping Sevierville'" width="640" height="400" loading="lazy">
           <div class="work-body">
             <h3>Mountain Landscapers</h3>
@@ -170,7 +170,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
         </a>
       </li>
       <li class="card work-card">
-        <a href="https://ahappyhost.vercel.app/" target="_blank" rel="noopener">
+        <a href="https://www.ahappyhost.com/" target="_blank" rel="noopener">
           <img src="/images/work/a-happy-host.webp" alt="A Happy Host website — concierge services hero with qualified workers and five-star rating stats" width="640" height="400" loading="lazy">
           <div class="work-body">
             <h3>A Happy Host</h3>
@@ -185,6 +185,26 @@ HOME_BODY = f"""<section class="hero hero-3d">
           <div class="work-body">
             <h3>Smoky Mountain Espresso</h3>
             <p>A warm, fast site for a Sevierville coffee shop and the locals who keep it busy.</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>
+      <li class="card work-card">
+        <a href="https://www.cpaservicessevierville.com/" target="_blank" rel="noopener">
+          <img src="/images/work/sevier-cpas.webp" alt="Sevier CPAs website — courthouse photo behind 'Local CPA and Accounting Services here in Sevierville'" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>Sevier CPAs</h3>
+            <p>Tax, bookkeeping, and accounting in Sevierville — a trust-first site for a numbers-first firm.</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>
+      <li class="card work-card">
+        <a href="https://www.colorteccoatings.com/" target="_blank" rel="noopener">
+          <img src="/images/work/colortec-coatings.webp" alt="Colortec Powder Coating website — technician spraying a part in the coating booth" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>Colortec Powder Coating</h3>
+            <p>Powder coating and sandblasting for East Tennessee, from single car parts to industrial runs.</p>
             <span class="card-link">Visit the live site &rsaquo;</span>
           </div>
         </a>
