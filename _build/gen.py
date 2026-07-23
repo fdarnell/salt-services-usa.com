@@ -321,5 +321,5 @@ if __name__ == "__main__":
     from pages_content import PAGES
     seen_t, seen_d = set(), set()
     written = [build(spec, seen_t, seen_d) for spec in PAGES]
-    write_sitemap(written)
+    write_sitemap([p for spec, p in zip(PAGES, written) if not spec.get("noindex")])
     print(f"{len(written)} pages built")

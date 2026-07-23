@@ -1,4 +1,21 @@
 {
+  "redirects": [
+    { "source": "/our-product", "destination": "/services/", "permanent": true },
+    { "source": "/our-prices", "destination": "/services/", "permanent": true },
+    { "source": "/seo-pricing", "destination": "/services/seo-aeo/", "permanent": true },
+    { "source": "/seo-why", "destination": "/services/seo-aeo/", "permanent": true },
+    { "source": "/stepone", "destination": "/contact/", "permanent": true },
+    { "source": "/support", "destination": "/contact/", "permanent": true },
+    { "source": "/payments", "destination": "/coraline/", "permanent": true },
+    { "source": "/terms-and-conditions", "destination": "/terms-of-service/", "permanent": true },
+    { "source": "/bnioffer", "destination": "/", "permanent": true },
+    { "source": "/bniprofile", "destination": "/about/", "permanent": true },
+    { "source": "/blog", "destination": "/", "permanent": true },
+    { "source": "/formsubmissioncomplete-websiteinfoform", "destination": "/form-completion/", "permanent": true },
+    { "source": "/category/:path*", "destination": "/", "permanent": true },
+    { "source": "/product/:path*", "destination": "/", "permanent": true },
+    { "source": "/copy-of-websitebuildinfo", "destination": "/contact/", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",

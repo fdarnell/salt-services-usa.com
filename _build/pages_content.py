@@ -982,6 +982,50 @@ A11Y_BODY = f"""<section class="section">
 </section>
 """
 
+# ============================================================ FORM COMPLETION (thank-you)
+FORM_DONE_BODY = f"""<section class="hero">
+  <div class="wrap">
+    <span class="hero-kicker">Inquiry received &middot; you're in the pipeline</span>
+    <h1>Got it — you're <span class="accent">in</span>.</h1>
+    {SPRINKLE}
+    <p class="lead">Your inquiry just landed in our CRM — the same kind we build for clients, so you're already watching the product work. A real person reads it today, does their homework on your business and your market, and comes back to you with a real plan.</p>
+    <p>
+      <a class="btn btn-accent" href="tel:{TEL}">Skip the line — call {PHONE} now</a>
+      <a class="btn btn-ghost" href="/work/">Browse our work while you wait</a>
+    </p>
+    <p class="hero-note">Seriously — if you'd rather talk right now, call. Mention you just sent the form and we'll pull it up while we're on the phone.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>What happens next</h2>
+      {SPRINKLE}
+    </div>
+    <ul class="card-grid">
+      <li class="card">
+        <span class="step-num" aria-hidden="true">01</span>
+        <h3>Today: a human reads it</h3>
+        <p>Not an autoresponder — a person. Your inquiry gets eyes on it the same business day it arrives.</p>
+      </li>
+      <li class="card">
+        <span class="step-num" aria-hidden="true">02</span>
+        <h3>We do our homework</h3>
+        <p>Your current website, your Google profile, your competition, and what your customers actually search for — so the first call is about specifics, not introductions.</p>
+      </li>
+      <li class="card">
+        <span class="step-num" aria-hidden="true">03</span>
+        <h3>You get a plan and a price</h3>
+        <p>A call to walk through what we found, what we'd do, and a flat written quote. The plan is yours to keep whether or not you hire us.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+""" + cta_band("Curious what you just signed up for?",
+               "Poke around while you wait — the services, the platform, the story behind the salt.",
+               "See how we work", "/services/")
+
 # ============================================================ 404
 NOTFOUND_BODY = f"""<section class="section">
   <div class="wrap prose">
@@ -1140,6 +1184,14 @@ PAGES = [
         "desc": "Call (866) 721-7258, email info@saltservicesusa.com, or start with our two-minute inquiry form. Based in Kodak, serving all of East Tennessee.",
         "crumbs": [["Home", "/"], ["Contact", "/contact/"]],
         "body": CONTACT_BODY,
+    },
+    {
+        "path": "/form-completion/", "nav": "",
+        "title": "Got It — Your Inquiry Is In | Salt Services",
+        "desc": "Your inquiry landed in our pipeline. A real person reads it today — or skip the line and call (866) 721-7258 right now.",
+        "noindex": True,
+        "extra_head": '<meta name="robots" content="noindex">\n',
+        "body": FORM_DONE_BODY,
     },
     {
         "path": "/privacy-policy/", "nav": "",
