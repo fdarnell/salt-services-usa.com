@@ -121,6 +121,34 @@ input[type="number"] { font-family: var(--mono); }
 :root[data-theme="dark"] .toast { background: var(--accent); color: var(--accent-ink); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .nosel { color: var(--muted); padding: 2.5rem 1rem; text-align: center; font-size: .95rem; }
+/* submitted-records list + read-only detail view */
+.sent-block { border-top: 1px solid var(--line); margin-top: 1rem; padding-top: .9rem; }
+.sent-block h2 { margin-bottom: .5rem; }
+#sentCount { color: var(--accent); }
+.sent-block ul { list-style: none; margin: 0 0 .5rem; padding: 0; max-height: 30vh; overflow-y: auto; }
+.sent-block li { display: flex; }
+.sent-block button.sent {
+  flex: 1; text-align: left; background: none; border: 0; border-radius: 8px;
+  padding: .4rem .6rem; cursor: pointer; color: var(--body); font: 500 .9rem var(--sans);
+}
+.sent-block button.sent:hover { background: var(--panel-2); }
+.sent-block li.active button.sent { background: var(--brand); color: #fff; }
+.sent-block button.sent .when { display: block; font: 400 .74rem var(--mono); color: var(--muted); }
+.sent-block li.active button.sent .when { color: rgba(255,255,255,.75); }
+button.small { font-size: .82rem; padding: .35rem .8rem; }
+.record { padding: 1.4rem 1.5rem 1.6rem; }
+.record .head-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.record .head-row .spacer { flex: 1; }
+.record h2 { font: 500 1.45rem/1.15 var(--serif); color: var(--ink); margin: 0; }
+.record pre {
+  white-space: pre-wrap; word-wrap: break-word; font: 400 .95rem/1.6 var(--sans);
+  background: var(--ground); border: 1px solid var(--line); border-radius: 10px;
+  padding: 1rem 1.1rem; margin: 0 0 1rem; color: var(--body);
+}
+.record .meta { font: 400 .82rem var(--mono); color: var(--muted); }
+.record dl { display: grid; grid-template-columns: max-content 1fr; gap: .35rem 1rem; margin: 1rem 0 0; font-size: .92rem; }
+.record dt { color: var(--muted); }
+.record dd { margin: 0; color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
 /* access gate */
@@ -159,11 +187,30 @@ input[type="number"] { font-family: var(--mono); }
     <aside class="card roster">
       <h2>Clients</h2>
       <ul id="roster"></ul>
-      <div class="empty" id="rosterEmpty">No clients yet.</div>
+      <div class="empty" id="rosterEmpty">No drafts on this device.</div>
       <button class="primary" id="addClient" type="button">+ New client</button>
+
+      <div class="sent-block">
+        <h2>Submitted <span id="sentCount"></span></h2>
+        <ul id="sentList"></ul>
+        <div class="empty" id="sentEmpty">Nothing submitted yet.</div>
+        <button class="ghost small" id="refreshSent" type="button">Refresh</button>
+      </div>
     </aside>
 
     <main>
+      <div class="card record hidden" id="recordView">
+        <div class="head-row">
+          <h2 id="recName">—</h2>
+          <span class="spacer"></span>
+          <button class="ghost small" id="recBack" type="button">Back to worksheet</button>
+          <button class="ghost small" id="recDelete" type="button">Delete</button>
+        </div>
+        <p class="meta" id="recWhen"></p>
+        <pre id="recSummary"></pre>
+        <dl id="recFields"></dl>
+      </div>
+
       <div class="card sheet" id="sheet">
         <div class="nosel" id="noSel">Add a client (or pick one on the left) to start the worksheet.</div>
         <div id="formWrap" hidden>
@@ -426,7 +473,8 @@ input[type="number"] { font-family: var(--mono); }
           c.lastSent = new Date().toISOString();
           persist();
           st.className = 'status ok'; st.textContent = 'sent · ' + new Date().toLocaleTimeString();
-          toast('Sent — it will be waiting for Claude');
+          toast('Sent — see it under Submitted');
+          loadSent();
         } else {
           st.className = 'status bad';
           st.textContent = (res.j && res.j.error) || 'failed';
@@ -456,6 +504,88 @@ input[type="number"] { font-family: var(--mono); }
 
   function renderAll() { renderRoster(); renderForm(); renderMath(); }
 
+  /* ---------- submitted records (server side) ---------- */
+  var sent = [], sentActive = null;
+
+  function showWorksheet() {
+    document.getElementById('recordView').classList.add('hidden');
+    document.getElementById('sheet').classList.remove('hidden');
+    sentActive = null;
+    renderSentList();
+  }
+  function renderSentList() {
+    var ul = document.getElementById('sentList');
+    ul.innerHTML = '';
+    sent.forEach(function (s, i) {
+      var li = document.createElement('li');
+      if (i === sentActive) li.className = 'active';
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'sent';
+      var biz = (s.data && s.data.biz) || '(unnamed)';
+      var when = new Date(s.uploadedAt);
+      b.innerHTML = '';
+      b.appendChild(document.createTextNode(biz));
+      var sp = document.createElement('span');
+      sp.className = 'when';
+      sp.textContent = when.toLocaleDateString() + ' ' + when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      b.appendChild(sp);
+      b.addEventListener('click', function () { sentActive = i; showRecord(s); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    document.getElementById('sentEmpty').style.display = sent.length ? 'none' : 'block';
+    document.getElementById('sentCount').textContent = sent.length ? '(' + sent.length + ')' : '';
+  }
+  function showRecord(s) {
+    var d = s.data || {};
+    document.getElementById('sheet').classList.add('hidden');
+    document.getElementById('recordView').classList.remove('hidden');
+    document.getElementById('recName').textContent = d.biz || '(unnamed)';
+    document.getElementById('recWhen').textContent =
+      'Submitted ' + new Date(d.submittedAt || s.uploadedAt).toLocaleString();
+    document.getElementById('recSummary').textContent = d.summary || '(no summary — submitted before summaries were added)';
+    var dl = document.getElementById('recFields');
+    dl.innerHTML = '';
+    [['Contact', d.contact], ['Phone', d.phone], ['Email', d.email],
+     ['Trade', d.trade], ['Service area', d.town],
+     ['Leads needed / mo', d.leadsNeeded], ['Lead gap', d.leadGap]
+    ].forEach(function (row) {
+      if (row[1] === undefined || row[1] === null || row[1] === '') return;
+      var dt = document.createElement('dt'); dt.textContent = row[0];
+      var dd = document.createElement('dd'); dd.textContent = row[1];
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+    document.getElementById('recDelete').dataset.pathname = s.pathname;
+    renderSentList();
+  }
+  function loadSent() {
+    var btn = document.getElementById('refreshSent');
+    btn.disabled = true; btn.textContent = 'Loading…';
+    return fetch('/api/intake?full=1&code=' + encodeURIComponent(code()))
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        sent = j.submissions || [];
+        renderSentList();
+      })
+      .catch(function () { toast('Could not load submitted records'); })
+      .then(function () { btn.disabled = false; btn.textContent = 'Refresh'; });
+  }
+  document.getElementById('refreshSent').addEventListener('click', loadSent);
+  document.getElementById('recBack').addEventListener('click', showWorksheet);
+  document.getElementById('recDelete').addEventListener('click', function () {
+    var p = this.dataset.pathname;
+    if (!p) return;
+    if (!confirm('Delete this submitted record? This cannot be undone.')) return;
+    fetch('/api/intake?code=' + encodeURIComponent(code()) + '&pathname=' + encodeURIComponent(p),
+          { method: 'DELETE' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j.ok) { toast('Deleted'); showWorksheet(); loadSent(); }
+        else toast('Delete failed');
+      })
+      .catch(function () { toast('Delete failed'); });
+  });
+
   /* ---------- access gate ---------- */
   function unlock(codeVal) {
     return fetch('/api/intake?code=' + encodeURIComponent(codeVal), { method: 'GET' })
@@ -465,6 +595,7 @@ input[type="number"] { font-family: var(--mono); }
         document.getElementById('gate').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
         renderAll();
+        loadSent();
         return true;
       });
   }
