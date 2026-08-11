@@ -11,7 +11,7 @@
  * GET /api/intake?code=...  — lists stored submissions (used by the local sync
  * script so Claude sessions can pull them into ~/Downloads/client-intake).
  */
-import { put, list } from '@vercel/blob';
+import { put, list, get } from '@vercel/blob';
 
 function slug(s) {
   return String(s || 'client').toLowerCase().replace(/[^a-z0-9]+/g, '-')
@@ -30,10 +30,14 @@ export default async function handler(req, res) {
       const wanted = blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
       const detail = req.query.full === '1'
         ? await Promise.all(wanted.map(async b => {
-            const r = await fetch(b.url);
-            return { pathname: b.pathname, uploadedAt: b.uploadedAt, data: await r.json() };
+            // private store: read content through the SDK, not the raw URL
+            const blob = await get(b.pathname);
+            const text = await blob.text();
+            let data;
+            try { data = JSON.parse(text); } catch { data = { raw: text }; }
+            return { pathname: b.pathname, uploadedAt: b.uploadedAt, data };
           }))
-        : wanted.map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt, url: b.url }));
+        : wanted.map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt }));
       return res.status(200).json({ count: detail.length, submissions: detail });
     } catch (err) {
       const msg = String(err.message || err);
@@ -69,7 +73,7 @@ export default async function handler(req, res) {
 
   try {
     const blob = await put(pathname, JSON.stringify(record, null, 2), {
-      access: 'public',              // unguessable random URL; never linked publicly
+      access: 'private',             // store is private; content is read back through the API
       contentType: 'application/json',
       addRandomSuffix: true,
     });
