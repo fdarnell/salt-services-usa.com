@@ -19,6 +19,14 @@ function slug(s) {
 }
 
 export default async function handler(req, res) {
+  // CORS: the Claude artifact version of this worksheet posts from another
+  // origin. The access code — not the origin — is the security boundary here.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, x-intake-code');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  if (req.method === 'OPTIONS') return res.status(204).end();
+
   const code = req.headers['x-intake-code'] || req.query.code;
   if (!process.env.INTAKE_CODE || code !== process.env.INTAKE_CODE) {
     return res.status(401).json({ error: 'bad or missing access code' });
