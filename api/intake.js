@@ -1,0 +1,90 @@
+/**
+ * POST /api/intake — receives a client-intake submission from /intake/,
+ * stores it privately in Vercel Blob, and (optionally) forwards it to a
+ * Coraline inbound webhook.
+ *
+ * Env vars (Vercel project settings):
+ *   BLOB_READ_WRITE_TOKEN  — added automatically when Blob storage is created
+ *   INTAKE_CODE            — shared access code the page must send
+ *   CORALINE_WEBHOOK_URL   — optional; if set, each submission is forwarded
+ *
+ * GET /api/intake?code=...  — lists stored submissions (used by the local sync
+ * script so Claude sessions can pull them into ~/Downloads/client-intake).
+ */
+import { put, list } from '@vercel/blob';
+
+function slug(s) {
+  return String(s || 'client').toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '').slice(0, 60) || 'client';
+}
+
+export default async function handler(req, res) {
+  const code = req.headers['x-intake-code'] || req.query.code;
+  if (!process.env.INTAKE_CODE || code !== process.env.INTAKE_CODE) {
+    return res.status(401).json({ error: 'bad or missing access code' });
+  }
+
+  if (req.method === 'GET') {
+    try {
+      const { blobs } = await list({ prefix: 'intake/' });
+      const wanted = blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+      const detail = req.query.full === '1'
+        ? await Promise.all(wanted.map(async b => {
+            const r = await fetch(b.url);
+            return { pathname: b.pathname, uploadedAt: b.uploadedAt, data: await r.json() };
+          }))
+        : wanted.map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt, url: b.url }));
+      return res.status(200).json({ count: detail.length, submissions: detail });
+    } catch (err) {
+      return res.status(500).json({ error: 'list failed', detail: String(err.message || err) });
+    }
+  }
+
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'GET, POST');
+    return res.status(405).json({ error: 'method not allowed' });
+  }
+
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'invalid JSON' }); }
+  }
+  if (!body || typeof body !== 'object' || !body.biz) {
+    return res.status(400).json({ error: 'missing business name' });
+  }
+
+  const now = new Date();
+  const record = {
+    ...body,
+    submittedAt: now.toISOString(),
+    source: 'saltservicesusa.com/intake/',
+  };
+  const stamp = now.toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  const pathname = `intake/${slug(body.biz)}-${stamp}.json`;
+
+  try {
+    const blob = await put(pathname, JSON.stringify(record, null, 2), {
+      access: 'public',              // unguessable random URL; never linked publicly
+      contentType: 'application/json',
+      addRandomSuffix: true,
+    });
+
+    let forwarded = null;
+    if (process.env.CORALINE_WEBHOOK_URL) {
+      try {
+        const r = await fetch(process.env.CORALINE_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(record),
+        });
+        forwarded = r.status;
+      } catch (e) {
+        forwarded = 'error: ' + String(e.message || e);
+      }
+    }
+
+    return res.status(200).json({ ok: true, stored: blob.pathname, forwarded });
+  } catch (err) {
+    return res.status(500).json({ error: 'store failed', detail: String(err.message || err) });
+  }
+}

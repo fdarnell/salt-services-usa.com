@@ -1,0 +1,483 @@
+<title>Client Intake — Salt Services</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+:root {
+  --ground: #f5f3ed; --panel: #fbfaf6; --panel-2: #ece9e0;
+  --ink: #201439; --body: #3d3357; --muted: #635a7d;
+  --line: #ddd8cc; --brand: #2b1d52; --brand-deep: #180f2f;
+  --accent: #e9a13b; --accent-ink: #1c1030;
+  --good: #2e7d4f; --warn: #b3541e;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #140d26; --panel: #1d1436; --panel-2: #241a42;
+    --ink: #eae7f4; --body: #cfc8e2; --muted: #9a8fbd;
+    --line: rgba(255,255,255,.12); --brand: #b7a8e8; --brand-deep: #cfc4f2;
+    --good: #6fce9a; --warn: #eba06a;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #140d26; --panel: #1d1436; --panel-2: #241a42;
+  --ink: #eae7f4; --body: #cfc8e2; --muted: #9a8fbd;
+  --line: rgba(255,255,255,.12); --brand: #b7a8e8; --brand-deep: #cfc4f2;
+  --good: #6fce9a; --warn: #eba06a;
+}
+:root[data-theme="light"] {
+  --ground: #f5f3ed; --panel: #fbfaf6; --panel-2: #ece9e0;
+  --ink: #201439; --body: #3d3357; --muted: #635a7d;
+  --line: #ddd8cc; --brand: #2b1d52; --brand-deep: #180f2f;
+  --good: #2e7d4f; --warn: #b3541e;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--body); font: 15px/1.55 var(--sans); }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+
+header.top { display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+header.top h1 { font: 500 1.7rem/1.1 var(--serif); color: var(--ink); margin: 0; letter-spacing: -.01em; }
+header.top .sub { color: var(--muted); font-size: .9rem; }
+.dots { color: var(--accent); letter-spacing: .35em; font-size: .8rem; }
+
+.cols { display: grid; grid-template-columns: 250px minmax(0,1fr); gap: 1.25rem; align-items: start; }
+@media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.roster { position: sticky; top: 1rem; padding: 1rem; }
+.roster h2, .math h2 { margin: 0 0 .6rem; font: 600 .72rem var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.roster ul { list-style: none; margin: 0 0 .75rem; padding: 0; max-height: 44vh; overflow-y: auto; }
+.roster li { display: flex; }
+.roster button.client {
+  flex: 1; text-align: left; background: none; border: 0; border-radius: 8px;
+  padding: .45rem .6rem; font: 500 .95rem var(--sans); color: var(--body); cursor: pointer;
+}
+.roster button.client:hover { background: var(--panel-2); }
+.roster li.active button.client { background: var(--brand); color: #fff; }
+:root[data-theme="dark"] .roster li.active button.client,
+html[data-theme="dark"] .roster li.active button.client { color: #140d26; }
+.roster .empty { color: var(--muted); font-size: .88rem; padding: .3rem .2rem .6rem; }
+
+button.primary, button.ghost {
+  font: 600 .92rem var(--sans); border-radius: 999px; padding: .55rem 1.1rem; cursor: pointer;
+}
+button.primary { background: var(--accent); color: var(--accent-ink); border: 0; }
+button.primary:hover { filter: brightness(1.06); }
+button.ghost { background: none; border: 1.5px solid var(--line); color: var(--body); }
+button.ghost:hover { border-color: var(--muted); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 1px;
+}
+
+.sheet { padding: 1.4rem 1.5rem 1.6rem; }
+.sheet h2.name { font: 500 1.45rem/1.15 var(--serif); color: var(--ink); margin: 0; }
+.sheet .head-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.sheet .head-row .spacer { flex: 1; }
+.saved { font: 500 .78rem var(--mono); color: var(--good); opacity: 0; transition: opacity .25s; }
+.saved.show { opacity: 1; }
+
+fieldset { border: 0; border-top: 1px solid var(--line); margin: 1.1rem 0 0; padding: 1rem 0 0; }
+legend { font: 600 .72rem var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); padding-right: .75rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: .8rem .9rem; }
+.field { display: flex; flex-direction: column; gap: .25rem; }
+.field.wide { grid-column: 1 / -1; }
+label { font-size: .82rem; font-weight: 600; color: var(--ink); }
+label .hint { font-weight: 400; color: var(--muted); }
+input, textarea, select {
+  font: 400 .95rem var(--sans); color: var(--ink); background: var(--ground);
+  border: 1px solid var(--line); border-radius: 8px; padding: .5rem .6rem; width: 100%;
+}
+textarea { min-height: 74px; resize: vertical; }
+input[type="number"] { font-family: var(--mono); }
+.checks { display: flex; flex-wrap: wrap; gap: .35rem .5rem; }
+.checks label {
+  display: flex; align-items: center; gap: .38rem; font-weight: 500; font-size: .86rem;
+  border: 1px solid var(--line); border-radius: 999px; padding: .3rem .7rem; cursor: pointer;
+  color: var(--body); background: var(--ground);
+}
+.checks input { width: auto; accent-color: var(--accent); margin: 0; }
+.checks label:has(input:checked) { border-color: var(--accent); color: var(--ink); background: var(--panel-2); }
+
+.math { position: sticky; top: 1rem; padding: 1rem 1.1rem 1.1rem; margin-top: 1.25rem; }
+.math .rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; }
+.stat { background: var(--ground); border: 1px solid var(--line); border-radius: 10px; padding: .6rem .75rem; }
+.stat .k { font: 500 .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.stat .v { font: 500 1.5rem/1.2 var(--serif); color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat .v small { font: 500 .78rem var(--mono); color: var(--muted); }
+.stat.gap-bad .v { color: var(--warn); }
+.stat.gap-good .v { color: var(--good); }
+.math .note { font-size: .82rem; color: var(--muted); margin: .6rem 0 0; }
+
+.toolbar { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.2rem; }
+.danger { color: var(--warn); background: none; border: 0; font: 500 .82rem var(--sans); cursor: pointer; text-decoration: underline; padding: .4rem 0; margin-left: auto; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%) translateY(8px);
+  background: var(--brand-deep); color: var(--ground); font: 500 .88rem var(--sans);
+  padding: .55rem 1rem; border-radius: 999px; opacity: 0; pointer-events: none; transition: all .25s;
+}
+:root[data-theme="dark"] .toast { background: var(--accent); color: var(--accent-ink); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.nosel { color: var(--muted); padding: 2.5rem 1rem; text-align: center; font-size: .95rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* access gate */
+.gate { max-width: 380px; margin: 12vh auto; padding: 1.6rem; }
+.gate h1 { font: 500 1.5rem var(--serif); color: var(--ink); margin: 0 0 .4rem; }
+.gate p { color: var(--muted); font-size: .9rem; margin: 0 0 1rem; }
+.gate .row { display: flex; gap: .5rem; }
+.gate input { flex: 1; }
+.gate .err { color: var(--warn); font-size: .85rem; min-height: 1.2em; margin: .5rem 0 0; }
+.sendbar { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; margin-top: 1.2rem;
+  padding-top: 1.1rem; border-top: 1px solid var(--line); }
+.sendbar .status { font: 500 .85rem var(--mono); color: var(--muted); }
+.sendbar .status.ok { color: var(--good); }
+.sendbar .status.bad { color: var(--warn); }
+.hidden { display: none !important; }
+</style>
+<div class="card gate" id="gate">
+  <h1>Client intake</h1>
+  <p>Salt Services internal tool. Enter the access code to continue.</p>
+  <div class="row">
+    <input id="gateCode" type="password" autocomplete="current-password" placeholder="Access code">
+    <button class="primary" id="gateGo" type="button">Enter</button>
+  </div>
+  <p class="err" id="gateErr"></p>
+</div>
+<div id="app" class="hidden">
+
+<div class="wrap">
+  <header class="top">
+    <h1>Client intake</h1>
+    <span class="dots">• • • • • •</span>
+    <span class="sub">Salt Services — discovery numbers &amp; marketing context, ready for Claude</span>
+  </header>
+
+  <div class="cols">
+    <aside class="card roster">
+      <h2>Clients</h2>
+      <ul id="roster"></ul>
+      <div class="empty" id="rosterEmpty">No clients yet.</div>
+      <button class="primary" id="addClient" type="button">+ New client</button>
+    </aside>
+
+    <main>
+      <div class="card sheet" id="sheet">
+        <div class="nosel" id="noSel">Add a client (or pick one on the left) to start the worksheet.</div>
+        <div id="formWrap" hidden>
+          <div class="head-row">
+            <h2 class="name" id="displayName">—</h2>
+            <span class="saved" id="savedFlag">saved</span>
+            <span class="spacer"></span>
+            <button class="ghost" id="copyBtn" type="button">Copy for Claude</button>
+            
+          </div>
+
+          <fieldset>
+            <legend>Business</legend>
+            <div class="grid">
+              <div class="field"><label for="f_biz">Business name</label><input id="f_biz" data-k="biz"></div>
+              <div class="field"><label for="f_contact">Contact person</label><input id="f_contact" data-k="contact"></div>
+              <div class="field"><label for="f_trade">Industry / trade</label><input id="f_trade" data-k="trade" placeholder="e.g. HVAC, med spa, cabin rentals"></div>
+              <div class="field"><label for="f_town">Town / service area</label><input id="f_town" data-k="town"></div>
+              <div class="field"><label for="f_phone">Phone</label><input id="f_phone" data-k="phone"></div>
+              <div class="field"><label for="f_email">Email</label><input id="f_email" data-k="email"></div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>The numbers</legend>
+            <div class="grid">
+              <div class="field"><label for="f_leadsNow">Leads per month, today</label><input id="f_leadsNow" data-k="leadsNow" type="number" min="0" step="1"></div>
+              <div class="field"><label for="f_close">Closing rate <span class="hint">%</span></label><input id="f_close" data-k="close" type="number" min="0" max="100" step="1"></div>
+              <div class="field"><label for="f_avgValue">Average job / customer value <span class="hint">$</span></label><input id="f_avgValue" data-k="avgValue" type="number" min="0" step="50"></div>
+              <div class="field"><label for="f_targetRev">Monthly revenue target <span class="hint">$</span></label><input id="f_targetRev" data-k="targetRev" type="number" min="0" step="500"></div>
+              <div class="field"><label for="f_capacity">Capacity ceiling <span class="hint">jobs/mo, blank = none</span></label><input id="f_capacity" data-k="capacity" type="number" min="0" step="1"></div>
+              <div class="field"><label for="f_spend">Current marketing spend <span class="hint">$/mo</span></label><input id="f_spend" data-k="spend" type="number" min="0" step="50"></div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Marketing today</legend>
+            <div class="grid">
+              <div class="field wide">
+                <label>Where leads come from now</label>
+                <div class="checks" id="srcChecks"></div>
+              </div>
+              <div class="field"><label for="f_crm">CRM / follow-up today</label><input id="f_crm" data-k="crm" placeholder="e.g. none, spreadsheet, Jobber"></div>
+              <div class="field"><label for="f_site">Website situation</label><input id="f_site" data-k="site" placeholder="e.g. none, outdated Wix, decent"></div>
+              <div class="field wide"><label for="f_competitors">Competitors they mention</label><input id="f_competitors" data-k="competitors"></div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Goals &amp; notes</legend>
+            <div class="grid">
+              <div class="field wide"><label for="f_goals">What they actually want <span class="hint">their words</span></label><textarea id="f_goals" data-k="goals"></textarea></div>
+              <div class="field wide"><label for="f_notes">Anything else <span class="hint">seasonality, staff, history with agencies…</span></label><textarea id="f_notes" data-k="notes"></textarea></div>
+            </div>
+          </fieldset>
+
+          <div class="card math" id="mathCard">
+            <h2>Lead math</h2>
+            <div class="rows" id="mathRows"></div>
+            <p class="note" id="mathNote"></p>
+          </div>
+
+          <div class="sendbar">
+            <button class="primary" id="sendBtn" type="button">Send to Salt Services</button>
+            <span class="status" id="sendStatus"></span>
+          </div>
+
+          <div class="toolbar">
+            
+            <button class="danger" id="delBtn" type="button">Delete this client</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+</div><div class="toast" id="toast"></div>
+<script>
+(function () {
+  'use strict';
+  var KEY = 'salt_intake_v1';
+  var SOURCES = ['Word of mouth', 'Google search', 'Google Ads', 'Facebook/Instagram', 'Referral partners', 'Repeat customers', 'Signage/truck', 'Home services apps', 'Door hangers/mail', 'Other'];
+  var state = load();
+  var current = state.clients.length ? state.clients[0].id : null;
+
+  function load() {
+    try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.clients) return s; } catch (e) {}
+    return { clients: [] };
+  }
+  function persist() {
+    localStorage.setItem(KEY, JSON.stringify(state));
+    var f = document.getElementById('savedFlag');
+    f.classList.add('show');
+    clearTimeout(persist._t);
+    persist._t = setTimeout(function () { f.classList.remove('show'); }, 1200);
+  }
+  function cur() {
+    for (var i = 0; i < state.clients.length; i++) if (state.clients[i].id === current) return state.clients[i];
+    return null;
+  }
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+  function money(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+
+  /* ---------- roster ---------- */
+  function renderRoster() {
+    var ul = document.getElementById('roster');
+    ul.innerHTML = '';
+    state.clients.forEach(function (c) {
+      var li = document.createElement('li');
+      if (c.id === current) li.className = 'active';
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'client';
+      b.textContent = c.biz || '(unnamed)';
+      b.addEventListener('click', function () { current = c.id; renderAll(); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    document.getElementById('rosterEmpty').style.display = state.clients.length ? 'none' : 'block';
+  }
+
+  /* ---------- form ---------- */
+  var srcWrap = document.getElementById('srcChecks');
+  SOURCES.forEach(function (s) {
+    var lab = document.createElement('label');
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = s;
+    cb.addEventListener('change', function () {
+      var c = cur(); if (!c) return;
+      c.sources = c.sources || [];
+      var i = c.sources.indexOf(s);
+      if (cb.checked && i < 0) c.sources.push(s);
+      if (!cb.checked && i >= 0) c.sources.splice(i, 1);
+      persist(); renderMath();
+    });
+    lab.appendChild(cb); lab.appendChild(document.createTextNode(s));
+    srcWrap.appendChild(lab);
+  });
+
+  var inputs = document.querySelectorAll('[data-k]');
+  inputs.forEach(function (el) {
+    el.addEventListener('input', function () {
+      var c = cur(); if (!c) return;
+      c[el.dataset.k] = el.value;
+      if (el.dataset.k === 'biz') {
+        document.getElementById('displayName').textContent = el.value || '(unnamed)';
+        renderRoster();
+      }
+      persist(); renderMath();
+    });
+  });
+
+  function renderForm() {
+    var c = cur();
+    document.getElementById('noSel').style.display = c ? 'none' : 'block';
+    document.getElementById('formWrap').hidden = !c;
+    if (!c) return;
+    document.getElementById('displayName').textContent = c.biz || '(unnamed)';
+    inputs.forEach(function (el) { el.value = c[el.dataset.k] || ''; });
+    srcWrap.querySelectorAll('input').forEach(function (cb) {
+      cb.checked = (c.sources || []).indexOf(cb.value) >= 0;
+    });
+  }
+
+  /* ---------- lead math ---------- */
+  function renderMath() {
+    var c = cur(); if (!c) return;
+    var rows = document.getElementById('mathRows');
+    var note = document.getElementById('mathNote');
+    var close = parseFloat(c.close), avg = parseFloat(c.avgValue),
+        target = parseFloat(c.targetRev), now = parseFloat(c.leadsNow),
+        cap = parseFloat(c.capacity), spend = parseFloat(c.spend);
+    rows.innerHTML = ''; note.textContent = '';
+    if (!(close > 0) || !(avg > 0) || !(target > 0)) {
+      note.textContent = 'Fill in closing rate, average value, and revenue target and the math appears here.';
+      return;
+    }
+    var jobsNeeded = target / avg;
+    var leadsNeeded = jobsNeeded / (close / 100);
+    var gap = isFinite(now) ? leadsNeeded - now : null;
+    var capped = isFinite(cap) && cap > 0 && jobsNeeded > cap;
+
+    function stat(k, v, cls) {
+      var d = document.createElement('div');
+      d.className = 'stat' + (cls ? ' ' + cls : '');
+      d.innerHTML = '<div class="k">' + k + '</div><div class="v">' + v + '</div>';
+      rows.appendChild(d);
+    }
+    stat('Jobs needed / mo', Math.ceil(jobsNeeded) + ' <small>at ' + money(avg) + '</small>');
+    stat('Leads needed / mo', Math.ceil(leadsNeeded) + ' <small>at ' + close + '% close</small>');
+    if (gap !== null) {
+      stat('Lead gap', (gap > 0 ? '+' + Math.ceil(gap) + ' <small>more needed</small>' : 'covered'),
+           gap > 0 ? 'gap-bad' : 'gap-good');
+    }
+    if (isFinite(spend) && spend > 0 && gap !== null && now > 0) {
+      stat('Current cost / lead', money(spend / now));
+    }
+    if (capped) {
+      note.textContent = 'Heads up: hitting ' + money(target) + ' takes ~' + Math.ceil(jobsNeeded) +
+        ' jobs, above their stated capacity of ' + cap + '. Talk price, capacity, or timeline before promising lead volume.';
+    } else if (gap !== null && gap > 0) {
+      note.textContent = 'They need roughly ' + Math.ceil(gap) + ' more leads a month than they get today. That number is the pitch.';
+    }
+  }
+
+  /* ---------- exports ---------- */
+  function summarize(c) {
+    var L = [];
+    L.push('# Client intake — ' + (c.biz || '(unnamed)'));
+    L.push('');
+    L.push('- Contact: ' + (c.contact || '?') + (c.phone ? ' · ' + c.phone : '') + (c.email ? ' · ' + c.email : ''));
+    L.push('- Trade: ' + (c.trade || '?') + ' — ' + (c.town || '?'));
+    L.push('- Leads/mo today: ' + (c.leadsNow || '?') + ' | Closing rate: ' + (c.close || '?') + '% | Avg value: $' + (c.avgValue || '?'));
+    L.push('- Revenue target: $' + (c.targetRev || '?') + '/mo | Capacity: ' + (c.capacity || 'none stated') + ' | Marketing spend: $' + (c.spend || '?') + '/mo');
+    L.push('- Lead sources now: ' + ((c.sources && c.sources.length) ? c.sources.join(', ') : '?'));
+    L.push('- CRM today: ' + (c.crm || '?') + ' | Website: ' + (c.site || '?'));
+    if (c.competitors) L.push('- Competitors: ' + c.competitors);
+    if (c.goals) { L.push(''); L.push('Goals (their words): ' + c.goals); }
+    if (c.notes) { L.push(''); L.push('Notes: ' + c.notes); }
+    var close = parseFloat(c.close), avg = parseFloat(c.avgValue), target = parseFloat(c.targetRev);
+    if (close > 0 && avg > 0 && target > 0) {
+      var jobs = Math.ceil(target / avg), leads = Math.ceil((target / avg) / (close / 100));
+      L.push('');
+      L.push('Lead math: ~' + jobs + ' jobs/mo → ~' + leads + ' leads/mo needed at current close rate.');
+    }
+    return L.join('\n');
+  }
+  function slug(s) { return (s || 'client').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'client'; }
+
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    var c = cur(); if (!c) return;
+    navigator.clipboard.writeText(summarize(c)).then(
+      function () { toast('Copied — paste it into any Claude chat'); },
+      function () { toast('Copy failed — try the JSON download instead'); });
+  });
+
+  /* ---------- send to server ---------- */
+  var CODE_KEY = 'salt_intake_code';
+  function code() { return sessionStorage.getItem(CODE_KEY) || ''; }
+
+  document.getElementById('sendBtn').addEventListener('click', function () {
+    var c = cur(); if (!c) return;
+    if (!c.biz) { toast('Add a business name first'); return; }
+    var btn = this, st = document.getElementById('sendStatus');
+    btn.disabled = true; st.className = 'status'; st.textContent = 'sending…';
+    fetch('/api/intake', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-intake-code': code() },
+      body: JSON.stringify(c)
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        btn.disabled = false;
+        if (res.ok) {
+          c.lastSent = new Date().toISOString();
+          persist();
+          st.className = 'status ok'; st.textContent = 'sent · ' + new Date().toLocaleTimeString();
+          toast('Sent — it will be waiting for Claude');
+        } else {
+          st.className = 'status bad';
+          st.textContent = (res.j && res.j.error) || 'failed';
+        }
+      })
+      .catch(function (e) {
+        btn.disabled = false;
+        st.className = 'status bad'; st.textContent = 'network error';
+      });
+  });
+
+  /* ---------- add / delete ---------- */
+  document.getElementById('addClient').addEventListener('click', function () {
+    var c = { id: 'c' + Math.random().toString(36).slice(2, 9), biz: '', sources: [] };
+    state.clients.unshift(c);
+    current = c.id;
+    persist(); renderAll();
+    document.getElementById('f_biz').focus();
+  });
+  document.getElementById('delBtn').addEventListener('click', function () {
+    var c = cur(); if (!c) return;
+    if (!confirm('Delete ' + (c.biz || 'this client') + '? This cannot be undone.')) return;
+    state.clients = state.clients.filter(function (x) { return x.id !== current; });
+    current = state.clients.length ? state.clients[0].id : null;
+    persist(); renderAll();
+  });
+
+  function renderAll() { renderRoster(); renderForm(); renderMath(); }
+
+  /* ---------- access gate ---------- */
+  function unlock(codeVal) {
+    return fetch('/api/intake?code=' + encodeURIComponent(codeVal), { method: 'GET' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('bad code');
+        sessionStorage.setItem(CODE_KEY, codeVal);
+        document.getElementById('gate').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        renderAll();
+        return true;
+      });
+  }
+  document.getElementById('gateGo').addEventListener('click', function () {
+    var v = document.getElementById('gateCode').value.trim();
+    var err = document.getElementById('gateErr');
+    err.textContent = '';
+    if (!v) { err.textContent = 'Enter the code.'; return; }
+    unlock(v).catch(function () { err.textContent = 'That code did not work.'; });
+  });
+  document.getElementById('gateCode').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('gateGo').click();
+  });
+  if (code()) { unlock(code()).catch(function () { sessionStorage.removeItem(CODE_KEY); }); }
+})();
+</script>
