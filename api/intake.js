@@ -11,7 +11,7 @@
  * GET /api/intake?code=...  — lists stored submissions (used by the local sync
  * script so Claude sessions can pull them into ~/Downloads/client-intake).
  */
-import { put, list, get } from '@vercel/blob';
+import { put, list, get, del } from '@vercel/blob';
 
 function slug(s) {
   return String(s || 'client').toLowerCase().replace(/[^a-z0-9]+/g, '-')
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   // CORS: the Claude artifact version of this worksheet posts from another
   // origin. The access code — not the origin — is the security boundary here.
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   res.setHeader('Access-Control-Allow-Headers', 'content-type, x-intake-code');
   res.setHeader('Access-Control-Max-Age', '86400');
   if (req.method === 'OPTIONS') return res.status(204).end();
@@ -59,8 +59,21 @@ export default async function handler(req, res) {
     }
   }
 
+  if (req.method === 'DELETE') {
+    const pathname = req.query.pathname;
+    if (!pathname || !String(pathname).startsWith('intake/')) {
+      return res.status(400).json({ error: 'pathname query param required' });
+    }
+    try {
+      await del(pathname);
+      return res.status(200).json({ ok: true, deleted: pathname });
+    } catch (err) {
+      return res.status(500).json({ error: 'delete failed', detail: String(err.message || err) });
+    }
+  }
+
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'GET, POST');
+    res.setHeader('Allow', 'GET, POST, DELETE');
     return res.status(405).json({ error: 'method not allowed' });
   }
 
