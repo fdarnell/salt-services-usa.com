@@ -43,7 +43,11 @@ header.top .sub { color: var(--muted); font-size: .9rem; }
 .dots { color: var(--accent); letter-spacing: .35em; font-size: .8rem; }
 
 .cols { display: grid; grid-template-columns: 250px minmax(0,1fr); gap: 1.25rem; align-items: start; }
+.cols.solo { grid-template-columns: minmax(0,1fr); }
 @media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+.head-spacer { flex: 1; }
+.privacy-note { font-size: .78rem; color: var(--muted); margin: 0 0 .8rem; line-height: 1.4; }
+#toggleRecords[aria-expanded="true"] { border-color: var(--accent); color: var(--ink); }
 
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
 .roster { position: sticky; top: 1rem; padding: 1rem; }
@@ -180,12 +184,16 @@ button.small { font-size: .82rem; padding: .35rem .8rem; }
   <header class="top">
     <h1>Client intake</h1>
     <span class="dots">• • • • • •</span>
-    <span class="sub">Salt Services — discovery numbers &amp; marketing context, ready for Claude</span>
+    <span class="sub">Salt Services — discovery numbers &amp; marketing context</span>
+    <span class="head-spacer"></span>
+    <button class="primary small" id="newClientTop" type="button">+ New client</button>
+    <button class="ghost small" id="toggleRecords" type="button" aria-expanded="false">Records</button>
   </header>
 
-  <div class="cols">
-    <aside class="card roster">
-      <h2>Clients</h2>
+  <div class="cols solo" id="cols">
+    <aside class="card roster hidden" id="rosterPanel">
+      <p class="privacy-note">Hidden by default so client names aren't on screen during a meeting.</p>
+      <h2>Drafts on this device</h2>
       <ul id="roster"></ul>
       <div class="empty" id="rosterEmpty">No drafts on this device.</div>
       <button class="primary" id="addClient" type="button">+ New client</button>
@@ -571,6 +579,22 @@ button.small { font-size: .82rem; padding: .35rem .8rem; }
       .then(function () { btn.disabled = false; btn.textContent = 'Refresh'; });
   }
   document.getElementById('refreshSent').addEventListener('click', loadSent);
+
+  /* Records panel stays closed by default so a client sitting beside you
+     never sees other prospects' names or how many there are. */
+  var recordsLoaded = false;
+  document.getElementById('toggleRecords').addEventListener('click', function () {
+    var panel = document.getElementById('rosterPanel');
+    var open = panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !open);
+    document.getElementById('cols').classList.toggle('solo', !open);
+    this.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open && !recordsLoaded) { recordsLoaded = true; loadSent(); }
+  });
+  document.getElementById('newClientTop').addEventListener('click', function () {
+    document.getElementById('addClient').click();
+    showWorksheet();
+  });
   document.getElementById('recBack').addEventListener('click', showWorksheet);
   document.getElementById('recDelete').addEventListener('click', function () {
     var p = this.dataset.pathname;
@@ -595,7 +619,6 @@ button.small { font-size: .82rem; padding: .35rem .8rem; }
         document.getElementById('gate').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
         renderAll();
-        loadSent();
         return true;
       });
   }
