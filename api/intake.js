@@ -31,10 +31,12 @@ export default async function handler(req, res) {
       const detail = req.query.full === '1'
         ? await Promise.all(wanted.map(async b => {
             // private store: read content through the SDK, not the raw URL
-            const blob = await get(b.pathname);
-            const text = await blob.text();
-            let data;
-            try { data = JSON.parse(text); } catch { data = { raw: text }; }
+            const result = await get(b.pathname, { access: 'private' });
+            let data = null;
+            if (result && result.blob) {
+              const text = await result.blob.text();
+              try { data = JSON.parse(text); } catch { data = { raw: text }; }
+            }
             return { pathname: b.pathname, uploadedAt: b.uploadedAt, data };
           }))
         : wanted.map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt }));
