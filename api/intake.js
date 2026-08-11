@@ -36,7 +36,12 @@ export default async function handler(req, res) {
         : wanted.map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt, url: b.url }));
       return res.status(200).json({ count: detail.length, submissions: detail });
     } catch (err) {
-      return res.status(500).json({ error: 'list failed', detail: String(err.message || err) });
+      const msg = String(err.message || err);
+      if (/No token found|BLOB_READ_WRITE_TOKEN/i.test(msg)) {
+        // code is valid but storage isn't wired yet — let the page unlock anyway
+        return res.status(200).json({ count: 0, submissions: [], warning: 'storage not configured' });
+      }
+      return res.status(500).json({ error: 'list failed', detail: msg });
     }
   }
 
@@ -85,6 +90,12 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ ok: true, stored: blob.pathname, forwarded });
   } catch (err) {
-    return res.status(500).json({ error: 'store failed', detail: String(err.message || err) });
+    const msg = String(err.message || err);
+    if (/No token found|BLOB_READ_WRITE_TOKEN/i.test(msg)) {
+      return res.status(503).json({
+        error: 'storage not configured — add BLOB_READ_WRITE_TOKEN in Vercel project settings',
+      });
+    }
+    return res.status(500).json({ error: 'store failed', detail: msg });
   }
 }
