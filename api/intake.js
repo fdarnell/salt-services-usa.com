@@ -86,8 +86,45 @@ export default async function handler(req, res) {
   }
 
   const now = new Date();
+
+  // Derive the lead math server-side so the CRM doesn't have to compute it,
+  // and build a one-field summary for CRMs where per-number custom fields
+  // aren't worth the setup.
+  const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
+  const close = num(body.close), avg = num(body.avgValue),
+        target = num(body.targetRev), leadsNow = num(body.leadsNow);
+  let jobsNeeded = null, leadsNeeded = null, leadGap = null;
+  if (close > 0 && avg > 0 && target > 0) {
+    jobsNeeded = Math.ceil(target / avg);
+    leadsNeeded = Math.ceil((target / avg) / (close / 100));
+    if (leadsNow !== null) leadGap = Math.max(0, leadsNeeded - leadsNow);
+  }
+
+  const money = n => (n === null ? '?' : '$' + Math.round(n).toLocaleString('en-US'));
+  const summary = [
+    `${body.biz || '(unnamed)'}${body.trade ? ' — ' + body.trade : ''}${body.town ? ' (' + body.town + ')' : ''}`,
+    `Leads/mo now: ${leadsNow ?? '?'} | Close rate: ${close ?? '?'}% | Avg value: ${money(avg)}`,
+    `Revenue target: ${money(target)}/mo` +
+      (body.capacity ? ` | Capacity: ${body.capacity} jobs/mo` : '') +
+      (body.spend ? ` | Marketing spend: ${money(num(body.spend))}/mo` : ''),
+    leadsNeeded !== null
+      ? `LEAD MATH: needs ~${jobsNeeded} jobs/mo = ~${leadsNeeded} leads/mo` +
+        (leadGap !== null ? ` — gap of ${leadGap} more per month` : '')
+      : 'LEAD MATH: incomplete (needs close rate, avg value, revenue target)',
+    body.sources && body.sources.length ? `Leads come from: ${body.sources.join(', ')}` : '',
+    body.crm ? `CRM today: ${body.crm}` : '',
+    body.site ? `Website: ${body.site}` : '',
+    body.competitors ? `Competitors: ${body.competitors}` : '',
+    body.goals ? `Goals: ${body.goals}` : '',
+    body.notes ? `Notes: ${body.notes}` : '',
+  ].filter(Boolean).join('\n');
+
   const record = {
     ...body,
+    jobsNeeded,
+    leadsNeeded,
+    leadGap,
+    summary,
     submittedAt: now.toISOString(),
     source: 'saltservicesusa.com/intake/',
   };
