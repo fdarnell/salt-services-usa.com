@@ -30,11 +30,11 @@ export default async function handler(req, res) {
       const wanted = blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
       const detail = req.query.full === '1'
         ? await Promise.all(wanted.map(async b => {
-            // private store: read content through the SDK, not the raw URL
+            // private store: read content through the SDK's stream, not the raw URL
             const result = await get(b.pathname, { access: 'private' });
             let data = null;
-            if (result && result.blob) {
-              const text = await result.blob.text();
+            if (result && result.stream) {
+              const text = await new Response(result.stream).text();
               try { data = JSON.parse(text); } catch { data = { raw: text }; }
             }
             return { pathname: b.pathname, uploadedAt: b.uploadedAt, data };
