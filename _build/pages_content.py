@@ -883,8 +883,8 @@ PRIVACY_BODY = f"""<section class="section">
   <div class="wrap prose">
     <h1>Privacy policy</h1>
     {SPRINKLE}
-    <p><em>Effective July 18, 2026</em></p>
-    <p>This policy describes how Salt Services ("we," "us"), a marketing agency based in Kodak, Tennessee, collects and uses information through saltservicesusa.com and our related services. Short version: we collect what you send us so we can respond and do our work, we don't sell it, and we don't share your mobile number with anyone for their marketing.</p>
+    <p><em>Effective August 12, 2026</em></p>
+    <p>This policy describes how Salt Services ("we," "us"), a marketing agency based in Kodak, Tennessee, collects and uses information through saltservicesusa.com, our client portal, and our related services. Short version: we collect what you send us so we can respond and do our work, we don't sell it, and we don't share your mobile number with anyone for their marketing.</p>
 
     <h2>Information you give us</h2>
     <p>When you fill out a form, start a chat, call, email, or sign up for Coraline, you may provide your name, email address, phone number, business name, address, and details about your business and goals. We use this to respond to you, prepare recommendations and quotes, provide services you've engaged us for, and communicate with you about them.</p>
@@ -895,8 +895,11 @@ PRIVACY_BODY = f"""<section class="section">
     <h2>Text messaging (SMS) terms</h2>
     <p>If you provide your phone number, you consent to receive calls and text messages from us about your inquiry and our services. Message frequency varies; message and data rates may apply. Reply STOP at any time to opt out of texts, or HELP for help. <strong>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes.</strong> Opt-in data and consent are not shared with any third party.</p>
 
+    <h2>Client portal accounts</h2>
+    <p>If you're a hosting client, you have an account in our client portal at portal.saltservicesusa.com, protected by a password and a one-time code we send by text or email through Coraline each time you log in. Your portal account shows your own website's traffic and search performance (from Vercel Analytics and Google Search Console), your billing status, and the monthly work we're doing for your site — information about your own account and your own website, not collected from anyone else. Payments for hosting are processed by Stripe; we never see or store your card details ourselves. The portal has its own privacy policy at <a href="https://portal.saltservicesusa.com/privacy-policy/">portal.saltservicesusa.com/privacy-policy/</a> with the full detail.</p>
+
     <h2>How we share information</h2>
-    <p>We share information only with service providers who help us operate — our CRM and communications platform (Coraline, built on LeadConnector/HighLevel infrastructure), our hosting provider (Vercel), and similar processors bound to use it only on our behalf — or when the law requires it, or as part of a business transfer. We do not sell personal information, and we do not share it with anyone for their own marketing.</p>
+    <p>We share information only with service providers who help us operate — our CRM and communications platform (Coraline, built on LeadConnector/HighLevel infrastructure), our hosting provider (Vercel), our payment processor (Stripe, for hosting clients' subscriptions), and similar processors bound to use it only on our behalf — or when the law requires it, or as part of a business transfer. We do not sell personal information, and we do not share it with anyone for their own marketing.</p>
 
     <h2>Cookies and your choices</h2>
     <p>The cookies on this site are functional (chat and form continuity), not advertising cookies. You can block or delete cookies in your browser settings; the site will still work, though chat conversations may not persist across visits.</p>
@@ -923,7 +926,7 @@ TERMS_BODY = f"""<section class="section">
   <div class="wrap prose">
     <h1>Terms of service</h1>
     {SPRINKLE}
-    <p><em>Effective July 18, 2026</em></p>
+    <p><em>Effective August 12, 2026</em></p>
     <p>These terms govern your use of saltservicesusa.com and set the baseline for how Salt Services ("we," "us") does business. By using this site, you accept them. If you sign a service agreement or proposal with us, that signed document controls wherever it differs from these terms.</p>
 
     <h2>What we do</h2>
@@ -934,6 +937,9 @@ TERMS_BODY = f"""<section class="section">
 
     <h2>Coraline subscriptions</h2>
     <p>Coraline plans are billed as described at sign-up through our checkout at coraline.saltservicesusa.com. The pricing, billing cycle, and cancellation terms presented at checkout govern your subscription. Coraline is built on third-party infrastructure, and its availability depends in part on those providers; we'll always do our part to keep your account running and your data accessible.</p>
+
+    <h2>Client portal &amp; hosting subscriptions</h2>
+    <p>Hosting clients get access to our client portal at portal.saltservicesusa.com for account management, billing, and website performance data. Portal access, suspension for non-payment, and restoration on payment are handled as described in your hosting agreement. Hosting subscriptions are billed through Stripe and can be managed — including updating your card — through the secure billing portal linked from your account; we never see or store your card details ourselves. The portal has its own terms of service at <a href="https://portal.saltservicesusa.com/terms-of-service/">portal.saltservicesusa.com/terms-of-service/</a>.</p>
 
     <h2>Intellectual property</h2>
     <p>The content of this website — text, design, graphics, and code — belongs to Salt Services and may not be copied for commercial use without permission. Ownership of client deliverables (websites, content, campaigns) is defined in each client's agreement. Client names and screenshots shown in our portfolio are used to describe our own work; the underlying businesses and their trademarks belong to their owners.</p>
