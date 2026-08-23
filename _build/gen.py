@@ -91,9 +91,8 @@ HEAD = """<!DOCTYPE html>
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/instrument-sans-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fraunces-600-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/style.css?v={css_v}">
 {extra_head}{jsonld}
 </head>
