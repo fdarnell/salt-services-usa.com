@@ -79,7 +79,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
   </div>
 </section>
 <script type="importmap">
-{{ "imports": {{ "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" }} }}
+{{ "imports": {{ "three": "/js/vendor/three.module.js" }} }}
 </script>
 <script type="module" src="/js/hero3d.js"></script>
 

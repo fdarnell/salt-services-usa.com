@@ -1,0 +1,19 @@
+# The deploy root is the public web root: anything not excluded here is
+# fetchable at https://www.saltservicesusa.com/<path>.
+# NOTE: api/ and package.json must NOT be excluded -- api/intake.js is a
+# serverless function and @vercel/blob is its dependency.
+
+# Build tooling and content sources
+_build/
+*.py
+
+# Internal documents
+site.config.json
+content-plan.md
+DESIGN.md
+README.md
+CLIENT-HANDOFF.md
+seo-baseline/
+
+.claude/
+.DS_Store
