@@ -322,3 +322,15 @@ if __name__ == "__main__":
     written = [build(spec, seen_t, seen_d) for spec in PAGES]
     write_sitemap([p for spec, p in zip(PAGES, written) if not spec.get("noindex")])
     print(f"{len(written)} pages built")
+
+
+# Content-hash every asset reference so /images, /css and /fonts can be cached
+# for a year without stranding an edit. Must run last.
+try:
+    import sys as _sys, os as _os
+    _root = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+    _sys.path.insert(0, _root)
+    import stamp_assets as _stamp
+    _stamp.main(_root)
+except Exception as _e:
+    print("stamp_assets skipped:", _e)
