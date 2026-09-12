@@ -40,9 +40,9 @@ BIZ = {
 
 # Coraline embed (client-specific — from the embed code Franklin provided)
 CORALINE = {
-    "iframe_src": "https://link.coraline-communication.com/widget/form/ZG2GvC7Xk9bF3bCMCEB1",
+    "iframe_src": "https://api.leadconnectorhq.com/widget/form/ZG2GvC7Xk9bF3bCMCEB1",
     "form_id": "ZG2GvC7Xk9bF3bCMCEB1",
-    "embed_js": "https://link.coraline-communication.com/js/form_embed.js",
+    "embed_js": "https://api.leadconnectorhq.com/js/form_embed.js",
     "form_name": "Website | Inquiry Form",
     "form_height": "770",
 }
