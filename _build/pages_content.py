@@ -926,7 +926,7 @@ TERMS_BODY = f"""<section class="section">
   <div class="wrap prose">
     <h1>Terms of service</h1>
     {SPRINKLE}
-    <p><em>Effective August 12, 2026</em></p>
+    <p><em>Effective September 14, 2026</em></p>
     <p>These terms govern your use of saltservicesusa.com and set the baseline for how Salt Services ("we," "us") does business. By using this site, you accept them. If you sign a service agreement or proposal with us, that signed document controls wherever it differs from these terms.</p>
 
     <h2>What we do</h2>
@@ -940,6 +940,13 @@ TERMS_BODY = f"""<section class="section">
 
     <h2>Client portal &amp; hosting subscriptions</h2>
     <p>Hosting clients get access to our client portal at portal.saltservicesusa.com for account management, billing, and website performance data. Portal access, suspension for non-payment, and restoration on payment are handled as described in your hosting agreement. Hosting subscriptions are billed through Stripe and can be managed — including updating your card — through the secure billing portal linked from your account; we never see or store your card details ourselves. The portal has its own terms of service at <a href="https://portal.saltservicesusa.com/terms-of-service/">portal.saltservicesusa.com/terms-of-service/</a>.</p>
+
+    <h2>Text messaging (SMS) program terms</h2>
+    <p>Salt Services sends text messages only to people who have given us their mobile number and agreed to receive them — by ticking the consent box on our contact form, by telling us on a call that we may text them, or by providing a mobile number on a signed services agreement. The messages we send are service messages about your own inquiry, project, or account: replies to an inquiry submitted on this site, appointment and call-back confirmations, account and billing notices for our client portal, one-time sign-in codes for the portal, and an automatic reply when we miss your call. We do not send marketing or promotional texts, and we never text numbers from a purchased or rented list. By opting in, you consent to receive these messages from Salt Services at the mobile number you provided.</p>
+    <p><strong>Message frequency varies.</strong> Message and data rates may apply; check with your wireless carrier for the details of your plan.</p>
+    <p><strong>To opt out</strong>, reply STOP to any message. You will receive one final text confirming that you have been unsubscribed, and no further messages after that. <strong>For help</strong>, reply HELP to any message, text HELP to <a href="tel:{TEL}">{PHONE}</a>, or email <a href="mailto:{BIZ['email']}">{BIZ['email']}</a>. Opting out of texts does not stop us from contacting you by phone or email about work you have asked us to do.</p>
+    <p>Wireless carriers are not liable for delayed or undelivered messages. Delivery depends on your carrier's network and is subject to the transmission errors and delays of mobile networks, and messages may not be delivered if your phone is out of range, switched off, or otherwise unavailable.</p>
+    <p>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes. Opt-in data and consent are not shared with any third party. How we collect, use, and protect your mobile number and message history is set out in our <a href="/privacy-policy/">Privacy Policy</a>.</p>
 
     <h2>Intellectual property</h2>
     <p>The content of this website — text, design, graphics, and code — belongs to Salt Services and may not be copied for commercial use without permission. Ownership of client deliverables (websites, content, campaigns) is defined in each client's agreement. Client names and screenshots shown in our portfolio are used to describe our own work; the underlying businesses and their trademarks belong to their owners.</p>
