@@ -485,3 +485,25 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 @media print {
   .site-header, .callbar, .coraline-form { display: none; }
 }
+
+/* Salt CRM form (replaces Coraline) — rendered into the page as plain HTML,
+   so it takes this site's own fonts and colours. */
+.saltcrm-mount{min-height:0}
+.saltcrm-form{text-align:left}
+.saltcrm-field{display:block;margin:0 0 16px}
+.saltcrm-field>span,.saltcrm-group>legend{display:block;font-weight:600;font-size:.9em;margin:0 0 6px}
+.saltcrm-field input:not([type=checkbox]):not([type=radio]),.saltcrm-field textarea,.saltcrm-field select{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:16px;color:#222;background:#fff;border:1px solid #c8c8c8;border-radius:6px;padding:11px 13px;margin:0}
+.saltcrm-field textarea{min-height:110px;resize:vertical}
+.saltcrm-field input:focus,.saltcrm-field textarea:focus,.saltcrm-field select:focus{outline:2px solid currentColor;outline-offset:1px}
+.saltcrm-group{border:0;padding:0;margin:0 0 16px;min-width:0}
+.saltcrm-check,.saltcrm-consent{display:flex;gap:10px;align-items:flex-start;margin:0 0 10px;font-size:.85em;line-height:1.5;font-weight:400;text-align:left}
+.saltcrm-check input,.saltcrm-consent input{margin:3px 0 0;flex:0 0 auto;width:auto}
+.saltcrm-errors{color:#b42318;margin:12px 0 0}
+.saltcrm-thanks{text-align:center;padding:24px 0;font-size:1.05em}
+.saltcrm-submit{margin-top:8px;cursor:pointer}
+.saltcrm-submit{margin-top: 0.75rem;
+  background: var(--accent); color: #1c1030;
+  border: none; border-radius: 999px;
+  padding: 0.8rem 1.8rem; font-size: 1rem; font-weight: 600; cursor: pointer;}
+.saltcrm-submit:hover{background: var(--accent-hover);}
+.saltcrm-submit:disabled{opacity:.6;cursor:default}
