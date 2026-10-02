@@ -52,6 +52,26 @@
      The raw Coraline embed is a ~2085px iframe plus an external script —
      the heaviest thing on any page. We show a styled placeholder and inject
      the real form only when it scrolls near the viewport or is tapped. */
+  /* ---- Salt CRM form (replaces Coraline) ----
+     Each Coraline form on this site has a twin in Salt CRM, keyed here by the
+     Coraline form id the page already carries. A listed mount gets the CRM
+     form instead of the iframe: plain HTML rendered into the page, styled by
+     this site's CSS, as tall as its content. The embed script mounts every
+     CRM form on the page not yet mounted, so it is added again for each. */
+  var SALTCRM_FORMS = { 'ZG2GvC7Xk9bF3bCMCEB1': 'H-Diwo9Ic3o7tC2gdugZ1A' };
+  var loadSaltcrmForm = function (mount, token) {
+    var host = document.createElement('div');
+    host.setAttribute('data-saltcrm-form', token);
+    mount.innerHTML = '';
+    mount.style.minHeight = '';
+    mount.classList.add('saltcrm-mount');
+    mount.appendChild(host);
+    var s = document.createElement('script');
+    s.src = 'https://crm.saltservicesusa.com/api/embed/' + token;
+    s.async = true;
+    document.body.appendChild(s);
+  };
+
   var mounts = document.querySelectorAll('.coraline-form');
   if (!mounts.length) return;
 
@@ -60,6 +80,7 @@
   function loadForm(mount) {
     if (mount.dataset.loaded) return;
     mount.dataset.loaded = 'true';
+    if (SALTCRM_FORMS[mount.dataset.formId]) { loadSaltcrmForm(mount, SALTCRM_FORMS[mount.dataset.formId]); return; }
 
     var src = mount.dataset.iframeSrc;
     var formId = mount.dataset.formId;
