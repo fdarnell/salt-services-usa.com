@@ -507,3 +507,7 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
   padding: 0.8rem 1.8rem; font-size: 1rem; font-weight: 600; cursor: pointer;}
 .saltcrm-submit:hover{background: var(--accent-hover);}
 .saltcrm-submit:disabled{opacity:.6;cursor:default}
+
+/* Website chat (Salt CRM). On phones the sticky call bar owns the bottom
+   edge; lift the chat launcher above it. Beats the widget's inline offset. */
+@media (max-width: 640px) { #saltcrm-chat { bottom: 88px !important; } }

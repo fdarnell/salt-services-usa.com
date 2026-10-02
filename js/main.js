@@ -1,4 +1,4 @@
-/* Salt Services — shared script: mobile nav toggle + Coraline form lazy-loader */
+/* Salt Services — shared script: mobile nav toggle, website chat and contact form loaders */
 (function () {
   'use strict';
 
@@ -12,36 +12,20 @@
     });
   }
 
-  /* ----- Coraline chat widget (site-wide) -----
+  /* ----- Website chat (Salt CRM; replaced Coraline's SALT AI) -----
      Deferred: injected 2.5s after page load, or on first interaction,
-     whichever comes first — so the widget never blocks rendering. */
+     whichever comes first — so the widget never blocks rendering. It finds
+     this site's assistant by the site's own address; until one is set up in
+     the CRM it answers "not enabled" and draws nothing. On phones it sits
+     above the sticky call bar (css: #saltcrm-chat). */
   var chatLoaded = false;
   function loadChat() {
     if (chatLoaded) return;
     chatLoaded = true;
     var s = document.createElement('script');
-    s.src = 'https://widgets.leadconnectorhq.com/loader.js';
-    s.setAttribute('data-resources-url', 'https://widgets.leadconnectorhq.com/chat-widget/loader.js');
-    s.setAttribute('data-widget-id', '6a559752c02522215a5d3d5b');
+    s.src = 'https://crm.saltservicesusa.com/api/widget.js?site=saltservicesusa.com';
+    s.defer = true;
     document.body.appendChild(s);
-    liftChatAboveCallbar();
-  }
-
-  /* On phones the sticky call bar owns the bottom edge; nudge the chat
-     launcher (inside the widget's shadow DOM) up so they don't overlap. */
-  function liftChatAboveCallbar() {
-    var tries = 0;
-    var timer = setInterval(function () {
-      var w = document.querySelector('chat-widget');
-      if (w && w.shadowRoot) {
-        var st = document.createElement('style');
-        st.textContent = '@media (max-width: 640px) { .lc_text-widget, .lc_text-widget--bubble { bottom: 88px !important; } }';
-        w.shadowRoot.appendChild(st);
-        clearInterval(timer);
-      } else if (++tries > 40) {
-        clearInterval(timer);
-      }
-    }, 300);
   }
   window.addEventListener('load', function () { setTimeout(loadChat, 2500); });
   ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (ev) {
