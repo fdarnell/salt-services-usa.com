@@ -23,9 +23,12 @@
     "form_id": "ZG2GvC7Xk9bF3bCMCEB1",
     "embed_js": "https://api.leadconnectorhq.com/js/form_embed.js",
     "form_name": "Website | Inquiry Form",
-    "form_height": 770,
-    "chat_widget_id": "6a559752c02522215a5d3d5b",
-    "chat_widget_note": "Injected site-wide by js/main.js, deferred until page load + 2.5s or first interaction"
+    "form_height": 770
+  },
+  "chat": {
+    "provider": "Salt CRM website assistant (replaced Coraline's SALT AI)",
+    "embed": "https://crm.saltservicesusa.com/api/widget.js?site=saltservicesusa.com",
+    "note": "Loaded site-wide by js/main.js, deferred until page load + 2.5s or first interaction. Set up in Salt CRM: Marketing → Website chat."
   },
   "name_origin": "Matthew 5:13"
 }
