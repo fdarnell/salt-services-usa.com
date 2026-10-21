@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="scroll">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<script src="_bridge.js"></script>
+<title>One team, one pipeline · Salt Services</title>
+<!-- MONOLITH · scroll-story 3D. One object, four chapters, scroll is the timeline:
+     the salt shaker rises, turns, comes apart (salt spilling through the gaps) and goes back together, glowing. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:var(--ink-0); }
+  body { background:radial-gradient(ellipse 80% 70% at 60% 40%, var(--ink-1) 0%, var(--ink-0) 75%) fixed; color:var(--lilac);
+    font-family:'Instrument Sans',system-ui,sans-serif; overflow-x:hidden; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  #gl { position:fixed; inset:0; z-index:1; }
+  #progress { position:fixed; right:0; top:0; width:2px; height:0%; background:var(--amber); z-index:20; box-shadow:0 0 12px rgba(233,161,59,.6); }
+
+  section { position:relative; z-index:5; height:100vh; display:flex; align-items:center; padding:0 8vw; }
+  section:nth-child(even) { justify-content:flex-end; text-align:right; }
+  .block { max-width:460px; }
+  .block .mono { display:block; margin-bottom:14px; }
+  .block .mono.step { color:var(--amber); }
+  .block h2 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(44px,5.4vw,84px); line-height:.95; letter-spacing:-.02em; color:var(--bone); }
+  .block h2 em { font-style:italic; font-weight:500; color:var(--amber); }
+  .block p { margin-top:18px; font-size:17px; line-height:1.55; color:var(--mist); }
+  .spacer { height:12vh; }
+  @media (max-width:700px){
+    section, section:nth-child(even) { align-items:flex-end; justify-content:flex-start; text-align:left; padding:0 22px 9vh; }
+    .block { max-width:none; padding:22px 20px; border-radius:14px; background:linear-gradient(180deg, rgba(14,8,31,.55), rgba(14,8,31,.82));
+      backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(179,170,205,.14); }
+    .block h2 { font-size:44px; }
+  }
+</style>
+</head>
+<body>
+  <div id="progress"></div>
+  <div id="gl"></div>
+
+  <section><div class="block">
+    <span class="mono">V · The signal — 58/76</span>
+    <span class="mono step">01 · One team</span>
+    <h2>One team.</h2>
+    <p>Your website, ads, CRM and AI, built by one team that knows how all four fit together.</p>
+  </div></section>
+  <section><div class="block">
+    <span class="mono step">02 · One system</span>
+    <h2>One system.</h2>
+    <p>The site, the ads and the CRM share one set of records, so every lead lands in the same place.</p>
+  </div></section>
+  <section><div class="block">
+    <span class="mono step">The gaps</span>
+    <h2>Pull it <em>apart</em> and it spills.</h2>
+    <p>Four vendors, four logins, nobody watching the seams. That's where leads go missing.</p>
+  </div></section>
+  <section><div class="block">
+    <span class="mono step">03 · One pipeline</span>
+    <h2>One <em>pipeline.</em></h2>
+    <p>Built by one team to work as one pipeline, so leads stop falling through the gaps.</p>
+  </div></section>
+  <div class="spacer"></div>
+
+<script type="importmap">
+{ "imports": { "three": "../kit/three/three.module.js",
+  "three/addons/": "../kit/three/addons/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const MODEL_URL = '../assets/models/salt-shaker.glb';
+const MODEL_HEIGHT = 3.2;
+const narrow = () => innerWidth / innerHeight < .8;
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+document.getElementById('gl').appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x0e081f, 8, 19);
+const camera = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, .1, 60);
+camera.position.set(0, 0, 8);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), .04).texture;
+scene.environmentIntensity = .6;
+const key = new THREE.PointLight(0xf0b055, 30); key.position.set(5, 4, 5); scene.add(key);
+const fill = new THREE.PointLight(0x7a68c8, 10); fill.position.set(-5, 1, 4); scene.add(fill);
+const rim = new THREE.PointLight(0xe9a13b, 0); rim.position.set(-4, -2, -2); scene.add(rim);
+const under = new THREE.PointLight(0xe9a13b, 0, 6); under.position.set(0, -2.2, 1); scene.add(under);
+
+/* the shaker: its parts come apart in chapter three */
+const group = new THREE.Group(); scene.add(group);
+/* amber halo behind the shaker once it is whole again */
+const halo = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const x = c.getContext('2d'), g = x.createRadialGradient(128,128,0,128,128,128);
+  g.addColorStop(0,'rgba(240,176,85,.55)'); g.addColorStop(.35,'rgba(233,161,59,.18)'); g.addColorStop(1,'rgba(233,161,59,0)');
+  x.fillStyle = g; x.fillRect(0,0,256,256);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(6.5,6.5), new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(c), transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false }));
+  scene.add(m); return m;
+})();
+const parts = [];
+/* where each part goes when it comes apart (world units) */
+const AWAY = {
+  cap:   { p:[ 1.2,  1.45, .3], r:[ .5, .3, -.7] },
+  hole:  { p:[ 1.2,  1.45, .3], r:[ .5, .3, -.7] },
+  glass: { p:[-1.3,  .25, -.5], r:[-.2, .8, .45] },
+  salt:  { p:[ .8,  -.85, .5], r:[ .3, -.4, .3] }
+};
+
+/* salt grains: inside the column when whole, spilling down through the gaps when apart */
+const N = 900, home = new Float32Array(N*3), away = new Float32Array(N*3), pos = new Float32Array(N*3), col = new Float32Array(N*3);
+const grainGeo = new THREE.BufferGeometry();
+grainGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+grainGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+const grainMat = new THREE.PointsMaterial({ size:.04, vertexColors:true, transparent:true, opacity:0, depthWrite:false });
+const grains = new THREE.Points(grainGeo, grainMat);
+group.add(grains);
+const cW = new THREE.Color(0xf5f3ed), cA = new THREE.Color(0xf0b055);
+for (let i = 0; i < N; i++) {
+  const c = Math.random() < .12 ? cA : cW; col.set([c.r, c.g, c.b], i*3);
+  const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * .5;
+  home.set([Math.cos(a)*r, -1.4 + Math.random()*1.3, Math.sin(a)*r], i*3);
+  /* most spill downward and out, a few hang in the air */
+  const fall = Math.random();
+  away.set([Math.cos(a)*(.6 + fall*3.2) + .3, -1.2 - fall*fall*3.4 + (Math.random()-.5)*1.4, Math.sin(a)*(.5 + fall*2) ], i*3);
+}
+
+new GLTFLoader().load(MODEL_URL, g => {
+  const model = g.scene;
+  let box = new THREE.Box3().setFromObject(model);
+  const s = MODEL_HEIGHT / box.getSize(new THREE.Vector3()).y;
+  model.scale.setScalar(s);
+  box = new THREE.Box3().setFromObject(model);
+  model.position.sub(box.getCenter(new THREE.Vector3()));
+  group.add(model);
+  model.updateMatrixWorld(true);
+  model.traverse(o => {
+    if (!o.isMesh) return;
+    const name = (o.name + ' ' + (o.material && o.material.name || '')).toLowerCase();
+    const k = /cap|silver/.test(name) ? 'cap' : /hole/.test(name) ? 'hole' : /glass/.test(name) ? 'glass' : /salt/.test(name) ? 'salt' : null;
+    const ws = o.parent.getWorldScale(new THREE.Vector3()).x;
+    const a = k ? AWAY[k] : { p:[(Math.random()-.5)*3, (Math.random()-.5)*3, (Math.random()-.5)*2], r:[Math.random(), Math.random(), Math.random()] };
+    parts.push({ m:o, home:o.position.clone(), homeR:o.rotation.clone(), off:new THREE.Vector3(...a.p).divideScalar(ws), rot:a.r });
+  });
+});
+
+/* scroll → story keyframes. 0-.22 arrive · .25-.5 turn + drift · .5-.72 come apart · .75-.96 back together + glow */
+function storyAt(p){
+  const seg = (a, b) => Math.max(0, Math.min(1, (p - a) / (b - a)));
+  const ease = t => t<.5 ? 2*t*t : -1+(4-2*t)*t;
+  return {
+    arrive:  ease(seg(0, .22)),
+    turn:    ease(seg(.25, .5)),
+    shatter: ease(seg(.5, .72)) * (1 - ease(seg(.75, .95))),
+    glow:    ease(seg(.78, .96))
+  };
+}
+
+const SIDE = [[0, 1], [.32, -1], [.64, .55], [.96, -1]];
+function sideAt(p){
+  if (p <= SIDE[0][0]) return SIDE[0][1];
+  for (let i = 1; i < SIDE.length; i++) if (p <= SIDE[i][0]) {
+    const [a, va] = SIDE[i-1], [b, vb] = SIDE[i], u = (p - a) / (b - a), e = u*u*(3 - 2*u);
+    return va + (vb - va) * e;
+  }
+  return SIDE[SIDE.length-1][1];
+}
+let scrollP = 0, smoothP = 0;
+const bar = document.getElementById('progress');
+function onScroll(){
+  const max = document.documentElement.scrollHeight - innerHeight;
+  scrollP = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+  bar.style.height = scrollP * 100 + '%';
+}
+addEventListener('scroll', onScroll, { passive:true });
+const mouse = { x:0, y:0 };
+addEventListener('pointermove', e => { if (e.pointerType !== 'touch') { mouse.x = e.clientX/innerWidth - .5; mouse.y = e.clientY/innerHeight - .5; } });
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight); onScroll();
+});
+onScroll(); smoothP = scrollP;
+
+/* inside the story, each line of copy fades out before it reaches the story header (top 88px);
+   on phones the card behind the copy also slides under that edge. Opened alone, nothing changes. */
+if (SCENE.embedded) {
+  const lines = [...document.querySelectorAll('.block > *')], cards = [...document.querySelectorAll('.block')];
+  const clear = () => {
+    for (const el of lines) { const t = el.getBoundingClientRect().top; el.style.opacity = t > 160 ? '' : Math.max(0, (t - 88) / 72).toFixed(3); }
+    const n = narrow();
+    for (const c of cards) { const cut = n ? 92 - c.getBoundingClientRect().top : 0; c.style.clipPath = cut > 0 ? `inset(${cut.toFixed(1)}px 0 0 0 round 14px)` : ''; }
+  };
+  clear();
+  addEventListener('scroll', clear, { passive:true });
+  addEventListener('resize', clear);
+}
+
+let running = true, hidden = false, intro = 0, introOn = false;
+SCENE.onFirstEnter(() => introOn = true);
+addEventListener('scene:leave', () => running = false);
+addEventListener('scene:enter', () => running = true);
+addEventListener('scene:progress', () => running = true);
+document.addEventListener('visibilitychange', () => hidden = document.hidden);
+
+const clock = new THREE.Clock();
+(function loop(){
+  requestAnimationFrame(loop);
+  if (hidden || !running) return;
+  const t = clock.getElapsedTime();
+  smoothP += (scrollP - smoothP) * .07;
+  const st = storyAt(smoothP), n = narrow();
+
+  intro += ((introOn ? 1 : 0) - intro) * .035;
+  group.position.y = (1 - st.arrive) * -2.3 - (1 - intro) * 4.5 + st.shatter * (n ? 1.1 : .45) + (n ? 1.2 : 0);
+  /* sits opposite the copy: right of left-hand text, left of right-hand text */
+  group.position.x = n ? 0 : sideAt(smoothP) * 2.1;
+  group.rotation.y = st.turn * Math.PI * 1.25 + (1 - intro) * 2.2 + t * .12 + mouse.x * .35 + st.shatter * .6;
+  group.rotation.x = Math.sin(t * .4) * .06 + mouse.y * .2;
+  group.rotation.z = Math.sin(t * .3) * .03;
+
+  for (const pt of parts) {
+    pt.m.position.copy(pt.home).addScaledVector(pt.off, st.shatter * (n ? .62 : 1));
+    pt.m.rotation.set(pt.homeR.x + pt.rot[0]*st.shatter*2.4, pt.homeR.y + pt.rot[1]*st.shatter*2.4, pt.homeR.z + pt.rot[2]*st.shatter*2.4);
+  }
+  if (parts.length) {
+    for (let i = 0; i < N*3; i += 3) {
+      const k = st.shatter, w = Math.sin(t*1.3 + i) * .04 * k;
+      pos[i]   = home[i]   + (away[i]   - home[i])   * k + w;
+      pos[i+1] = home[i+1] + (away[i+1] - home[i+1]) * k - (k > .02 ? ((t*.25 + i*.0013) % 1) * .5 * k : 0);
+      pos[i+2] = home[i+2] + (away[i+2] - home[i+2]) * k;
+    }
+    grainGeo.attributes.position.needsUpdate = true;
+    grainMat.opacity = Math.min(1, st.shatter * 1.6) * .9;
+  }
+
+  rim.intensity = st.glow * 110 + st.shatter * 25;
+  under.intensity = st.glow * 40;
+  camera.position.z = (n ? 12 : 8) - st.arrive * 1.2 + st.shatter * 1.8;
+  camera.lookAt(group.position.x * .4, 0, 0);
+  halo.position.set(group.position.x, group.position.y - .2, -1.2);
+  halo.material.opacity = st.glow * .85 + st.shatter * .15;
+  renderer.render(scene, camera);
+})();
+</script>
+<!-- signature cursor, amber (fine pointers only) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .3s; }
+  .cur-on #wlDot,.cur-on #wlRing{ opacity:1; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.9); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{document.body.classList.add('cur-on');mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

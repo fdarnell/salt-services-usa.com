@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Opening time · The Salt Effect</title>
+<!-- No. 79 DAYLIGHT Mood Clock Hero, re-skinned: reads the visitor's clock and sets the sky,
+     sun or moon, lit windows and the line for that hour. Chips time-travel. The sun rises on first enter. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+    --fg:var(--bone); --mut:var(--mist); --acc:var(--amber);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--fg); font-family:'Instrument Sans',system-ui,sans-serif; transition:color 1.6s; }
+  body.light { --fg:var(--ink-text); --mut:var(--plum); --acc:var(--ink-text); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mut); transition:color 1.6s; }
+
+  /* four skies, cross-faded */
+  .sky { position:fixed; inset:0; z-index:0; opacity:0; transition:opacity 1.6s ease; }
+  .sky.on { opacity:1; }
+  .sky.dawn  { background:linear-gradient(180deg, transparent 52%, rgba(233,161,59,.5) 100%), linear-gradient(180deg,#180f2f 0%,#2b1d52 48%,#635a7d 100%); }
+  .sky.day   { background:linear-gradient(180deg,#b3aacd 0%,#eae7f4 55%,#f5f3ed 100%); }
+  .sky.dusk  { background:linear-gradient(180deg, transparent 55%, rgba(233,161,59,.42) 100%), linear-gradient(180deg,#0e081f 0%,#2b1d52 60%,#635a7d 100%); }
+  .sky.night { background:linear-gradient(180deg,#0e081f 0%,#180f2f 70%,#2b1d52 100%); }
+  #stars { position:fixed; inset:0 0 30vh; z-index:1; opacity:0; transition:opacity 1.6s; pointer-events:none; }
+  #stars i { position:absolute; width:2px; height:2px; border-radius:50%; background:var(--bone); }
+
+  #orb { position:fixed; width:150px; height:150px; border-radius:50%; z-index:2; left:calc(50% - 75px); top:92%;
+    transition:top 1.8s cubic-bezier(.4,0,.2,1), left 1.8s cubic-bezier(.4,0,.2,1), background 1.6s, box-shadow 1.6s, transform 1.6s; filter:blur(1px); }
+  #glow { position:fixed; inset:0; z-index:1; transition:opacity 1.6s; pointer-events:none; }
+  .hills { position:fixed; left:0; right:0; bottom:0; z-index:3; transition:background 1.6s; }
+  #hillsBack { height:34vh; background:var(--hb,#180f2f); z-index:3;
+    clip-path:polygon(0 48%, 9% 36%, 20% 44%, 33% 22%, 47% 40%, 61% 26%, 76% 42%, 90% 30%, 100% 38%, 100% 100%, 0 100%); }
+  #hills { height:26vh; background:var(--hill,#0e081f); z-index:4;
+    clip-path:polygon(0 62%, 12% 46%, 26% 58%, 41% 38%, 58% 55%, 74% 34%, 88% 50%, 100% 40%, 100% 100%, 0 100%); }
+  .win { position:absolute; width:4px; height:3px; background:var(--amber-hi); box-shadow:0 0 8px 2px rgba(233,161,59,.55);
+    opacity:var(--lit,0); transition:opacity 1.2s; }
+
+  .content { position:fixed; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:72px 6vw 22vh; gap:18px; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; letter-spacing:-.02em; font-size:clamp(46px,7.4vw,112px); line-height:.95; transition:opacity .5s, transform .5s; max-width:14ch; }
+  h1 em { font-style:normal; color:var(--acc); transition:color 1.6s; }
+  body.light h1 em { text-decoration:underline; text-decoration-color:var(--amber); text-decoration-thickness:.08em; text-underline-offset:.1em; }
+  h1.swap { opacity:0; transform:translateY(10px); }
+  .sub { font-family:'Fraunces',Georgia,serif; font-weight:500; letter-spacing:-.02em; font-size:clamp(22px,2.6vw,34px); line-height:1.1; }
+  #clock { font-variant-numeric:tabular-nums; }
+
+  .chips { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); z-index:10; display:flex; gap:8px; }
+  .chips button { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+    background:rgba(14,8,31,.4); border:1px solid rgba(245,243,237,.22); color:var(--lilac); padding:14px 18px;
+    border-radius:999px; cursor:pointer; transition:background .3s, color .3s, border-color .3s; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .chips button:hover { border-color:var(--amber); }
+  .chips button.on { background:var(--amber); color:var(--ink-0); border-color:var(--amber); }
+  .chips button:focus-visible { outline:2px solid var(--amber-hi); outline-offset:3px; }
+  .hud { position:fixed; z-index:10; bottom:40px; color:var(--mist); }
+  .b1{ left:32px; } .b2{ right:32px; }
+  @media (max-width:980px){ .hud { display:none; } }
+  @media (max-width:640px){
+    .chips { bottom:18px; width:calc(100% - 32px); flex-wrap:wrap; justify-content:center; }
+    .chips button { flex:1 1 calc(33% - 8px); padding:13px 6px; }
+    .content { padding-bottom:30vh; }
+    #orb { width:110px; height:110px; left:calc(50% - 55px); }
+  }
+  @media (pointer:fine){
+    * { cursor:none !important; }
+    #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+    #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+    #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid var(--amber); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+    .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+    @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+  }
+</style>
+</head>
+<body>
+  <div class="sky dawn"></div><div class="sky day"></div><div class="sky dusk"></div><div class="sky night on"></div>
+  <div id="stars" aria-hidden="true"></div>
+  <div id="glow"></div>
+  <div id="orb" aria-hidden="true"></div>
+  <div class="hills" id="hillsBack" aria-hidden="true"></div>
+  <div class="hills" id="hills" aria-hidden="true"></div>
+
+  <div class="content">
+    <span class="mono">VI · The world — 70/76</span>
+    <h1 id="line"></h1>
+    <p class="sub" id="sub">It's always opening time somewhere.</p>
+    <span class="mono"><span id="clockLabel">Your clock</span>: <span id="clock">--:--</span></span>
+  </div>
+
+  <div class="chips" role="group" aria-label="Time of day">
+    <button data-m="dawn" aria-pressed="false">6 AM</button>
+    <button data-m="day" aria-pressed="false">Noon</button>
+    <button data-m="dusk" aria-pressed="false">6 PM</button>
+    <button data-m="night" aria-pressed="false">Midnight</button>
+    <button data-m="auto" class="on" aria-pressed="true">Now</button>
+  </div>
+  <span class="mono hud b1">35.97° N, 83.62° W</span>
+  <span class="mono hud b2" id="moodTag">Mood: your time</span>
+
+<script>
+const MOODS = {
+  dawn:  { hill:'#180f2f', hb:'#2b1d52', orb:{ x:50, y:66, c:'#f0b055', glow:'rgba(240,176,85,.38)' }, lit:1, stars:.15, time:'6:00 AM',
+           line:"Coffee's <em>on.</em>" },
+  day:   { hill:'#2b1d52', hb:'#635a7d', orb:{ x:82, y:12, high:true, c:'#f5f3ed', glow:'rgba(240,176,85,.35)' }, lit:0, stars:0, time:'12:00 PM', light:true,
+           line:'Lunch <em>rush.</em>' },
+  dusk:  { hill:'#0e081f', hb:'#180f2f', orb:{ x:58, y:62, sink:.35, c:'#e9a13b', glow:'rgba(233,161,59,.42)' }, lit:1, stars:.45, time:'6:00 PM',
+           line:'One more <em>customer.</em>' },
+  night: { hill:'#0e081f', hb:'#180f2f', orb:{ x:84, y:12, high:true, c:'#eae7f4', glow:'rgba(179,170,205,.2)' }, lit:.85, stars:1, time:'12:00 AM',
+           line:"Somebody's still doing <em>the books.</em>" }
+};
+const NAMES = { dawn:'6 AM', day:'noon', dusk:'6 PM', night:'midnight' };
+/* dawn 5–9 AM, day 9 AM–5 PM, dusk 5–8 PM, night 8 PM–5 AM (visitor's local clock) */
+function moodByHour(h){ return h < 5 ? 'night' : h < 9 ? 'dawn' : h < 17 ? 'day' : h < 20 ? 'dusk' : 'night'; }
+
+/* salt-white stars and lit windows on the ridges */
+const stars = document.getElementById('stars');
+for (let i = 0; i < 90; i++){
+  const s = document.createElement('i');
+  s.style.left = (Math.random()*100) + '%'; s.style.top = (Math.random()*100) + '%';
+  s.style.opacity = (.25 + Math.random()*.75).toFixed(2);
+  if (Math.random() < .2) s.style.width = s.style.height = '3px';
+  stars.appendChild(s);
+}
+[['hills',[[7,72],[16,64],[31,70],[44,58],[52,66],[67,60],[80,52],[93,66]]],['hillsBack',[[22,58],[38,42],[63,44],[85,48]]]].forEach(([id, spots]) => {
+  const el = document.getElementById(id);
+  spots.forEach(([x,y]) => { const w = document.createElement('span'); w.className = 'win'; w.style.left = x+'%'; w.style.top = y+'%'; el.appendChild(w); });
+});
+
+const orb = document.getElementById('orb'), glow = document.getElementById('glow');
+const lineEl = document.getElementById('line'), body = document.body;
+let mode = 'auto', current = '', started = false;
+
+function apply(name){
+  if (name === current) return;
+  current = name;
+  const m = MOODS[name];
+  document.querySelectorAll('.sky').forEach(s => s.classList.toggle('on', s.classList.contains(name)));
+  body.classList.toggle('light', !!m.light);
+  body.style.setProperty('--hill', m.hill);
+  body.style.setProperty('--hb', m.hb);
+  body.style.setProperty('--lit', m.lit);
+  stars.style.opacity = m.stars;
+  orb.style.background = m.orb.c;
+  orb.style.boxShadow = `0 0 90px 40px ${m.orb.glow}`;
+  orb.style.transform = name === 'night' ? 'scale(.55)' : 'none';
+  document.getElementById('moodTag').textContent = 'Mood: ' + (mode === 'auto' ? 'your time' : NAMES[name]);
+  const was = lineEl.innerHTML;
+  lineEl.innerHTML = m.line; placeOrb();          // measure with the new line in place (same frame, never painted)
+  if (was === m.line) return;
+  lineEl.innerHTML = was;
+  lineEl.classList.add('swap');
+  setTimeout(() => { lineEl.innerHTML = m.line; lineEl.classList.remove('swap'); placeOrb(); }, 450);
+}
+/* Sun and moon never sit behind type: a high orb (noon sun, midnight moon) lives in the
+   top-right third above or beside the text; a low orb (6 AM / 6 PM) sits below the clock line. */
+/* y of the back ridge's skyline at screen x (same points as #hillsBack's clip-path) */
+const RIDGE = [[0,48],[9,36],[20,44],[33,22],[47,40],[61,26],[76,42],[90,30],[100,38]];
+function ridgeAt(x){
+  const el = document.getElementById('hillsBack'), h = el.offsetHeight, top = innerHeight - h, px = x / innerWidth * 100;
+  for (let i = 1; i < RIDGE.length; i++){
+    const [x0,y0] = RIDGE[i-1], [x1,y1] = RIDGE[i];
+    if (px <= x1) return top + h * (y0 + (y1 - y0) * (px - x0) / (x1 - x0)) / 100;
+  }
+  return top + h * RIDGE[RIDGE.length-1][1] / 100;
+}
+let placed = false;
+function placeOrb(){
+  const m = MOODS[current]; if (!m) return;
+  const W = innerWidth, H = innerHeight, d = orb.offsetWidth;
+  const r = d * (current === 'night' ? .55 : 1) / 2, pad = 28, top = 76;
+  const boxes = [...document.querySelectorAll('.content > *')].map(e => e.getBoundingClientRect()).filter(b => b.width)
+    .sort((a, b) => b.bottom - a.bottom);
+  const hits = (cx, cy) => boxes.find(b => cx + r + pad > b.left && cx - r - pad < b.right && cy + r + pad > b.top && cy - r - pad < b.bottom);
+  let cx = W * m.orb.x / 100, cy = H * m.orb.y / 100 + d / 2;
+  if (m.orb.high){
+    cx = Math.min(Math.max(cx, W * 2 / 3 + r), W - r - 16);
+    cy = Math.max(cy, top + r);
+    for (const b of boxes) if (hits(cx, cy) === b) cy = b.top - pad - r;   // lift above the text
+    if (cy < top + r){                                                       // no room above: go beside it
+      cy = top + r;
+      const right = Math.max(...boxes.filter(b => cy + r + pad > b.top && cy - r - pad < b.bottom).map(b => b.right), 0);
+      cx = Math.min(Math.max(cx, right + pad + r), W - r - 8);
+    }
+  } else {
+    const low = boxes[0];
+    if (low) cy = Math.max(cy, low.bottom + pad + r);
+    if (m.orb.sink != null) cy = Math.max(cy, ridgeAt(cx) + r * m.orb.sink);   // dusk: the sun is going down behind the ridge
+  }
+  if (!placed){ placed = true; orb.style.transition = 'none'; orb.style.left = (cx - d / 2) + 'px'; orb.offsetWidth; orb.style.transition = ''; }
+  orb.style.left = (cx - d / 2) + 'px';
+  orb.style.top = (cy - d / 2) + 'px';
+  glow.style.background = `radial-gradient(ellipse at ${cx}px ${cy + H * .08}px, ${m.orb.glow} 0%, transparent 55%)`;
+}
+addEventListener('resize', placeOrb);
+if (document.fonts) document.fonts.ready.then(placeOrb);
+function tickClock(){
+  const d = new Date();
+  const now = d.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+  if (mode === 'auto'){
+    document.getElementById('clockLabel').textContent = 'Your clock';
+    document.getElementById('clock').textContent = now;
+    if (started) apply(moodByHour(d.getHours()));
+  } else {
+    document.getElementById('clockLabel').textContent = 'Somewhere';
+    document.getElementById('clock').textContent = MOODS[mode].time;
+  }
+}
+/* before the visitor arrives: night sky, sun below the ridge, the headline as the title */
+lineEl.innerHTML = MOODS[moodByHour(new Date().getHours())].line;
+tickClock(); setInterval(tickClock, 5000);
+SCENE.onFirstEnter(() => {
+  started = true;
+  const pick = document.querySelector(`.chips button[data-m="${location.hash.slice(1)}"]`);
+  setTimeout(() => pick ? pick.click() : tickClock(), 350);
+});
+
+document.querySelectorAll('.chips button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.chips button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
+  started = true;
+  mode = b.dataset.m;
+  if (mode !== 'auto') apply(mode);
+  tickClock();
+}));
+
+(function(){
+  if (!matchMedia('(pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=-99,my=-99,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · Opening day</title>
+<!-- Scene 9/76 · from template 81 T-MINUS Particle Countdown.
+     Digits built from salt-white specks count 3, 2, 1; each change is a migration; zero bursts
+     into confetti and "Open." comes up with the morning light. Starts on first enter, replays on enter. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  canvas { position:fixed; inset:0; width:100%; height:100%; }
+  /* first light of opening day, rising behind everything once the count is done */
+  .dawn { position:fixed; inset:0; z-index:2; pointer-events:none; opacity:0; transform:translateY(12%); transition:opacity 2.2s ease, transform 2.6s cubic-bezier(.19,1,.22,1);
+    background:
+      radial-gradient(70% 45% at 50% 108%, rgba(240,176,85,.42), rgba(233,161,59,.12) 45%, transparent 75%),
+      linear-gradient(0deg, rgba(43,29,82,.6), transparent 55%); }
+  body.done .dawn { opacity:1; transform:none; }
+  .hud { position:fixed; z-index:10; }
+  .t1{ top:88px; left:32px; } .t2{ top:88px; right:32px; text-align:right; }
+  .b1{ bottom:26px; left:32px; } .b2{ bottom:26px; right:32px; }
+  #phase { color:var(--amber); }
+  #msg { position:fixed; left:50%; top:50%; transform:translate(-50%,-46%); z-index:5; text-align:center; width:100%; padding:0 20px;
+    opacity:0; transition:opacity .8s .4s, transform 1.2s .4s cubic-bezier(.19,1,.22,1); pointer-events:none; }
+  #msg h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(84px,15vw,220px); letter-spacing:-.02em; line-height:.95; color:var(--bone);
+    text-shadow:0 0 30px rgba(14,8,31,.8), 0 0 80px rgba(233,161,59,.35); }
+  #msg h1 em { font-style:normal; color:var(--amber); }
+  #msg .mono { display:block; margin-top:44px; color:var(--lilac); }
+  body.done #msg { opacity:1; transform:translate(-50%,-50%); }
+  #replay { position:fixed; bottom:76px; left:50%; transform:translateX(-50%); z-index:10; font-family:'Space Mono',ui-monospace,monospace;
+    font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); background:none; border:1px solid var(--ink-2);
+    padding:12px 22px; border-radius:999px; cursor:pointer; opacity:0; pointer-events:none; transition:all .4s .8s; white-space:nowrap; }
+  body.done #replay { opacity:1; pointer-events:auto; }
+  #replay:hover, #replay:focus-visible { color:var(--bone); border-color:var(--amber); outline:none; }
+  @media (max-width:640px){
+    .t1{ left:20px } .t2{ right:20px } .b1{ left:20px } .b2{ display:none }
+    #replay { bottom:70px; }
+    #msg h1 { font-size:27vw; }
+  }
+</style>
+</head>
+<body>
+  <div class="dawn" aria-hidden="true"></div>
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <div id="msg" aria-live="polite"><h1>Open<em>.</em></h1><span class="mono">Opening day · 7:00 AM</span></div>
+  <button id="replay" type="button">↻ Count again</button>
+  <span class="mono hud t1">I · The grain — 9/76</span>
+  <span class="mono hud t2" id="phase">Not yet</span>
+  <span class="mono hud b1" id="count">3,600 specks</span>
+  <span class="mono hud b2">35.97° N, 83.62° W</span>
+
+<script>
+const FROM = 3;
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let W, H, parts = [], confetti = [];
+const SALT = '#f5f3ed', AMBER = '#e9a13b';
+const COLORS = ['#e9a13b','#f0b055','#f5f3ed','#eae7f4','#b3aacd'];
+
+function sample(text){
+  const off = document.createElement('canvas'); off.width = W; off.height = H;
+  const o = off.getContext('2d', { willReadFrequently: true });
+  const fs = Math.min(W * (W < 640 ? .95 : .62), H * .62);
+  o.font = `600 ${fs}px Fraunces, Georgia, serif`;
+  o.textAlign = 'center'; o.textBaseline = 'middle';
+  o.fillStyle = '#fff'; o.fillText(text, W/2, H/2 + fs * .04);
+  const px = o.getImageData(0, 0, W, H).data, pts = [];
+  const step = W < 640 ? 3 : 4;
+  for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step)
+    if (px[(y*W + x)*4 + 3] > 128) pts.push([x, y]);
+  /* shuffle so every particle lands somewhere different each digit */
+  for (let i = pts.length - 1; i > 0; i--){ const j = (Math.random() * (i + 1)) | 0; [pts[i], pts[j]] = [pts[j], pts[i]]; }
+  return pts;
+}
+function fit(){
+  W = cv.width = innerWidth; H = cv.height = innerHeight;
+  parts = Array.from({ length: W < 640 ? 2400 : 3600 }, () => ({
+    x: Math.random()*W, y: Math.random()*H, vx:0, vy:0,
+    amber: Math.random() < .14
+  }));
+  if (counting && n >= 0) target = sample(String(n));
+  document.getElementById('count').textContent = parts.length.toLocaleString('en-US') + ' specks';
+}
+
+let n = FROM, target = [], counting = false, run = 0;
+const phase = document.getElementById('phase');
+fit(); addEventListener('resize', fit);
+
+function setDigit(){
+  target = sample(String(n));
+  phase.textContent = `Opening in ${n}`;
+}
+function boom(){
+  counting = false;
+  document.body.classList.add('done');
+  phase.textContent = 'Doors open';
+  for (let i = 0; i < 260; i++){
+    const a = Math.random()*Math.PI*2, f = Math.random()*15 + 4;
+    confetti.push({ x:W/2, y:H/2, vx:Math.cos(a)*f, vy:Math.sin(a)*f - 5,
+      w:Math.random()*8+4, h:Math.random()*5+3, rot:Math.random()*7, vr:(Math.random()-.5)*.4,
+      c:COLORS[i % COLORS.length], life:1, flut:Math.random()*7 });
+  }
+  /* scatter the digit particles */
+  parts.forEach(p => { p.vx += (Math.random()-.5)*26; p.vy += (Math.random()-.5)*26; });
+}
+function start(){
+  const id = ++run;
+  n = FROM; counting = true; confetti = [];
+  document.body.classList.remove('done');
+  setDigit();
+  (function tick(){
+    setTimeout(() => {
+      if (id !== run) return;
+      n--;
+      if (n > 0){ setDigit(); tick(); } else boom();
+    }, 1500);
+  })();
+}
+document.getElementById('replay').addEventListener('click', start);
+
+/* the count waits for the visitor, and runs again when they come back */
+let first = false;
+document.fonts.load('600 100px Fraunces').then(() => {
+  SCENE.onFirstEnter(() => { first = true; start(); });
+});
+addEventListener('scene:enter', () => { if (first && !counting) start(); });
+
+(function loop(){
+  requestAnimationFrame(loop);
+  ctx.fillStyle = 'rgba(14,8,31,.32)';
+  ctx.fillRect(0, 0, W, H);
+  if (counting && target.length){
+    for (let i = 0; i < parts.length; i++){
+      const p = parts[i], t = target[i % target.length];
+      p.vx += (t[0] - p.x) * .06;
+      p.vy += (t[1] - p.y) * .06;
+      p.vx *= .82; p.vy *= .82;
+      p.x += p.vx; p.y += p.vy;
+      ctx.fillStyle = p.amber ? AMBER : SALT;
+      ctx.fillRect(p.x, p.y, 2.2, 2.2);
+    }
+  } else {
+    /* drift: before the count, a still field of salt; after it, the scattered digit */
+    for (const p of parts){
+      p.x += p.vx; p.y += p.vy; p.vx *= .97; p.vy *= .97;
+      ctx.fillStyle = p.amber ? 'rgba(233,161,59,.45)' : 'rgba(245,243,237,.32)';
+      ctx.fillRect(p.x, p.y, 1.6, 1.6);
+    }
+  }
+  /* confetti physics */
+  for (let i = confetti.length - 1; i >= 0; i--){
+    const c = confetti[i];
+    c.flut += .16; c.vy += .2;
+    c.x += c.vx + Math.sin(c.flut); c.y += c.vy;
+    c.rot += c.vr; c.life -= .006;
+    if (c.life <= 0 || c.y > H + 40){ confetti.splice(i, 1); continue; }
+    ctx.save();
+    ctx.translate(c.x, c.y); ctx.rotate(c.rot);
+    ctx.scale(1, Math.abs(Math.sin(c.flut)) * .8 + .2);
+    ctx.globalAlpha = Math.min(1, c.life * 1.6);
+    ctx.fillStyle = c.c;
+    ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+})();
+</script>
+<!-- signature cursor, brand colours, off on touch -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .2s; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(234,231,244,.75); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .2s; }
+  .cur-on #wlDot, .cur-on #wlRing { opacity:1; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  const R=document.documentElement;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';R.classList.add('cur-on');});
+  document.addEventListener('mouseleave',()=>R.classList.remove('cur-on'));
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

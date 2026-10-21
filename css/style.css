@@ -322,6 +322,32 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 .work-card .card-link { font-weight: 600; }
 .work-card.work-cta > a { display: flex; flex-direction: column; justify-content: center; padding: 1.75rem; }
 .work-more { margin-top: 2rem; }
+/* featured showcase (Salt's own work, not a client) — dark card above the client grid */
+.work-feature {
+  padding: 0; overflow: hidden; margin: 0 0 3rem;
+  background: var(--brand); border-color: var(--brand-soft);
+  box-shadow: inset 0 1px 0 var(--highlight-ondark), var(--shadow-2);
+}
+.work-feature > a {
+  display: grid; grid-template-columns: 1.4fr 1fr; align-items: stretch;
+  color: inherit; text-decoration: none;
+}
+.work-feature img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.work-feature .work-body { padding: 2rem 2.25rem; display: flex; flex-direction: column; justify-content: center; }
+.work-feature h2 { color: #fff; margin: 0.6rem 0 0.4rem; }
+.work-feature p { color: var(--on-brand); margin: 0 0 1rem; }
+.work-feature .card-link { color: var(--accent); font-weight: 700; }
+.work-feature > a:hover .card-link { text-decoration: underline; }
+.work-tag {
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+}
+.work-subhead { margin: 0 0 1.25rem; }
+@media (max-width: 760px) {
+  .work-feature > a { grid-template-columns: 1fr; }
+  .work-feature img { height: auto; }
+  .work-feature .work-body { padding: 1.4rem 1.4rem 1.6rem; }
+}
 
 /* ---------- Pricing cards (Coraline page) ---------- */
 .price-card { display: flex; flex-direction: column; position: relative; }

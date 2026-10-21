@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · Every season</title>
+<!-- SEASONS · Cinematic Weather Layer. Story position 44/76, Chapter IV · The town.
+     Weather falls over the valley town in three parallax depths, and the wind follows the
+     cursor. Four seasons on the chips; they turn on their own until the visitor picks one. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{color:var(--lilac);font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+    background:linear-gradient(180deg, var(--ink-1) 0%, var(--ink-0) 100%)}
+  .mono{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mist)}
+
+  /* the valley town, tinted per season */
+  .bg{position:fixed;inset:0;overflow:hidden}
+  .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 60%;display:block;
+    transform:scale(1.06);animation:drift 40s ease-in-out infinite alternate;
+    transition:filter 1.6s ease}
+  @keyframes drift{to{transform:scale(1.12) translate(-1.2%,-.8%)}}
+  body[data-mode="winter"] .bg img{filter:saturate(.55) brightness(.72) contrast(1.05)}
+  body[data-mode="spring"] .bg img{filter:saturate(.9) brightness(.86)}
+  body[data-mode="summer"] .bg img{filter:saturate(1.1) brightness(.9) sepia(.12)}
+  body[data-mode="fall"]   .bg img{filter:saturate(1.15) brightness(.82) sepia(.28)}
+  .bg::after{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 46%, rgba(14,8,31,.62) 0%, rgba(14,8,31,.2) 70%),
+      linear-gradient(180deg, rgba(14,8,31,.55) 0%, rgba(14,8,31,0) 30%, rgba(14,8,31,0) 70%, rgba(14,8,31,.75) 100%)}
+  .tint{position:fixed;inset:0;pointer-events:none;mix-blend-mode:soft-light;transition:background 1.6s ease}
+  body[data-mode="winter"] .tint{background:rgba(179,170,205,.28)}
+  body[data-mode="spring"] .tint{background:rgba(234,231,244,.12)}
+  body[data-mode="summer"] .tint{background:rgba(240,176,85,.18)}
+  body[data-mode="fall"]   .tint{background:rgba(233,161,59,.3)}
+
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .center{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;pointer-events:none;padding:80px 16px 120px}
+  h1{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.02em;line-height:.95;
+    font-size:clamp(46px,7.4vw,110px);color:var(--bone);text-shadow:0 2px 30px rgba(14,8,31,.7)}
+  h1 em{font-style:italic;color:var(--amber-hi)}
+  .say{position:relative;margin-top:26px;height:1.4em;width:min(92vw,820px);
+    font-family:'Fraunces',Georgia,serif;font-size:clamp(22px,2.4vw,34px);font-weight:500;letter-spacing:-.01em;color:var(--lilac)}
+  .say span{position:absolute;inset:0;opacity:0;transform:translateY(10px);transition:opacity .7s ease, transform .7s ease;
+    text-shadow:0 1px 20px rgba(14,8,31,.9);white-space:nowrap}
+  .say span.on{opacity:1;transform:none}
+  .center .hint{margin-top:22px;padding:6px 14px;border-radius:999px;background:rgba(14,8,31,.55);text-shadow:0 0 8px rgba(14,8,31,.9)}
+  .chips{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:8px}
+  .chips button{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    background:rgba(24,15,47,.55);border:1px solid rgba(179,170,205,.3);color:var(--lilac);padding:12px 20px;
+    border-radius:999px;cursor:pointer;transition:background .3s,color .3s,border-color .3s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .chips button:hover{border-color:var(--amber)}
+  .chips button.on{background:var(--amber);color:var(--ink-0);border-color:var(--amber)}
+  .chips button:focus-visible{outline:2px solid var(--amber-hi);outline-offset:3px}
+  .hud{position:fixed;z-index:10;text-shadow:0 0 10px rgba(14,8,31,.9)}
+  .t1{top:84px;left:32px} .t2{top:84px;right:32px;text-align:right}
+  .touch{display:none}
+  @media (hover:none){ .fine{display:none} .touch{display:inline} }
+  @media (max-width:640px){
+    .t1{left:16px;top:80px} .t2{right:16px;top:80px}
+    .chips{gap:6px;bottom:28px}
+    .chips button{padding:11px 12px;font-size:11px}
+    .say{height:2.6em;font-size:22px}
+    .say span{white-space:normal}
+  }
+</style>
+</head>
+<body data-mode="winter">
+  <div class="bg"><picture>
+    <source media="(max-width:700px)" srcset="../assets/img/town-ridge-tall.jpg">
+    <img src="../assets/img/town-ridge.jpg" onerror="this.style.visibility='hidden'" alt="A valley town's lights under layered mountain ridges at blue hour">
+  </picture></div>
+  <div class="tint"></div>
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <div class="center">
+    <h1>Through every <em>season.</em></h1>
+    <div class="say" aria-live="polite">
+      <span data-s="winter" class="on">Open through the ice storm.</span>
+      <span data-s="spring">The first warm Saturday.</span>
+      <span data-s="summer">Tourist July in the Smokies.</span>
+      <span data-s="fall">Leaf season. All hands on deck.</span>
+    </div>
+    <span class="mono hint"><span class="fine">Move the cursor · the wind follows your hand</span><span class="touch">Drag across · the wind follows your hand</span></span>
+  </div>
+  <div class="chips" role="group" aria-label="Season">
+    <button data-m="winter" class="on" aria-pressed="true">Winter</button>
+    <button data-m="spring" aria-pressed="false">Spring</button>
+    <button data-m="summer" aria-pressed="false">Summer</button>
+    <button data-m="fall" aria-pressed="false">Fall</button>
+  </div>
+  <span class="mono hud t1">IV · The town — 44/76</span>
+  <span class="mono hud t2" id="month">Jan · 35.97° N</span>
+
+<script>
+(function(){
+  const DENSITY = innerWidth < 640 ? 170 : 260;
+  /* bone/lilac snow, bone dogwood petals, amber summer motes, amber/plum fall leaves */
+  const MODES = {
+    winter: { colors: ['rgba(245,243,237,', 'rgba(179,170,205,'], fall: .6,  sway: .6,  shape: 'dot',   month: 'Jan' },
+    spring: { colors: ['rgba(245,243,237,', 'rgba(234,231,244,'], fall: .45, sway: 1.5, shape: 'petal', month: 'Apr' },
+    summer: { colors: ['rgba(240,176,85,',  'rgba(233,161,59,'], fall: -.18, sway: .9, shape: 'mote',  month: 'Jul' },
+    fall:   { colors: ['rgba(233,161,59,',  'rgba(240,176,85,', 'rgba(99,90,125,'], fall: .55, sway: 1.3, shape: 'leaf', month: 'Oct' }
+  };
+  const ORDER = ['winter', 'spring', 'summer', 'fall'];
+  let key = 'winter', mode = MODES[key];
+
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  let W, H, DPR;
+  const fit = () => {
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  };
+  fit(); addEventListener('resize', fit);
+
+  /* three parallax depths: far (small, slow), mid, near (big, fast) */
+  const flakes = Array.from({ length: DENSITY }, (_, i) => ({
+    x: Math.random() * W, y: Math.random() * H,
+    depth: i % 3,
+    ph: Math.random() * Math.PI * 2,
+    spin: Math.random() * Math.PI * 2,
+    ci: Math.random()
+  }));
+
+  let wind = 0, targetWind = 0, lastMove = -1e9, pmx = null;
+  addEventListener('pointermove', e => {
+    if (pmx !== null) targetWind = Math.max(-3, Math.min(3, (e.clientX - pmx) * .12));
+    pmx = e.clientX; lastMove = performance.now();
+  });
+  addEventListener('pointerdown', e => { pmx = e.clientX; });
+
+  const btns = [...document.querySelectorAll('.chips button')];
+  const lines = [...document.querySelectorAll('.say span')];
+  const monthEl = document.getElementById('month');
+  function setMode(k){
+    key = k; mode = MODES[k];
+    document.body.dataset.mode = k;
+    btns.forEach(b => { const on = b.dataset.m === k; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    lines.forEach(l => l.classList.toggle('on', l.dataset.s === k));
+    monthEl.textContent = mode.month + ' · 35.97° N';
+  }
+  /* the seasons turn on their own until the visitor picks one */
+  let auto = null, picked = false;
+  function startAuto(){
+    if (picked) return;
+    clearInterval(auto);
+    auto = setInterval(() => setMode(ORDER[(ORDER.indexOf(key) + 1) % 4]), 5200);
+  }
+  SCENE.onFirstEnter(startAuto);
+  addEventListener('scene:enter', startAuto);
+  addEventListener('scene:leave', () => clearInterval(auto));
+  btns.forEach(b => b.addEventListener('click', () => { picked = true; clearInterval(auto); setMode(b.dataset.m); }));
+
+  function leaf(size){
+    ctx.beginPath();
+    ctx.moveTo(-size * 2, 0);
+    ctx.quadraticCurveTo(0, -size * 1.3, size * 2, 0);
+    ctx.quadraticCurveTo(0, size * 1.3, -size * 2, 0);
+    ctx.fill();
+  }
+
+  (function loop(){
+    requestAnimationFrame(loop);
+    const t = performance.now() / 1000;
+    if (performance.now() - lastMove > 2600) targetWind = Math.sin(t * .4) * 1.2;  /* idle breeze */
+    wind += (targetWind - wind) * .03;
+    targetWind *= .985;
+    ctx.clearRect(0, 0, W, H);
+
+    for (const f of flakes){
+      const dscale = [.45, .8, 1.5][f.depth];
+      f.ph += .015 + f.depth * .008;
+      f.x += wind * dscale + Math.sin(f.ph) * mode.sway * dscale;
+      f.y += mode.fall * (0.5 + dscale);
+      f.spin += .02 + wind * .01;
+      if (f.y > H + 14){ f.y = -14; f.x = Math.random() * W; }
+      if (f.y < -14){ f.y = H + 14; f.x = Math.random() * W; }
+      if (f.x > W + 14) f.x = -14;
+      if (f.x < -14) f.x = W + 14;
+
+      const alpha = [.35, .6, .95][f.depth];
+      const size = [1.1, 1.9, 3.4][f.depth];
+      const c = mode.colors[Math.floor(f.ci * mode.colors.length)];
+      if (mode.shape === 'mote'){
+        const tw = .55 + .45 * Math.sin(f.ph * 2.3);
+        ctx.fillStyle = c + (alpha * tw * .9) + ')';
+        ctx.beginPath(); ctx.arc(f.x, f.y, size * .8, 0, 7); ctx.fill();
+        if (f.depth === 2){ ctx.fillStyle = c + (.08 * tw) + ')'; ctx.beginPath(); ctx.arc(f.x, f.y, size * 3.2, 0, 7); ctx.fill(); }
+      } else if (mode.shape === 'petal' || mode.shape === 'leaf'){
+        ctx.save();
+        ctx.translate(f.x, f.y); ctx.rotate(f.spin);
+        ctx.scale(1, .35 + .65 * Math.abs(Math.cos(f.spin * 1.7)));  /* tumbling */
+        ctx.fillStyle = c + alpha + ')';
+        if (mode.shape === 'leaf') leaf(size * 1.25);
+        else { ctx.beginPath(); ctx.ellipse(0, 0, size * 1.7, size, 0, 0, 7); ctx.fill(); }
+        ctx.restore();
+      } else {
+        ctx.fillStyle = c + alpha + ')';
+        ctx.beginPath(); ctx.arc(f.x, f.y, size, 0, 7); ctx.fill();
+      }
+    }
+  })();
+})();
+</script>
+
+<!-- cursor (fine pointers only) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  *{cursor:none !important}
+  #wlDot,#wlRing{position:fixed;top:0;left:0;pointer-events:none;z-index:9999}
+  #wlDot{width:6px;height:6px;border-radius:50%;background:var(--bone);transform:translate(-50%,-50%)}
+  #wlRing{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(245,243,237,.85);transform:translate(-50%,-50%);transition:width .25s ease,height .25s ease}
+  .wlRipple{position:fixed;pointer-events:none;z-index:9998;width:8px;height:8px;border-radius:50%;border:2px solid var(--bone);transform:translate(-50%,-50%);animation:wlrip .55s ease-out forwards}
+  @keyframes wlrip{to{width:70px;height:70px;opacity:0}}
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot = document.createElement('div'); dot.id = 'wlDot';
+  const ring = document.createElement('div'); ring.id = 'wlRing';
+  document.body.append(dot, ring);
+  let mx = -100, my = -100, rx = mx, ry = my;
+  addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx + 'px'; dot.style.top = my + 'px'; });
+  (function f(){ rx += (mx - rx) * .16; ry += (my - ry) * .16; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(f); })();
+  addEventListener('mousedown', e => { const r = document.createElement('div'); r.className = 'wlRipple'; r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px'; document.body.appendChild(r); setTimeout(() => r.remove(), 600); });
+  document.body.addEventListener('mouseover', e => {
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · The pull</title>
+<!-- FIELD · Magnetic Filings. Story position 40/76, Chapter IV · The town.
+     A grid of filings turns toward the cursor like iron under paper over a magnet.
+     Click (or tap) flips it from pull to push. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{background:radial-gradient(ellipse 90% 70% at 30% 80%, var(--ink-1) 0%, var(--ink-0) 100%);
+    color:var(--lilac);font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .mono{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mist)}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .panel{position:fixed;left:5vw;bottom:9vh;z-index:5;pointer-events:none;max-width:min(640px,90vw)}
+  .panel::before{content:"";position:absolute;inset:-40px -60px -40px -60px;z-index:-1;
+    background:radial-gradient(closest-side, rgba(14,8,31,.86), rgba(14,8,31,0));}
+  .panel h1{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.02em;line-height:.95;
+    font-size:clamp(42px,6vw,88px);color:var(--bone)}
+  .panel h1 em{font-style:italic;color:var(--amber-hi)}
+  .panel p{margin-top:20px;font-size:clamp(17px,1.4vw,20px);line-height:1.55;color:var(--lilac)}
+  .panel .mono{display:block;margin-top:16px}
+  .hud{position:fixed;z-index:10}
+  .t1{top:84px;left:32px} .t2{top:84px;right:32px;text-align:right} .b2{bottom:26px;right:32px}
+  #pol{color:var(--amber)}
+  .touch{display:none}
+  @media (hover:none){ .fine{display:none} .touch{display:inline} }
+  @media (max-width:640px){
+    .t1{left:16px;top:80px} .t2{right:16px;top:80px} .b2{right:16px;bottom:18px}
+    .panel{left:16px;right:16px;bottom:64px}
+    .panel::before{inset:-30px -16px -30px -16px}
+  }
+</style>
+</head>
+<body>
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <div class="panel">
+    <h1>Good businesses<br>have a <em>pull.</em></h1>
+    <p><span class="fine">Move your cursor.</span><span class="touch">Drag your finger.</span> Everything leans toward it.</p>
+    <span class="mono"><span class="fine">Click</span><span class="touch">Tap</span> to flip it · now: <span id="pol">pulling in</span></span>
+  </div>
+  <span class="mono hud t1">IV · The town — 40/76</span>
+  <span class="mono hud t2" id="count">Filings: 0</span>
+  <span class="mono hud b2">35.97° N, 83.62° W</span>
+
+<script>
+(function(){
+  const GAP = innerWidth < 640 ? 22 : 26;
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  let W, H, DPR, filings = [];
+
+  function build(){
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    filings = [];
+    const ox = (W % GAP) / 2 + GAP / 2, oy = (H % GAP) / 2 + GAP / 2;
+    for (let y = oy; y < H; y += GAP)
+      for (let x = ox; x < W; x += GAP)
+        filings.push({ x, y, a: Math.random() * Math.PI, mag: 0 });
+    document.getElementById('count').textContent = 'Filings: ' + filings.length.toLocaleString();
+  }
+  build(); addEventListener('resize', build);
+
+  let mx = -9999, my = -9999, lastMove = -1e9, polarity = 1, lx = W / 2, ly = H / 2;
+  const pol = document.getElementById('pol');
+  const setP = e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); };
+  addEventListener('pointermove', setP);
+  addEventListener('pointerdown', setP);
+  addEventListener('click', () => {
+    polarity *= -1;
+    pol.textContent = polarity > 0 ? 'pulling in' : 'pushing away';
+  });
+
+  (function loop(){
+    requestAnimationFrame(loop);
+    if (performance.now() - lastMove > 3000){
+      const t = performance.now() / 1700;
+      mx = W * (.5 + Math.cos(t) * .34);
+      my = H * (.42 + Math.sin(t * 1.5) * .27);
+    }
+    lx += (mx - lx) * .12; ly += (my - ly) * .12;
+    ctx.clearRect(0, 0, W, H);
+
+    /* the magnet is a lamp: a soft pool of amber under it */
+    const R = Math.min(420, Math.max(W, H) * .4);
+    const g = ctx.createRadialGradient(lx, ly, 0, lx, ly, R);
+    g.addColorStop(0, polarity > 0 ? 'rgba(233,161,59,.16)' : 'rgba(179,170,205,.10)');
+    g.addColorStop(1, 'rgba(233,161,59,0)');
+    ctx.fillStyle = g; ctx.fillRect(lx - R, ly - R, R * 2, R * 2);
+
+    ctx.lineCap = 'round';
+    for (const f of filings){
+      const dx = mx - f.x, dy = my - f.y;
+      const d = Math.hypot(dx, dy) || 1;
+      const ta = Math.atan2(dy * polarity, dx * polarity);
+      f.mag += ((d < R ? 1 - d / R : 0) - f.mag) * .08;
+      let diff = ta - f.a;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      f.a += diff * (.04 + f.mag * .14);
+
+      const len = 5 + f.mag * 9;
+      const cx = Math.cos(f.a) * len, cy = Math.sin(f.a) * len;
+      if (f.mag > .55){
+        /* close in: amber, like iron catching lamplight */
+        ctx.strokeStyle = `rgba(${f.mag > .8 ? '240,176,85' : '233,161,59'},${.3 + f.mag * .7})`;
+      } else {
+        /* far off: mist (#b3aacd) fading into the indigo */
+        ctx.strokeStyle = `rgba(179,170,205,${.18 + f.mag * .6})`;
+      }
+      ctx.lineWidth = 1 + f.mag * 1.3;
+      ctx.beginPath();
+      ctx.moveTo(f.x - cx, f.y - cy);
+      ctx.lineTo(f.x + cx, f.y + cy);
+      ctx.stroke();
+    }
+  })();
+})();
+</script>
+
+<!-- cursor: the magnet itself (fine pointers only) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  *{cursor:none !important}
+  #wlDot,#wlRing{position:fixed;top:0;left:0;pointer-events:none;z-index:9999}
+  #wlDot{width:8px;height:8px;border-radius:50%;background:var(--amber-hi);transform:translate(-50%,-50%);box-shadow:0 0 18px rgba(233,161,59,.8)}
+  #wlRing{width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(233,161,59,.9);transform:translate(-50%,-50%)}
+  .wlRipple{position:fixed;pointer-events:none;z-index:9998;width:8px;height:8px;border-radius:50%;border:2px solid var(--amber);transform:translate(-50%,-50%);animation:wlrip .55s ease-out forwards}
+  @keyframes wlrip{to{width:70px;height:70px;opacity:0}}
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot = document.createElement('div'); dot.id = 'wlDot';
+  const ring = document.createElement('div'); ring.id = 'wlRing';
+  document.body.append(dot, ring);
+  let mx = -100, my = -100, rx = mx, ry = my;
+  addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx + 'px'; dot.style.top = my + 'px'; });
+  (function f(){ rx += (mx - rx) * .16; ry += (my - ry) * .16; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(f); })();
+  addEventListener('mousedown', e => { const r = document.createElement('div'); r.className = 'wlRipple'; r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px'; document.body.appendChild(r); setTimeout(() => r.remove(), 600); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>Now people ask AI</title>
+<!-- 49/76 · SOLA AI orb: a breathing light that senses the cursor. Three satellites on its ring
+     stand for the three businesses an assistant names; the amber one is yours. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{--ink-0:#0e081f;--ink-1:#180f2f;--ink-2:#2b1d52;--amber:#e9a13b;--amber-hi:#f0b055;--bone:#f5f3ed;--bone-2:#ece9e0;--lilac:#eae7f4;--mist:#b3aacd;--plum:#635a7d;--ink-text:#201439}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  #orb { position:fixed; inset:0; }
+  .content { position:fixed; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    padding:0 16px 10vh; text-align:center; pointer-events:none; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(38px,5.6vw,80px); letter-spacing:-.02em; line-height:.98; color:var(--bone); }
+  h1 em { font-style:italic; font-weight:500; color:var(--amber-hi); }
+  .line { margin-top:18px; max-width:40ch; font-size:clamp(17px,1.4vw,19px); line-height:1.55; color:var(--lilac); }
+  .line b { font-weight:500; color:var(--amber-hi); }
+  #status { margin-top:22px; min-height:20px; color:var(--mist); }
+  #status .ok { color:var(--amber-hi); }
+  #status .caret { display:inline-block; width:.6em; height:1.05em; vertical-align:-.18em; margin-left:2px; background:var(--amber); animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .t1 { position:fixed; top:88px; left:38px; z-index:10; }
+  .foot { position:fixed; bottom:26px; left:38px; right:38px; z-index:10; display:flex; justify-content:space-between; }
+  @media (max-width:760px){
+    .t1 { left:16px; } .foot { left:16px; right:16px; }
+    .foot .r { display:none; }
+    .content { padding-bottom:12vh; }
+    #status { font-size:11px; letter-spacing:.04em; }
+  }
+  @media (hover:none){ .hint-fine{ display:none; } }
+  @media (hover:hover){ .hint-touch{ display:none; } }
+</style>
+</head>
+<body>
+  <canvas id="orb"></canvas>
+  <span class="mono t1">V · The signal — 49/76</span>
+
+  <div class="content">
+    <h1>Now people ask <em>AI</em><br>who to call.</h1>
+    <p class="line">When an assistant names three businesses, be one of them. That's <b>AEO</b>, and it's part of what we do.</p>
+    <div id="status" class="mono" aria-live="polite"></div>
+  </div>
+  <div class="foot"><span class="mono"><span class="hint-fine">Bring the cursor to the light</span><span class="hint-touch">Touch the light</span></span><span class="mono r">AEO · answer engine optimization</span></div>
+
+<script>
+/* ---------- the orb: layered radial light, breathing + cursor-aware ---------- */
+const cv = document.getElementById('orb'), ctx = cv.getContext('2d');
+let W, H;
+const fit = () => {
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+};
+fit(); addEventListener('resize', fit);
+
+let mx = .5, my = .9, ex = 0, t = 0, lastInput = -1e9;
+const take = (x, y) => { mx = x / innerWidth; my = y / innerHeight; lastInput = performance.now(); };
+addEventListener('pointermove', e => take(e.clientX, e.clientY));
+addEventListener('touchmove', e => take(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+addEventListener('touchstart', e => take(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+
+/* palette: amber light, lilac and soft indigo veils, bone-white heart */
+const AMBER = '233,161,59', AMBER_HI = '240,176,85', LILAC = '179,170,205', SOFT = '99,90,125', BONE = '245,243,237';
+
+function draw(){
+  t += .008;
+  ctx.fillStyle = '#0e081f'; ctx.fillRect(0, 0, W, H);
+  const cx = W * .5, cy = H * (W < 760 ? .36 : .4);
+  const R = Math.min(W, H) * (W < 760 ? .24 : .2);
+  const d = Math.hypot(mx*W - cx, my*H - cy) / (Math.min(W,H) * .5);
+  const target = Math.max(0, 1 - d);
+  ex += (target - ex) * .06;
+  const breath = 1 + Math.sin(t * 2.1) * .05 + ex * .22;
+
+  ctx.globalCompositeOperation = 'lighter';
+  let g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 3.4 * breath);
+  g.addColorStop(0, `rgba(${AMBER},${.13 + ex*.1})`); g.addColorStop(.5, `rgba(${SOFT},.06)`); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < 3; i++){
+    const ox = Math.cos(t * (1.1 + i*.35)) * R * .16, oy = Math.sin(t * (1.4 + i*.3)) * R * .14;
+    const rr = R * breath * (1 - i * .22);
+    g = ctx.createRadialGradient(cx+ox, cy+oy, 0, cx+ox, cy+oy, rr);
+    const cols = [[AMBER,.46], [LILAC,.3], [AMBER_HI,.34]][i];
+    g.addColorStop(0, `rgba(${cols[0]},${cols[1] + ex*.25})`);
+    g.addColorStop(.72, `rgba(${cols[0]},.07)`);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx+ox, cy+oy, rr, 0, 7); ctx.fill();
+  }
+  g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * .5 * breath);
+  g.addColorStop(0, `rgba(${BONE},${.72 + ex*.28})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R*.5*breath, 0, 7); ctx.fill();
+
+  /* orbit ring with three named businesses; the amber one is you */
+  ctx.globalCompositeOperation = 'source-over';
+  const rot = t * .5, ax = R * 1.7, ay = R * .5;
+  ctx.strokeStyle = `rgba(${LILAC},${.16 + ex*.3})`;
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.ellipse(cx, cy, ax, ay, rot, 0, 7); ctx.stroke();
+  const cr = Math.cos(rot), sr = Math.sin(rot);
+  for (let k = 0; k < 3; k++){
+    const sa = t * 1.6 + k * 2.094;
+    const px = cx + Math.cos(sa) * ax * cr - Math.sin(sa) * ay * sr;
+    const py = cy + Math.cos(sa) * ax * sr + Math.sin(sa) * ay * cr;
+    if (k === 0){
+      const s = 3.2 + ex * 2.4;
+      g = ctx.createRadialGradient(px, py, 0, px, py, s * 6);
+      g.addColorStop(0, `rgba(${AMBER_HI},.55)`); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, s * 6, 0, 7); ctx.fill();
+      ctx.fillStyle = '#f0b055'; ctx.beginPath(); ctx.arc(px, py, s, 0, 7); ctx.fill();
+    } else {
+      ctx.fillStyle = `rgba(${BONE},.8)`; ctx.beginPath(); ctx.arc(px, py, 2.4, 0, 7); ctx.fill();
+    }
+  }
+  /* salt-white specks drifting like stars */
+  for (let i = 0; i < 46; i++){
+    const a = i * 2.39996 + t * .05 * (i % 3 + 1), rr = R * (1.4 + (i * 37 % 100) / 40);
+    const x = cx + Math.cos(a) * rr * 1.3, y = cy + Math.sin(a) * rr * .8;
+    ctx.fillStyle = `rgba(${BONE},${.12 + (Math.sin(t * 3 + i) + 1) * .12})`;
+    ctx.fillRect(x, y, 1.4, 1.4);
+  }
+  /* with no visitor input, the light leans toward an imaginary hand now and then */
+  if (performance.now() - lastInput > 4000){ mx = .5 + Math.sin(t * .7) * .2; my = .55 + Math.cos(t * .5) * .25; }
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ---------- the assistant thinking out loud: typed, then cycling ---------- */
+const LINES = [
+  '▸ asked: “who cleans cabins near Sevierville?”',
+  '▸ reading websites, reviews and hours…',
+  '▸ checking who answers the question best…',
+  '▸ <span class="ok">naming three businesses</span>',
+  '▸ is yours one of them?'
+];
+const status = document.getElementById('status');
+let li = 0, timer = null;
+function typeLine(){
+  const html = LINES[li], plain = html.replace(/<[^>]+>/g, '');
+  let n = 0;
+  clearTimeout(timer);
+  (function step(){
+    n++;
+    status.innerHTML = (n >= plain.length ? html : plain.slice(0, n).replace(/</g, '&lt;')) + '<span class="caret"></span>';
+    if (n < plain.length) timer = setTimeout(step, 28);
+    else { li = (li + 1) % LINES.length; timer = setTimeout(typeLine, 1900); }
+  })();
+}
+SCENE.onFirstEnter(() => typeLine());
+addEventListener('scene:enter', () => { li = 0; typeLine(); });
+</script>
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  dot.style.opacity=ring.style.opacity='0';   /* hidden until the first pointer move, so nothing parks over the copy */
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{if(ring.style.opacity){rx=e.clientX;ry=e.clientY;dot.style.opacity=ring.style.opacity='';}mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

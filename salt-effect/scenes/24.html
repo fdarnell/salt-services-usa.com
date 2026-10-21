@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<script src="_bridge.js"></script>
+<title>Influence travels · Salt Services</title>
+<!-- DUST · point-cloud image. The valley town becomes thousands of 3D points, then lets go into
+     salt-white and amber dust that drifts off past the edge. The cursor sends waves through it. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:radial-gradient(ellipse at 50% 40%, var(--ink-1) 0%, var(--ink-0) 72%); color:var(--bone); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  #gl { position:fixed; inset:0; }
+  .hud { position:fixed; z-index:10; }
+  .b1 { bottom:30px; left:36px; } .b2 { bottom:30px; right:36px; text-align:right; }
+  .t2 { top:92px; right:36px; text-align:right; }
+  .cap { position:fixed; left:50%; bottom:13vh; transform:translateX(-50%); z-index:10; text-align:center; width:min(92vw,980px); pointer-events:none; }
+  .cap h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(34px,4.6vw,68px); line-height:.98; letter-spacing:-.02em;
+    text-shadow:0 2px 28px rgba(14,8,31,.95), 0 0 3px rgba(14,8,31,.6); }
+  .cap h1 em { font-style:italic; font-weight:500; color:var(--amber-hi); }
+  .cap h1 .w { display:inline-block; opacity:0; transform:translateY(.35em); filter:blur(6px); transition:opacity 1s ease, transform 1s cubic-bezier(.2,.7,.2,1), filter 1s; }
+  .go .cap h1 .w { opacity:1; transform:none; filter:none; }
+  @media (max-width:700px){
+    .cap { bottom:16vh; }
+    .cap h1 { font-size:38px; }
+    .b1 { left:20px; bottom:24px; } .b2 { left:20px; right:auto; text-align:left; bottom:46px; }
+    .t2 { display:none; }
+  }
+</style>
+</head>
+<body>
+  <div id="gl"></div>
+  <div class="cap"><h1 id="h">Influence travels further than <em>you'll ever see.</em></h1></div>
+  <span class="mono hud t2">Drag to turn it</span>
+  <span class="mono hud b1">VI · The world — 60/76</span>
+  <span class="mono hud b2" id="count">One town, in grains of salt</span>
+
+<script type="importmap">
+{ "imports": { "three": "../kit/three/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const narrow = innerWidth / innerHeight < .8;
+const IMAGE_URL = narrow ? '../assets/img/town-ridge-tall.jpg' : '../assets/img/town-ridge.jpg';
+const DEPTH = 2.2;          /* how far bright pixels rise */
+const GAP = .066;           /* spacing between samples */
+
+/* split the headline into words for the rise-in */
+const h = document.getElementById('h');
+h.querySelectorAll('em').forEach(em => { em.innerHTML = em.textContent.split(' ').map(w => `<span class="w">${w}</span>`).join(' '); });
+h.childNodes.forEach(n => { if (n.nodeType === 3) { const s = document.createElement('span'); s.innerHTML = n.textContent.trim().split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' ') + ' '; n.replaceWith(s); } });
+h.querySelectorAll('.w').forEach((w, i) => w.style.transitionDelay = (.5 + i * .07) + 's');
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.getElementById('gl').appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, .1, 100);
+camera.position.z = 9;
+
+const dotTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 32; const x = c.getContext('2d');
+  const g = x.createRadialGradient(16,16,0,16,16,16); g.addColorStop(0,'#fff'); g.addColorStop(.5,'rgba(255,255,255,.85)'); g.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0,0,32,32); return new THREE.CanvasTexture(c); })();
+
+/* dissolve: 0 = the picture, 1 = salt and amber dust drifting away */
+let dissolve = 0, dissolveTarget = 0, extra = 0;
+SCENE.onFirstEnter(() => { document.body.classList.add('go'); setTimeout(() => dissolveTarget = 1, 1400); });
+addEventListener('scene:progress', e => { extra = Math.max(0, (e.detail.p - .5) * 2); running = true; });
+let running = true;
+addEventListener('scene:leave', () => running = false);
+addEventListener('scene:enter', () => running = true);
+
+const img = new Image();
+img.src = IMAGE_URL;
+img.onload = () => {
+  const cw = narrow ? 104 : 150, ch = Math.round(cw * img.height / img.width);
+  const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+  const c2 = cv.getContext('2d');
+  c2.drawImage(img, 0, 0, cw, ch);
+  const data = c2.getImageData(0, 0, cw, ch).data;
+
+  const pts = [], cols = [], home = [], src = [], dust = [], seed = [];
+  const amber = new THREE.Color(0xe9a13b), amberHi = new THREE.Color(0xf0b055), bone = new THREE.Color(0xf5f3ed), ink = new THREE.Color(0x2b1d52);
+  for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++){
+    const i = (y * cw + x) * 4;
+    const r = data[i]/255, g = data[i+1]/255, b = data[i+2]/255;
+    const lum = r*.3 + g*.59 + b*.11;
+    /* a little jitter so the grid reads as scattered grains, not a screen */
+    const px = (x - cw/2 + (Math.random()-.5) * .9) * GAP, py = -(y - ch/2 + (Math.random()-.5) * .9) * GAP, pz = lum * DEPTH - DEPTH/2;
+    pts.push(px, py, pz); home.push(px, py, pz);
+    /* the picture, lifted: blue-hour art is dark, and dots need more light than pixels do */
+    const lift = v => Math.min(1, Math.max(0, (v - .09) * 2.5));
+    cols.push(lift(r), lift(g), lift(b)); src.push(lift(r), lift(g), lift(b));
+    /* the dust palette: lit windows and lamps turn amber, everything else salt-white, faint in the dark */
+    const warm = r - b > .08 && lum > .28;
+    const d = warm ? (lum > .55 ? amberHi : amber).clone() : bone.clone().multiplyScalar(Math.min(1, Math.max(.03, (lum - .13) * 3.4)));
+    dust.push(d.r, d.g, d.b);
+    seed.push(Math.random(), Math.random(), Math.random());
+  }
+  const N = pts.length / 3;
+  document.getElementById('count').textContent = `${N.toLocaleString('en-US')} grains, one town`;
+  const halfW = cw / 2 * GAP, halfH = ch / 2 * GAP;
+  const fit = () => {
+    const vFov = THREE.MathUtils.degToRad(camera.fov);
+    const needH = (halfH * 2 + .8) / (2 * Math.tan(vFov / 2));
+    const needW = (halfW * 2 + .6) / (2 * Math.tan(vFov / 2) * camera.aspect);
+    camera.position.z = Math.max(needH, needW) * (narrow ? 1.02 : .92);
+    camera.position.y = narrow ? -.6 : -.35;
+  };
+  fit(); addEventListener('resize', fit);
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  const mat = new THREE.PointsMaterial({ size:narrow ? .085 : .075, map:dotTex, vertexColors:true, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending });
+  const cloud = new THREE.Points(geo, mat);
+  scene.add(cloud);
+
+  /* interaction: the cursor (or a finger) sends a wave through the cloud; drag to turn it */
+  const mouse = new THREE.Vector2(-99,-99);
+  const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0,0,1), 0), hit = new THREE.Vector3();
+  let dragging = false, lastX = 0, rv = 0, lastMove = -1e9;
+  addEventListener('pointermove', e => {
+    mouse.set((e.clientX/innerWidth)*2-1, -(e.clientY/innerHeight)*2+1);
+    if (dragging){ rv += (e.clientX - lastX) * .0014; lastX = e.clientX; }
+    lastMove = performance.now();
+  });
+  addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') { dragging = true; lastX = e.clientX; } });
+  addEventListener('pointerup', () => dragging = false);
+
+  const clock = new THREE.Clock();
+  let hiddenTab = false;
+  document.addEventListener('visibilitychange', () => hiddenTab = document.hidden);
+  (function loop(){
+    requestAnimationFrame(loop);
+    if (hiddenTab || !running) return;
+    const t = clock.getElapsedTime();
+    dissolve += (dissolveTarget - dissolve) * .012;
+    const D = Math.min(1, dissolve), E = extra;
+    ray.setFromCamera(mouse, camera);
+    ray.ray.intersectPlane(plane, hit);
+    /* idle: the wave sweeps by itself */
+    if (performance.now() - lastMove > 2800){ hit.x = Math.cos(t * .7) * halfW * .8; hit.y = Math.sin(t * .9) * halfH * .8; }
+
+    const p = geo.attributes.position.array, c = geo.attributes.color.array;
+    for (let i = 0; i < N; i++){
+      const ix = i*3, sx = seed[ix], sy = seed[ix+1], sz = seed[ix+2];
+      /* how loose this grain is: the right side and the bright grains let go first */
+      const edge = (home[ix] / halfW) * .5 + .5;
+      const loose = Math.max(0, Math.min(1, (edge - .42) * 2.3 * D - sx * .3 + E * (.5 + edge * .5)));
+      /* dust drifts right and up, each grain on its own slow orbit, then loops back */
+      const ph = ((t * (.04 + sy * .05) + sz) % 1);
+      const tx = home[ix]   + loose * (ph * (3.5 + sx * 4) + Math.sin(t * .6 + sz * 9) * .25);
+      const ty = home[ix+1] + loose * (ph * (1.2 + sy * 1.4) + Math.cos(t * .5 + sx * 9) * .2);
+      const tz = home[ix+2] * (1 + D * .5) + loose * (sz - .5) * 2.5;
+      if (tx - p[ix] < -1.5) { p[ix] = tx; p[ix+1] = ty; p[ix+2] = tz; }   /* wrapped: start again at home, unseen */
+      p[ix]   += (tx - p[ix])   * .06;
+      p[ix+1] += (ty - p[ix+1]) * .06;
+      p[ix+2] += (tz - p[ix+2]) * .06;
+      const dx = p[ix] - hit.x, dy = p[ix+1] - hit.y;
+      const d2 = dx*dx + dy*dy;
+      if (d2 < 1.6){
+        const f = (1.6 - d2) * .11;
+        p[ix+2] += f * 2.4;
+        p[ix] += dx * f * .25; p[ix+1] += dy * f * .25;
+      }
+      /* colour: picture → dust; drifting grains fade as they travel */
+      const L = Math.min(1, loose), fade = (1 - L) + L * Math.sin(ph * Math.PI) * .9;
+      c[ix]   = (src[ix]   + (dust[ix]   - src[ix])   * D) * fade;
+      c[ix+1] = (src[ix+1] + (dust[ix+1] - src[ix+1]) * D) * fade;
+      c[ix+2] = (src[ix+2] + (dust[ix+2] - src[ix+2]) * D) * fade + (1 - fade) * .12;
+    }
+    geo.attributes.position.needsUpdate = true;
+    geo.attributes.color.needsUpdate = true;
+    rv *= .94;
+    cloud.rotation.y += rv + Math.sin(t * .2) * .0006;
+    cloud.rotation.y *= .995;
+    cloud.rotation.x = Math.sin(t * .3) * .04;
+    renderer.render(scene, camera);
+  })();
+};
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+<!-- signature cursor, amber (fine pointers only) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .3s; }
+  .cur-on #wlDot,.cur-on #wlRing{ opacity:1; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.9); transform:translate(-50%,-50%); }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{document.body.classList.add('cur-on');mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

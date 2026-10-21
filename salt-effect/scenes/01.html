@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · A pinch changes everything</title>
+<!-- Scene 2/76 · from template 01 VELOUR Cinematic Hero.
+     Story image under drifting amber light-bands (canvas), grain, vignette, blur-fade-up intro, mouse parallax. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; background:var(--ink-0); overflow:hidden; }
+  body { font-family:'Instrument Sans',system-ui,sans-serif; color:var(--lilac); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+
+  .stage { position:fixed; inset:0; overflow:hidden; background:var(--ink-1); }
+  .photo { position:absolute; inset:-4%; background:var(--ink-1) url(../assets/img/salt-crystal.jpg) center/cover no-repeat;
+    animation:drift 26s ease-in-out infinite alternate; filter:brightness(.82) saturate(.92); }
+  @keyframes drift { from { transform:scale(1.02) translate(0,0); } to { transform:scale(1.1) translate(-1.5%,-1%); } }
+  .wash { position:absolute; inset:0; background:
+      radial-gradient(ellipse 42% 46% at 50% 52%, rgba(14,8,31,.62), rgba(14,8,31,.25) 60%, transparent 100%),
+      linear-gradient(180deg, rgba(14,8,31,.72) 0%, rgba(14,8,31,.38) 38%, rgba(14,8,31,.5) 64%, rgba(14,8,31,.9) 100%); }
+  #bgCanvas { position:absolute; inset:0; width:100%; height:100%; mix-blend-mode:screen; }
+  .grain { position:absolute; inset:-100%; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity:.08; animation:grain 8s steps(10) infinite; pointer-events:none; }
+  @keyframes grain { 0%,100%{transform:translate(0,0)} 20%{transform:translate(-3%,2%)} 40%{transform:translate(2%,-3%)} 60%{transform:translate(-2%,-2%)} 80%{transform:translate(3%,3%)} }
+  .vignette { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 45%, transparent 28%, rgba(14,8,31,.82) 100%); pointer-events:none; }
+
+  /* intro: everything waits until the visitor arrives */
+  .hero > *, .foot { opacity:0; filter:blur(12px); transform:translateY(26px); }
+  .go .hero > *, .go .foot { animation:blurFadeUp 1.2s cubic-bezier(.19,1,.22,1) forwards; }
+  @keyframes blurFadeUp { to { opacity:1; filter:blur(0); transform:translateY(0);} }
+
+  .hero { position:relative; z-index:10; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:72px 24px 40px; }
+  .kicker { color:var(--amber); }
+  .go .kicker { animation-delay:.25s; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(56px,9.6vw,140px); line-height:.95; letter-spacing:-.02em;
+    margin-top:22px; color:var(--bone); will-change:transform; text-shadow:0 2px 40px rgba(14,8,31,.5); }
+  h1 span { display:block; }
+  h1 .l3 { font-style:italic; font-weight:500; color:rgba(14,8,31,.35); -webkit-text-stroke:1.5px var(--bone); text-shadow:none; }
+  .go .h1wrap { animation-delay:.45s; }
+  .subline { margin-top:40px; max-width:470px; color:var(--lilac); font-size:17px; line-height:1.6; }
+  .go .subline { animation-delay:.7s; }
+  .ctas { display:flex; gap:14px; margin-top:36px; }
+  .go .ctas { animation-delay:.9s; }
+  .btn { font:inherit; font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    padding:16px 32px; border-radius:999px; border:0; cursor:pointer; background:var(--amber); color:var(--ink-0);
+    box-shadow:0 0 0 0 rgba(233,161,59,.0), 0 10px 40px -10px rgba(233,161,59,.55); transition:all .35s cubic-bezier(.19,1,.22,1); }
+  .btn:hover, .btn:focus-visible { background:var(--amber-hi); transform:translateY(-2px); outline:none; box-shadow:0 0 0 6px rgba(233,161,59,.15), 0 14px 44px -10px rgba(233,161,59,.7); }
+
+  .foot { position:fixed; bottom:0; left:0; right:0; z-index:20; display:flex; justify-content:space-between; padding:26px 44px; color:var(--mist); }
+  .go .foot { animation-delay:1.15s; }
+  .scrollcue { display:flex; align-items:center; gap:10px; }
+  .scrollcue::after { content:''; width:44px; height:1px; background:var(--mist); animation:pulse 2.2s ease-in-out infinite; transform-origin:left; }
+  @keyframes pulse { 50% { transform:scaleX(.4); opacity:.4; } }
+  @media (max-width:640px){
+    .foot { padding:22px 20px; }
+    .foot .coords { display:none; }
+    .foot { justify-content:center; }
+    .photo { background-image:url(../assets/img/salt-crystal-tall.jpg); }
+    h1 { font-size:clamp(50px,15.5vw,72px); }
+    .subline { font-size:17px; }
+  }
+  @media (prefers-reduced-motion:reduce){ .photo,.grain{ animation:none } }
+</style>
+</head>
+<body>
+  <div class="stage" aria-hidden="true">
+    <div class="photo"></div>
+    <div class="wash"></div>
+    <canvas id="bgCanvas"></canvas>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+  </div>
+
+  <main class="hero">
+    <div class="kicker mono">I · The grain — 2/76</div>
+    <div class="h1wrap"><h1 id="parallaxTitle"><span class="l1">A pinch</span><span class="l2">changes</span><span class="l3">everything.</span></h1></div>
+    <p class="subline">Salt is a small thing. A few grains and the whole dish is different. Some businesses work the same way.</p>
+    <div class="ctas"><button class="btn" id="start" type="button">Start the story ↓</button></div>
+  </main>
+
+  <div class="foot mono"><span class="coords">Kodak, TN · 35.97° N, 83.62° W</span><span class="scrollcue">Scroll</span></div>
+
+<script>
+/* ---------- amber light-bands drifting over the photo, like window light at dusk ---------- */
+const cv = document.getElementById('bgCanvas'), ctx = cv.getContext('2d');
+let W, H, t = 0;
+function fit(){ const d = Math.min(devicePixelRatio || 1, 1.5); W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d,0,0,d,0,0); }
+fit(); addEventListener('resize', fit);
+function draw(){
+  t += 0.0035;
+  ctx.clearRect(0, 0, W, H);
+  for (let i = 0; i < 4; i++){
+    const y = H * (.28 + .16 * i) + Math.sin(t * (0.7 + i * .18) + i * 2.1) * H * .07;
+    const grad = ctx.createRadialGradient(W * (.5 + Math.sin(t * .5 + i) * .25), y, 0, W * .5, y, Math.max(W, H) * .62);
+    grad.addColorStop(0, `rgba(233,161,59,${0.1 - i * 0.02})`);
+    grad.addColorStop(1, 'rgba(233,161,59,0)');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ---------- mouse parallax on the headline ---------- */
+const title = document.getElementById('parallaxTitle');
+let tx = 0, ty = 0, cx = 0, cy = 0;
+addEventListener('mousemove', e => {
+  tx = (e.clientX / innerWidth - .5) * 18;
+  ty = (e.clientY / innerHeight - .5) * 12;
+});
+(function ease(){
+  cx += (tx - cx) * .06; cy += (ty - cy) * .06;
+  title.style.transform = `translate(${cx}px, ${cy}px)`;
+  requestAnimationFrame(ease);
+})();
+
+/* ---------- intro waits for the visitor ---------- */
+SCENE.onFirstEnter(() => document.body.classList.add('go'));
+
+/* ---------- the button moves the story along ---------- */
+document.getElementById('start').addEventListener('click', () => {
+  if (SCENE.embedded) parent.postMessage({ salt:1, t:'key', k:'PageDown', shift:false }, '*');
+});
+</script>
+<!-- signature cursor, brand colours, off on touch -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .2s; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(234,231,244,.75); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .2s; }
+  .cur-on #wlDot, .cur-on #wlRing { opacity:1; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  const R=document.documentElement;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';R.classList.add('cur-on');});
+  document.addEventListener('mouseleave',()=>R.classList.remove('cur-on'));
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

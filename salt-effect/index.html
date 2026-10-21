@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Salt Effect · Salt Services</title>
+<meta name="description" content="A story about businesses that change the world around them, told in 76 scenes. Salt Services, Kodak, Tennessee.">
+<link rel="canonical" href="https://www.saltservicesusa.com/salt-effect/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Salt Services">
+<meta property="og:title" content="The Salt Effect · Salt Services">
+<meta property="og:description" content="A story about businesses that change the world around them, told in 76 hand-built web effects. By Salt Services, Kodak, Tennessee.">
+<meta property="og:url" content="https://www.saltservicesusa.com/salt-effect/">
+<meta property="og:image" content="https://www.saltservicesusa.com/images/salt-effect.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Salt Effect: a hand sprinkling glowing grains of salt beside the title, on deep violet">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/logo/salt-mark.svg" type="image/svg+xml">
+<link rel="preload" href="kit/fonts/fraunces-normal-100-900-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="kit/fonts/fonts.css">
+<style>
+:root {
+  --ink-0: #0e081f; --ink-1: #180f2f; --ink-2: #2b1d52;
+  --amber: #e9a13b; --amber-hi: #f0b055;
+  --bone: #f5f3ed; --lilac: #eae7f4; --mist: #b3aacd;
+  --glass: rgba(14, 8, 31, .8); --glass-line: rgba(234, 231, 244, .14);
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Instrument Sans', system-ui, sans-serif;
+  --mono: 'Space Mono', ui-monospace, monospace;
+  --top: env(safe-area-inset-top, 0px);
+  --bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { overflow-anchor: none; }
+html, body { margin: 0; background: var(--ink-0); color: var(--lilac); font: 17px/1.55 var(--sans); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.stage iframe:focus-visible { outline-offset: -4px; }
+.mono { font: 400 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 16px; z-index: 100; background: var(--amber); color: var(--ink-0); padding: 10px 14px; border-radius: 8px; }
+
+/* ---------- header ---------- */
+.bar { position: fixed; z-index: 40; left: 0; right: 0; top: 0; padding: calc(12px + var(--top)) 16px 0;
+  display: flex; align-items: center; gap: 10px; pointer-events: none; }
+.bar > * { pointer-events: auto; }
+.pill { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: 999px;
+  background: var(--glass); border: 1px solid var(--glass-line); backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%); color: var(--lilac); text-decoration: none; }
+.brand { padding-left: 6px; }
+.brand img { width: 32px; height: 32px; }
+.brand b { font: 600 17px/1 var(--serif); letter-spacing: -.01em; }
+.where { cursor: pointer; border: 1px solid var(--glass-line); font: inherit; margin-left: auto; margin-right: auto; }
+.where .mono { color: var(--mist); }
+.where .ch { color: var(--lilac); }
+.where .num { color: var(--amber); }
+.where .name { font: 500 14px/1 var(--sans); color: var(--lilac); white-space: nowrap; max-width: 22ch; overflow: hidden; text-overflow: ellipsis; }
+.band { position: fixed; z-index: 39; left: 0; right: 0; top: 0; height: calc(104px + var(--top)); pointer-events: none; opacity: 0;
+  background: linear-gradient(var(--ink-0) 30%, rgba(14, 8, 31, 0)); transition: opacity .4s ease; }
+body.scroll-scene .band { opacity: .85; }
+.bar, .band { transition: opacity .35s ease, translate .35s ease, visibility 0s linear 0s; }
+body.chrome-off .bar, body.chrome-off .band { opacity: 0; translate: 0 -10px; visibility: hidden; pointer-events: none;
+  transition: opacity .35s ease, translate .35s ease, visibility 0s linear .35s; }
+body.light-scene .band { background: linear-gradient(#f5f3ed 30%, rgba(245, 243, 237, 0)); }
+.cta { gap: .3em; background: var(--amber); border-color: transparent; color: var(--ink-0); font-weight: 600; font-size: 15px; }
+.cta:hover { background: var(--amber-hi); }
+.cta .short { display: none; }
+.progress { position: fixed; z-index: 41; left: 0; top: 0; height: 3px; width: 100%; background: var(--amber);
+  transform-origin: 0 50%; transform: scaleX(0); }
+
+/* ---------- scene index ---------- */
+.index { overscroll-behavior: contain; position: fixed; z-index: 39; inset: 0; background: rgba(14, 8, 31, .92); backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); overflow-y: auto; padding: calc(84px + var(--top)) 16px calc(32px + var(--bottom)); }
+.index .wrap { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px 32px; }
+.index h3 { margin: 0 0 10px; font: 500 26px/1.05 var(--serif); color: var(--bone); }
+.index h3 small { display: block; margin-bottom: 6px; color: var(--amber); }
+.index ol { list-style: none; margin: 0; padding: 0; }
+.index a { display: flex; gap: 12px; padding: 7px 0; text-decoration: none; color: var(--mist); border-top: 1px solid rgba(234,231,244,.07); }
+.index a:hover, .index a[aria-current] { color: var(--lilac); }
+.index a span:first-child { color: var(--amber); min-width: 34px; font-variant-numeric: tabular-nums; }
+
+/* ---------- scenes ---------- */
+.scene { position: relative; height: 140vh; }
+.stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; background: var(--ink-1); }
+.stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;
+  opacity: 0; transition: opacity .5s ease; background: var(--ink-1); }
+.stage iframe.on { opacity: 1; }
+.poster { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 14px; padding: 16px;
+  background: radial-gradient(60% 50% at 50% 55%, rgba(233,161,59,.10), transparent 70%), var(--ink-1); }
+.poster h2 { margin: 0; font: 500 clamp(2.4rem, 1rem + 5vw, 5.5rem)/.95 var(--serif); letter-spacing: -.02em; color: var(--bone); text-wrap: balance; }
+.poster .mono { color: var(--mist); }
+.shade { position: absolute; inset: 0; background: var(--ink-0); opacity: 0; pointer-events: none; }
+
+/* over a light scene the chrome switches to bone glass and dark ink */
+body.light-scene { --glass: rgba(245, 243, 237, .74); --glass-line: rgba(32, 20, 57, .14); }
+body.light-scene .pill:not(.cta) { color: #201439; }
+body.light-scene .where .mono, body.light-scene .where .name { color: #201439; }
+body.light-scene .where .num { color: #8a5a12; }
+body.light-scene .brand img { filter: brightness(.12); }
+body.light-scene .where .pos { color: #635a7d; }
+.pill { transition: background-color .3s ease, color .3s ease, border-color .3s ease; }
+@media (max-width: 720px) {
+  .brand b, .where .ch-name, .where .num, .where .name, .cta .long { display: none; }
+  .cta .short { display: inline; }
+  .bar { gap: 8px; }
+  .pill { padding: 0 12px; }
+}
+@media (max-width: 1180px) { .where .ch-name { display: none; } }
+@media (prefers-reduced-motion: reduce) { .stage iframe { transition: none; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#end">Skip to contact</a>
+<div class="progress" aria-hidden="true"></div>
+<header class="bar">
+  <a class="pill brand" href="https://saltservicesusa.com/" target="_top"><img src="assets/logo/salt-logo.png" alt="Salt Services" width="32" height="32"><b>Salt Services</b></a>
+  <button class="pill where" type="button" aria-expanded="false" aria-controls="index">
+    <span class="mono ch">I</span><span class="mono ch-name">The grain</span><span class="mono pos">01/76</span><span class="mono num">No. 11</span><span class="name">Preloader Counter</span>
+  </button>
+  <a class="pill cta" href="https://saltservicesusa.com/contact/" target="_top"><span class="long">Free growth plan</span><span class="short">Free plan</span></a>
+</header>
+
+<nav class="index" id="index" hidden data-lenis-prevent aria-label="All 76 scenes"><div class="wrap"></div></nav>
+
+<main id="story" aria-label="The Salt Effect, 76 scenes"></main>
+<span id="end"></span>
+
+<div class="band" aria-hidden="true"></div>
+
+<noscript><p style="padding:120px 16px;max-width:60ch;margin:auto">The Salt Effect needs JavaScript to play its 76 scenes. Call Salt Services at (866) 721-7258 or write info@saltservicesusa.com.</p></noscript>
+
+<script src="kit/lenis/lenis.min.js" defer></script>
+<script defer>
+addEventListener('DOMContentLoaded', () => {
+  const CHAPTERS = { I: 'The grain', II: 'The door', III: 'The street', IV: 'The town', V: 'The signal', VI: 'The world', VII: 'Your turn' };
+  const LIST = {
+    I: [[11, 'Preloader Counter'], [1, 'Cinematic Hero'], [44, 'Starfield Hero'], [59, 'Variable Font Breathing'], [12, 'Text Scramble'], [61, 'Word Cycler'], [55, 'Galaxy Hero'], [65, 'Self-Drawing Strokes'], [81, 'Particle Countdown'], [41, 'Hold to Enter']],
+    II: [[18, 'Page Transitions'], [50, 'Confetti Engine'], [35, 'Split-Flap Board'], [8, 'Magnetic Buttons'], [13, 'Gooey Cursor'], [2, 'Liquid Glass'], [17, 'Video Text Mask'], [60, 'Line Reveal Suite'], [72, 'FAQ Ink Expand'], [10, 'Reveal Comparer']],
+    III: [[32, 'Text Highlight Scroll'], [4, 'Social Proof Wall'], [69, 'Testimonial Carousel'], [33, 'Stacked Cards Scroll'], [37, 'Sticker Trail Cursor'], [28, 'Sticker Chaos Hero'], [7, 'Image Trail Cursor'], [15, 'Card Clip Hover'], [36, 'Inertia Drag Carousel'], [63, 'Ticker Tape'], [51, 'Spark Trail Cursor'], [14, 'Cursor Spotlight']],
+    IV: [[54, 'Ripple Surface'], [34, 'Zoom-Through Scroll'], [27, 'Horizontal Journey'], [31, 'Pinned Story'], [62, 'Counter Stats'], [48, 'Constellation Network'], [45, 'Fireflies Field'], [52, 'Magnetic Filings'], [47, 'Flow Field'], [20, 'Particle Morph'], [38, 'Cursor Glow Grid'], [49, 'Cinematic Weather Layer']],
+    V: [[66, 'Glitch Type'], [58, 'Rain on Glass'], [80, 'Data Rain Dashboard'], [78, 'Equalizer Hero'], [25, 'AI Orb Hero'], [40, 'Text Repel Cursor'], [46, 'Text Erosion'], [53, 'Particle Text Morph'], [26, 'Split Menu Overlay'], [68, 'Morph Pill Tabs'], [70, 'Pricing Spotlight'], [22, 'Holo Material Lab'], [23, '3D Product Showcase'], [19, 'Scroll-Story 3D']],
+    VI: [[21, 'Infinite Image Tunnel'], [24, 'Point-Cloud Image'], [56, 'Particle Image Reveal'], [57, 'Smoke Trails'], [29, 'Shader Gradient Hero'], [16, 'WebGL Distortion Hover'], [43, 'Particle Logo'], [75, 'Particle Hero'], [64, 'Outline Fill Scroll'], [71, 'Scroll Timeline'], [77, 'Live Wallpaper Kit'], [79, 'Mood Clock Hero'], [39, 'Inverter Blob Cursor']],
+    VII: [[42, 'Easter Egg Kit'], [3, 'Kinetic Type'], [74, 'Navbar Morph'], [82, 'The Grand Finale'], [73, 'Mega Footer']]
+  };
+  // scroll scenes: their height in screens, measured at 1440x900, so the page is laid out
+  // right before any of them has loaded (each scene reports its exact height on load)
+  const TALL = { 32: 2.51, 4: 3.58, 33: 4.88, 34: 4.6, 27: 4.8, 31: 4.4, 19: 4.12, 64: 3.27, 71: 3.06, 3: 3.92, 74: 2.67, 73: 2.45 };
+  const pad = n => String(n).padStart(2, '0');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const HOLD = 1.3;            // a one-screen scene stays put for 0.3 of a screen
+  const story = document.getElementById('story');
+  const indexWrap = document.querySelector('.index .wrap');
+  const scenes = [];
+
+  // ---------- build sections and the index ----------
+  for (const [ch, items] of Object.entries(LIST)) {
+    const box = document.createElement('section');
+    box.innerHTML = `<h3><small class="mono">Chapter ${ch}</small>${CHAPTERS[ch]}</h3><ol></ol>`;
+    indexWrap.appendChild(box);
+    for (const [no, name] of items) {
+      const i = scenes.length, pos = pad(i + 1);
+      const el = document.createElement('section');
+      el.className = 'scene';
+      el.dataset.key = 'no-' + pad(no);   // not an id: the browser would jump to it on its own
+      el.setAttribute('aria-label', `Scene ${i + 1} of 76: ${name}`);
+      el.innerHTML = `<div class="stage"><div class="poster"><span class="mono">${ch} · ${CHAPTERS[ch]} — ${pos}/76</span><h2>${name}</h2><span class="mono">No. ${pad(no)}</span></div><div class="shade"></div></div>`;
+      story.appendChild(el);
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="#no-${pad(no)}"><span class="mono">${pos}</span><span>${name}</span></a>`;
+      box.querySelector('ol').appendChild(li);
+      scenes.push({ i, no, name, ch, el, stage: el.firstElementChild, shade: el.querySelector('.shade'),
+        frame: null, ready: false, mode: TALL[no] ? 'scroll' : 'static', docH: 0, est: TALL[no] || 0, top: 0, h: 0, link: li.firstElementChild });
+    }
+  }
+
+  // ---------- smooth scroll ----------
+  const lenis = (!reduce && window.Lenis) ? new Lenis({ lerp: 0.1, wheelMultiplier: 1 }) : null;
+  // Lenis moves the real window scroll, so window.scrollY is always the truth (also after a
+  // jump that bypassed Lenis, such as a link or the browser restoring the position).
+  const scrollY = () => window.scrollY;
+  const scrollTo = (y, immediate) => {
+    y = Math.max(0, Math.min(y, document.documentElement.scrollHeight - innerHeight));
+    lenis ? lenis.scrollTo(y, { immediate: !!immediate, force: true }) : window.scrollTo({ top: y, behavior: immediate || reduce ? 'instant' : 'smooth' });
+  };
+  const target = () => lenis && lenis.isScrolling ? lenis.targetScroll : window.scrollY;
+
+  // ---------- layout ----------
+  let vh = innerHeight;
+  function layout() {
+    vh = innerHeight;
+    let y = 0;
+    for (const s of scenes) {
+      s.h = s.mode !== 'scroll' ? Math.round(vh * HOLD) : s.docH > vh ? s.docH : Math.round(vh * Math.max(s.est, HOLD));
+      s.el.style.height = s.h + 'px';
+      s.top = y; y += s.h;
+    }
+    if (lenis) lenis.resize();
+  }
+  function setHeight(s, mode, docH) {
+    const before = s.h, wasAbove = s.top + s.h <= scrollY() + 2;   // +2: smooth scroll can leave a fraction of a pixel
+    s.mode = mode; s.docH = docH;
+    layout();
+    if (wasAbove && s.h !== before) scrollTo(scrollY() + (s.h - before), true);   // keep the view still
+  }
+
+  // ---------- mounting ----------
+  function mount(s) {
+    if (s.frame) return;
+    const f = document.createElement('iframe');
+    f.title = `Scene ${s.i + 1} of 76: ${s.name}`;
+    f.setAttribute('allow', 'autoplay; fullscreen');
+    f.src = `scenes/${pad(s.no)}.html`;
+    s.stage.insertBefore(f, s.shade);
+    s.frame = f; s.ready = false; s.entered = false;
+  }
+  function unmount(s) {
+    if (!s.frame) return;
+    s.frame.src = 'about:blank';
+    s.frame.remove();
+    s.frame = null; s.ready = false; s.entered = false;
+  }
+  const send = (s, m) => { if (s.frame && s.ready) { m.salt = 1; s.frame.contentWindow.postMessage(m, '*'); } };
+
+  // ---------- messages from scenes ----------
+  addEventListener('message', e => {
+    const d = e.data;
+    if (!d || !d.salt) return;
+    const s = scenes.find(x => x.frame && x.frame.contentWindow === e.source);
+    if (!s) return;
+    if (d.t === 'ready') { s.ready = true; s.frame.classList.add('on'); tick(true); }
+    else if (d.t === 'size' && s.i === current) { document.body.classList.toggle('scroll-scene', d.mode === 'scroll'); }
+    if (d.t === 'size') { if (d.mode !== s.mode || (d.mode === 'scroll' && Math.abs(d.h - s.docH) > 2)) setHeight(s, d.mode, d.h); }
+    else if (d.t === 'wheel') {
+      if (lenis) window.dispatchEvent(new WheelEvent('wheel', { deltaY: d.dy, deltaMode: 0, cancelable: true }));
+      else window.scrollBy(0, d.dy);
+    }
+    else if (d.t === 'touch') scrollTo(window.scrollY + d.dy, true);
+    else if (d.t === 'fling') scrollTo(window.scrollY + d.v * 320);
+    else if (d.t === 'chrome') { if (s.i === current) document.body.classList.toggle('chrome-off', !d.show); }
+    else if (d.t === 'tone') { if (s.i === current) document.body.classList.toggle('light-scene', d.light); }
+    else if (d.t === 'key') {
+      const step = { ArrowDown: 120, ArrowUp: -120, PageDown: vh * .9, PageUp: -vh * .9, ' ': d.shift ? -vh * .9 : vh * .9 }[d.k];
+      if (step) scrollTo(target() + step);
+      else if (d.k === 'Home') scrollTo(0);
+      else if (d.k === 'End') scrollTo(1e9);
+    }
+  });
+
+  // ---------- the frame loop ----------
+  const bar = document.querySelector('.progress');
+  const where = document.querySelector('.where');
+  let current = -1;
+  function tick(force) {
+    const y = scrollY(), max = document.documentElement.scrollHeight - vh;
+    bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+    let now = current;
+    for (const s of scenes) {
+      const rel = s.top - y;                          // section top relative to the viewport
+      const near = rel < vh * 2.2 && rel + s.h > -vh * 1.2;
+      const far = rel > vh * 3.5 || rel + s.h < -vh * 2.5;
+      if (near) mount(s); else if (far) unmount(s);
+      if (!s.frame) continue;
+      const passed = Math.min(Math.max(y - s.top, 0), s.h);       // how far into the section
+      if (s.mode === 'scroll') send(s, { t: 'scroll', y: Math.min(passed, s.docH - vh) });
+      send(s, { t: 'progress', p: Math.min(Math.max((y - s.top + vh) / (s.h + vh), 0), 1) });
+      // the stage leaves when the section's bottom rises past the viewport bottom
+      const leave = Math.min(Math.max((vh - (rel + s.h)) / vh, 0), 1);
+      s.shade.style.opacity = (leave * .7).toFixed(3);
+      if (rel <= vh / 2 && rel + s.h > vh / 2) now = s.i;
+    }
+    if (now !== current || force === true) {
+      if (now !== current) {
+        if (current > -1) {
+          const prev = scenes[current];
+          send(prev, { t: 'leave' });
+          prev.entered = false;          // so coming back sends 'enter' again (replays, tone)
+          prev.link.removeAttribute('aria-current');
+        }
+        document.body.classList.remove('light-scene', 'chrome-off');
+        current = now;
+        const s = scenes[current];
+        where.querySelector('.ch').textContent = s.ch;
+        where.querySelector('.ch-name').textContent = CHAPTERS[s.ch];
+        where.querySelector('.pos').textContent = `${pad(s.i + 1)}/76`;
+        where.querySelector('.num').textContent = `No. ${pad(s.no)}`;
+        where.querySelector('.name').textContent = s.name;
+        where.setAttribute('aria-label', `Scene ${s.i + 1} of 76, chapter ${s.ch}, ${CHAPTERS[s.ch]}: ${s.name}. Open the list of scenes`);
+        document.body.classList.toggle('scroll-scene', s.mode === 'scroll');
+        s.link.setAttribute('aria-current', 'true');
+        if (history.replaceState) history.replaceState(null, '', '#' + s.el.dataset.key);
+      }
+      const s = scenes[current];
+      if (s && s.ready && !s.entered) { s.entered = true; send(s, { t: 'enter' }); }
+    }
+  }
+
+  // ---------- index panel ----------
+  const index = document.getElementById('index');
+  const toggleIndex = open => {
+    index.hidden = !open; where.setAttribute('aria-expanded', open);
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    if (open) (index.querySelector('a[aria-current]') || index.querySelector('a')).focus();
+    else where.focus({ preventScroll: true });
+  };
+  where.addEventListener('click', () => toggleIndex(index.hidden));
+  index.addEventListener('click', e => {
+    const a = e.target.closest('a'); if (!a) return;
+    e.preventDefault(); toggleIndex(false);
+    const s = scenes.find(x => '#' + x.el.dataset.key === a.getAttribute('href'));
+    if (s) scrollTo(s.top, true);
+  });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !index.hidden) toggleIndex(false); });
+
+
+  // ---------- start ----------
+  layout();
+  const start = scenes.find(s => '#' + s.el.dataset.key === location.hash);
+  if (start) scrollTo(start.top, true);
+  if (lenis) {
+    const raf = t => { lenis.raf(t); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf);
+  }
+  addEventListener('scroll', tick, { passive: true });
+  addEventListener('resize', () => { layout(); tick(true); });
+  tick(true);
+  setInterval(() => tick(), 500);   // catch scenes that load while the page sits still
+});
+
+// ---------- all-time view count ----------
+// One small ping per page load to the Salt portal. `first` is true only on this
+// browser's first visit. Skipped for automated browsers (screenshots, crawlers).
+// >>> VIEW_URL: replace __PAGE_VIEW_ENDPOINT__ with the portal's page-view path. <<<
+const VIEW_URL = 'https://my.saltservicesusa.com/__PAGE_VIEW_ENDPOINT__';
+(() => {
+  if (navigator.webdriver || /HeadlessChrome/.test(navigator.userAgent) || !navigator.sendBeacon) return;
+  let first = false;
+  try {
+    if (!localStorage.getItem('salt-effect.seen')) { first = true; localStorage.setItem('salt-effect.seen', '1'); }
+  } catch (e) {}
+  try {
+    navigator.sendBeacon(VIEW_URL, new Blob([JSON.stringify({ page: 'salt-effect', first })], { type: 'text/plain' }));
+  } catch (e) {}
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<script src="_bridge.js"></script>
+<title>Bigger than a business · Salt Services</title>
+<!-- FLUX · shader gradient hero. A living WebGL gradient of flowing noise in indigo and amber;
+     the cursor bends the flow and lights it. Raw WebGL, no libraries. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--bone); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--lilac); opacity:.8; }
+  #flux { position:fixed; inset:0; width:100%; height:100%; }
+  .grain { position:fixed; inset:-100%; z-index:2; pointer-events:none; opacity:.07;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    animation:gr 9s steps(10) infinite; }
+  @keyframes gr { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-2%,3%)} 50%{transform:translate(3%,-2%)} 75%{transform:translate(-3%,-3%)} }
+
+  .ui { position:fixed; inset:0; z-index:5; display:flex; flex-direction:column; justify-content:center; padding:80px 40px 30px; pointer-events:none; }
+  .bottom { position:absolute; left:40px; right:40px; bottom:30px; display:flex; justify-content:space-between; gap:20px; }
+  .mid { align-self:center; text-align:center; max-width:1000px; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(48px,8.4vw,136px); letter-spacing:-.02em; line-height:.95;
+    text-shadow:0 2px 40px rgba(14,8,31,.45); }
+  h1 em { font-style:italic; font-weight:500; color:var(--amber-hi); }
+  .line { display:block; max-width:560px; margin:26px auto 0; font-size:clamp(17px,1.45vw,20px); line-height:1.55; color:var(--lilac); text-shadow:0 1px 18px rgba(14,8,31,.7); }
+  .cta { pointer-events:auto; font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--bone); text-decoration:none; border:1px solid rgba(245,243,237,.4); padding:15px 30px; border-radius:999px;
+    backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); transition:background .35s, border-color .35s, color .35s; display:inline-block; margin-top:32px; }
+  .cta:hover, .cta:focus-visible { background:var(--amber); border-color:var(--amber); color:var(--ink-0); outline:none; }
+  .mid > * { opacity:0; transform:translateY(22px); transition:opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1); }
+  .go .mid > * { opacity:1; transform:none; }
+  .go .mid > :nth-child(2) { transition-delay:.25s; } .go .mid > :nth-child(3) { transition-delay:.45s; }
+  @media (max-width:700px){
+    .ui { padding:80px 20px 30px; }
+    h1 { font-size:58px; }
+    .bottom { left:20px; right:20px; bottom:24px; flex-direction:column; gap:8px; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="flux"></canvas>
+  <div class="grain"></div>
+
+  <div class="ui">
+    <div class="mid">
+      <h1>Bigger than<br><em>a business.</em></h1>
+      <span class="line">Jobs, habits, Saturday mornings, whole neighborhoods, shaped by somebody's decision to open.</span>
+      <a class="cta" href="https://saltservicesusa.com/work/" target="_top">See what we've built →</a>
+    </div>
+    <div class="bottom"><span class="mono">VI · The world — 63/76</span><span class="mono" id="hint">Live shader · move to bend the light</span></div>
+  </div>
+
+<script>
+/* brand colours, linear 0-1 */
+const COLOR_A = [0.388, 0.353, 0.490];  /* --plum  #635a7d: the dusk haze */
+const COLOR_B = [0.914, 0.631, 0.231];  /* --amber #e9a13b: lamplight */
+const COLOR_C = [0.055, 0.031, 0.122];  /* --ink-0 #0e081f: the night */
+const COLOR_D = [0.169, 0.114, 0.322];  /* --ink-2 #2b1d52: the hills */
+
+const cv = document.getElementById('flux');
+const gl = cv.getContext('webgl');
+const RES = Math.min(devicePixelRatio || 1, 1.6);
+function fit(){ cv.width = innerWidth * RES; cv.height = innerHeight * RES; gl && gl.viewport(0,0,cv.width,cv.height); }
+fit(); addEventListener('resize', fit);
+if (matchMedia('(hover:none)').matches) document.getElementById('hint').textContent = 'Live shader · touch to bend the light';
+
+const vs = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }`;
+const fs = `precision highp float;
+uniform vec2 uRes; uniform float uT; uniform vec2 uMouse;
+uniform vec3 uA; uniform vec3 uB; uniform vec3 uC; uniform vec3 uD;
+
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p){
+  vec2 i = floor(p), f = fract(p);
+  vec2 u = f*f*(3.-2.*f);
+  return mix(mix(hash(i), hash(i+vec2(1,0)), u.x),
+             mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), u.x), u.y);
+}
+float fbm(vec2 p){
+  float v = 0., a = .5;
+  for (int i = 0; i < 5; i++){ v += a * noise(p); p *= 2.04; a *= .52; }
+  return v;
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes;
+  vec2 asp = vec2(uRes.x / uRes.y, 1.);
+  vec2 p = uv * asp * 1.6;
+  /* the cursor bends the field */
+  vec2 m = uMouse * asp * 1.6;
+  float pull = exp(-distance(p, m) * 1.7) * .9;
+  vec2 flow = p + vec2(uT * .05, -uT * .03) + (m - p) * pull * .35;
+  float n1 = fbm(flow + fbm(flow * 1.7 + uT * .08) * 1.2);
+  float n2 = fbm(flow * .7 - uT * .04);
+  vec3 col = mix(uC, uD, smoothstep(.2, .6, n1));
+  col = mix(col, uA, smoothstep(.5, .85, n1) * .75);
+  col = mix(col, uB, smoothstep(.48, .92, n2 * n1 * 1.6) * .9);
+  /* the cursor is a lamp: warm light where it is */
+  col += uB * pull * pull * .34;
+  /* darker toward the bottom, like ground under a dusk sky */
+  col *= .62 + .45 * smoothstep(-.1, .9, uv.y);
+  /* vignette */
+  col *= .78 + .3 * smoothstep(1.1, .4, distance(uv, vec2(.5)));
+  gl_FragColor = vec4(col, 1.);
+}`;
+let ok = !!gl;
+if (ok) {
+  const shader = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+  const prog = gl.createProgram();
+  gl.attachShader(prog, shader(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog); gl.useProgram(prog);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var U = n => gl.getUniformLocation(prog, n), uRes = U('uRes'), uT = U('uT'), uMouse = U('uMouse');
+  gl.uniform3fv(U('uA'), COLOR_A); gl.uniform3fv(U('uB'), COLOR_B); gl.uniform3fv(U('uC'), COLOR_C); gl.uniform3fv(U('uD'), COLOR_D);
+} else document.body.style.background = 'radial-gradient(ellipse at 50% 30%, #2b1d52, #0e081f 70%)';
+
+let mx = .5, my = .5, sx = .5, sy = .5, lastMove = -1e9;
+addEventListener('pointermove', e => { mx = e.clientX/innerWidth; my = 1 - e.clientY/innerHeight; lastMove = performance.now(); });
+SCENE.onFirstEnter(() => document.body.classList.add('go'));
+let hidden = false, running = true;
+document.addEventListener('visibilitychange', () => hidden = document.hidden);
+addEventListener('scene:leave', () => running = false);
+addEventListener('scene:enter', () => running = true);
+addEventListener('scene:progress', () => running = true);
+(function loop(t){
+  requestAnimationFrame(loop);
+  if (hidden || !running || !ok) return;
+  /* idle: the light wanders on its own, a slow figure-eight */
+  if (performance.now() - lastMove > 3000) { const k = t * .00018; mx = .5 + Math.sin(k) * .3; my = .45 + Math.sin(k * 2) * .18; }
+  sx += (mx - sx) * .05; sy += (my - sy) * .05;
+  gl.uniform2f(uRes, cv.width, cv.height);
+  gl.uniform1f(uT, t * .001);
+  gl.uniform2f(uMouse, sx, sy);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+})(0);
+</script>
+<!-- signature cursor: inverting dot and ring (fine pointers only) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; mix-blend-mode:difference; opacity:0; transition:opacity .3s; }
+  .cur-on #wlDot,.cur-on #wlRing{ opacity:1; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:#fff; transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(255,255,255,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .3s; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid #fff; mix-blend-mode:difference; transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{document.body.classList.add('cur-on');mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

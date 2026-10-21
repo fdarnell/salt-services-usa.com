@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>Get found, answered, chosen</title>
+<!-- 52/76 · SHIFT particle text morph: salt grains flow from one word into the next.
+     Before the visitor arrives the grains drift as loose dust; on first enter they gather. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{--ink-0:#0e081f;--ink-1:#180f2f;--ink-2:#2b1d52;--amber:#e9a13b;--amber-hi:#f0b055;--bone:#f5f3ed;--bone-2:#ece9e0;--lilac:#eae7f4;--mist:#b3aacd;--plum:#635a7d;--ink-text:#201439}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  canvas { position:fixed; inset:0; }
+  .hud { position:fixed; z-index:10; }
+  .t1{ top:88px; left:32px; } .t2{ top:88px; right:32px; font-variant-numeric:tabular-nums; }
+  .b1{ bottom:26px; left:32px; } .b2{ bottom:26px; right:32px; }
+  .steps { position:fixed; z-index:10; left:0; right:0; bottom:clamp(76px,13vh,130px); display:flex; justify-content:center; gap:28px; flex-wrap:wrap; padding:0 16px; }
+  .steps span { font-family:'Fraunces',Georgia,serif; font-size:clamp(18px,1.6vw,22px); color:var(--plum); transition:color .5s; }
+  .steps span.on { color:var(--bone); }
+  .steps span.on::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--amber); margin-right:10px; vertical-align:.2em; box-shadow:0 0 10px var(--amber); }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  @media (max-width:760px){ .t1,.b1{ left:16px; } .t2{ right:16px; } .b2{ display:none; } .steps{ gap:16px; } .steps span{ font-size:17px; } }
+  @media (hover:none){ .hint-fine{ display:none; } }
+  @media (hover:hover){ .hint-touch{ display:none; } }
+</style>
+</head>
+<body>
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <h1 class="sr">Get found. Get answered. Get chosen.</h1>
+  <span class="mono hud t1">V · The signal — 52/76</span>
+  <span class="mono hud t2" id="wordTag">01 / 03</span>
+  <div class="steps" id="steps"><span>Get found.</span><span>Get answered.</span><span>Get chosen.</span></div>
+  <span class="mono hud b1"><span class="hint-fine">Stir the salt with the cursor</span><span class="hint-touch">Touch to stir the salt</span></span>
+  <span class="mono hud b2">Kodak, TN · 35.97° N, 83.62° W</span>
+
+<script>
+const WORDS = ['FOUND', 'ANSWERED', 'CHOSEN'];
+const INTERVAL = 3200;
+
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const stepEls = [...document.querySelectorAll('#steps span')];
+let W, H, GAP, parts = [], targets = [];
+
+/* each frame of the morph is "GET" over one big word, both made of grains */
+function sample(word){
+  const off = document.createElement('canvas'); off.width = W; off.height = H;
+  const o = off.getContext('2d', { willReadFrequently: true });
+  const longest = 'ANSWERED';
+  o.font = `600 100px Fraunces, Georgia, serif`;
+  const unit = o.measureText(longest).width / 100;
+  const fs = Math.min(W * .86 / unit, H * .3);
+  const cy = H * .5 + fs * .2;
+  o.textAlign = 'center'; o.textBaseline = 'middle'; o.fillStyle = '#fff';
+  o.font = `600 ${fs}px Fraunces, Georgia, serif`;
+  /* a thin stroke thickens Fraunces' hairlines so crossbars still catch grains */
+  o.strokeStyle = '#fff'; o.lineJoin = 'round';
+  o.lineWidth = Math.max(2, fs * .035); o.fillText(word, W/2, cy); o.strokeText(word, W/2, cy);
+  o.font = `600 ${fs * .5}px Fraunces, Georgia, serif`;
+  o.lineWidth = Math.max(1.5, fs * .02); o.fillText('Get', W/2, cy - fs * .9); o.strokeText('Get', W/2, cy - fs * .9);
+  const px = o.getImageData(0, 0, W, H).data;
+  const pts = [];
+  for (let y = 0; y < H; y += GAP) for (let x = 0; x < W; x += GAP)
+    if (px[(y*W + x)*4 + 3] > 128) pts.push([x, y]);
+  /* shuffle so grains travel across the whole word when it changes */
+  for (let i = pts.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [pts[i], pts[j]] = [pts[j], pts[i]]; }
+  return pts;
+}
+
+function build(){
+  W = cv.width = innerWidth; H = cv.height = innerHeight;
+  GAP = W < 760 ? 2 : 4;
+  targets = WORDS.map(sample);
+  const max = Math.max(...targets.map(t => t.length));
+  const old = parts;
+  parts = Array.from({ length: max }, (_, i) => old[i] || ({
+    x: Math.random()*W, y: Math.random()*H, vx:0, vy:0,
+    amber: Math.random() < .16, s: (Math.random() < .3 ? 2.4 : 1.8) * (W < 760 ? .75 : 1)
+  }));
+}
+build();
+addEventListener('resize', build);
+if (document.fonts) document.fonts.load('600 100px Fraunces').then(build, () => {});
+
+let wi = 0, started = false, timer = null;
+let clearNext = false;
+function show(i){
+  wi = i; clearNext = true;
+  document.getElementById('wordTag').textContent = `0${wi+1} / 0${WORDS.length}`;
+  stepEls.forEach((el, k) => el.classList.toggle('on', k === wi));
+}
+function start(){
+  started = true; clearInterval(timer); show(0);
+  timer = setInterval(() => show((wi + 1) % WORDS.length), INTERVAL);
+}
+SCENE.onFirstEnter(start);
+addEventListener('scene:enter', start);
+
+let mx = -9999, my = -9999, lastMove = -1e9;
+const take = (x, y) => { mx = x; my = y; lastMove = performance.now(); };
+addEventListener('pointermove', e => take(e.clientX, e.clientY));
+addEventListener('touchmove', e => take(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+addEventListener('touchstart', e => take(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+
+(function loop(){
+  requestAnimationFrame(loop);
+  const now = performance.now();
+  if (now - lastMove > 3000){
+    const t = now / 1500;
+    mx = W * (.5 + Math.cos(t) * .3);
+    my = H * (.52 + Math.sin(t * 2) * .1);
+  }
+  /* a full wipe when a new word starts clears the faint 8-bit residue the trails leave behind */
+  ctx.fillStyle = clearNext ? '#0e081f' : 'rgba(14,8,31,.32)'; clearNext = false;
+  ctx.fillRect(0, 0, W, H);
+  const tg = targets[wi];
+  if (!tg || !tg.length) return;
+  const R = W < 760 ? 52 : 75, R2 = R * R;
+  for (let i = 0; i < parts.length; i++){
+    const p = parts[i];
+    if (started){
+      const t = tg[i % tg.length];
+      p.vx += (t[0] - p.x) * .045;
+      p.vy += (t[1] - p.y) * .045;
+    } else {
+      /* loose salt dust, drifting until the visitor arrives */
+      p.vx += Math.sin(now * .0004 + i) * .03;
+      p.vy += Math.cos(now * .0003 + i * 1.3) * .03 - .004;
+      if (p.y < -5) p.y = H + 5;
+    }
+    const dx = p.x - mx, dy = p.y - my;
+    const d2 = dx*dx + dy*dy;
+    if (d2 < R2){
+      const d = Math.sqrt(d2) || 1, f = (R - d) * .075;
+      p.vx += dx/d * f; p.vy += dy/d * f;
+    }
+    p.vx *= .86; p.vy *= .86;
+    p.x += p.vx; p.y += p.vy;
+    ctx.fillStyle = p.amber ? '#e9a13b' : '#f5f3ed';
+    ctx.fillRect(p.x, p.y, p.s, p.s);
+  }
+})();
+</script>
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  dot.style.opacity=ring.style.opacity='0';   /* hidden until the first pointer move, so nothing parks over the copy */
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{if(ring.style.opacity){rx=e.clientX;ry=e.clientY;dot.style.opacity=ring.style.opacity='';}mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

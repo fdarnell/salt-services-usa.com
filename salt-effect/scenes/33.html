@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="scroll">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>How trust gets built · The Salt Effect</title>
+<!-- 24/76 · III The street · effect: Stacked Cards Scroll (template 33).
+     Each card is sticky; the next one slides over while the last shrinks and dims into the deck. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:var(--ink-0); }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; font-size:17px; line-height:1.55; overflow-x:hidden; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  .intro { height:56vh; min-height:420px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:72px 20px 0; }
+  .intro h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(44px,7vw,104px); letter-spacing:-.02em; line-height:.95; font-variation-settings:"opsz" 144, "SOFT" 30; }
+  .intro h1 em { font-style:italic; font-weight:500; color:var(--amber); }
+  .intro .mono { margin-top:24px; }
+  .intro .mono:first-child { margin:0 0 22px; }
+
+  .stack { position:relative; }
+  /* each section is 76vh of scroll, but its card sits in the same 12vh–88vh window,
+     so the next card slides up and lands exactly on top of the last */
+  .cardSec { position:sticky; top:0; height:76vh; display:flex; justify-content:center; }
+  .card { margin-top:12vh; width:min(1060px, 92vw); height:76vh; border-radius:22px; overflow:hidden; position:relative; flex:none;
+    display:flex; align-items:flex-start; will-change:transform, filter; box-shadow:0 -24px 60px -30px rgba(0,0,0,.75);
+    background:radial-gradient(80% 70% at 70% 30%, rgba(233,161,59,.18), transparent 60%), linear-gradient(160deg, var(--ink-2), var(--ink-1)); }
+  .card img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  /* words sit at the top of each card, so they stay readable while the next card slides over the bottom */
+  .card .veil { position:absolute; inset:0; background:linear-gradient(175deg, rgba(14,8,31,.9) 0%, rgba(14,8,31,.55) 34%, transparent 62%); }
+  .card .body { position:relative; z-index:2; padding:40px 44px; width:100%; display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding-right:150px; }
+  .card h2 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(40px,5.6vw,84px); letter-spacing:-.02em; line-height:.95; font-variation-settings:"opsz" 144, "SOFT" 30; }
+  .card h2 small { display:block; font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; color:var(--amber); margin-bottom:14px; font-weight:400; text-transform:uppercase; }
+  .card p { font-size:17px; line-height:1.55; color:var(--lilac); max-width:330px; }
+  .card .num { position:absolute; top:30px; right:36px; z-index:2; font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; color:var(--lilac);
+    padding:7px 12px; border-radius:999px; background:rgba(14,8,31,.55); backdrop-filter:blur(6px); }
+
+  .stack .rest { height:28vh; }
+  .outro { height:24vh; display:flex; align-items:center; justify-content:center; }
+  @media (max-width:700px){
+    .card { height:74vh; border-radius:18px; }
+    .card .body { flex-direction:column; align-items:flex-start; padding:22px 22px; gap:12px; }
+    .card .veil { background:linear-gradient(180deg, rgba(14,8,31,.92) 0%, rgba(14,8,31,.6) 40%, transparent 70%); }
+    .card .num { top:18px; right:18px; }
+  }
+</style>
+</head>
+<body>
+  <div class="intro">
+    <span class="mono">III · The street — 24/76</span>
+    <h1>How trust<br>gets <em>built</em></h1>
+    <span class="mono">Five cards. Keep scrolling, each one lands on the last.</span>
+  </div>
+
+  <div class="stack" id="stack">
+    <section class="cardSec"><div class="card">
+      <img src="../assets/img/shop-dusk.jpg" alt="A small storefront at dusk, its window lit amber"><div class="veil"></div><span class="num">01 / 05</span>
+      <div class="body"><h2><small>Step one</small>Show up.</h2><p>Open when the sign says open. Be there at the time you said, not twenty minutes after.</p></div>
+    </div></section>
+    <section class="cardSec"><div class="card">
+      <img src="../assets/img/window-rain.jpg" alt="Rain on a window at night with a phone glowing behind it"><div class="veil"></div><span class="num">02 / 05</span>
+      <div class="body"><h2><small>Step two</small>Pick up.</h2><p>When the phone rings, answer it. If you can't, call back the same day.</p></div>
+    </div></section>
+    <section class="cardSec"><div class="card">
+      <img src="../assets/img/workshop.jpg" alt="A workbench under one hanging lamp"><div class="veil"></div><span class="num">03 / 05</span>
+      <div class="body"><h2><small>Step three</small>Make it right.</h2><p>Things go wrong in every business. People remember what you did next.</p></div>
+    </div></section>
+    <section class="cardSec"><div class="card">
+      <img src="../assets/img/market-lights.jpg" alt="String lights zig-zagging over market stalls"><div class="veil"></div><span class="num">04 / 05</span>
+      <div class="body"><h2><small>Step four</small>Remember them.</h2><p>Their name, their usual, the dog's name. It costs nothing and they notice every time.</p></div>
+    </div></section>
+    <section class="cardSec"><div class="card">
+      <img src="../assets/img/main-street-lit.jpg" alt="A row of small-town shops with the windows lit"><div class="veil"></div><span class="num">05 / 05</span>
+      <div class="body"><h2><small>Step five</small>Do it again.</h2><p>Tomorrow, and the day after that. There's no step six.</p></div>
+    </div></section>
+    <div class="rest" aria-hidden="true"></div>
+  </div>
+
+  <div class="outro"><span class="mono">Full deck dealt · 5 of 5</span></div>
+
+<script>
+const secs = [...document.querySelectorAll('.cardSec')];
+document.querySelectorAll('.card img').forEach(i => { const hide = () => i.style.visibility = 'hidden';
+  if (i.complete && !i.naturalWidth) hide(); else i.addEventListener('error', hide); });
+function frame(){
+  const travel = secs[0].offsetHeight;   /* scroll distance between two cards */
+  secs.forEach((sec, i) => {
+    const card = sec.firstElementChild;
+    const next = secs[i + 1];
+    if (!next) return;
+    /* how much the NEXT card has covered this one: 0..1 */
+    const p = Math.max(0, Math.min(1, 1 - next.getBoundingClientRect().top / travel));
+    card.style.transform = `scale(${1 - p * .07}) translateY(${p * -26}px)`;
+    card.style.filter = `brightness(${1 - p * .5})`;
+  });
+}
+(function loop(){ requestAnimationFrame(loop); frame(); })();
+</script>
+<!-- signature cursor, amber -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=-100,my=-100,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>One door at a time · The Salt Effect</title>
+<!-- 28/76 · III The street · effect: Card Clip Hover (template 15).
+     Hover a card: the picture zooms, the corner peels, the meta bar slides up and the number fills in.
+     On touch, tap a card; left alone, the cards take turns on their own. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-1); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; display:flex; flex-direction:column; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  .head { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding:96px 44px 22px; }
+  .head h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(34px,4.2vw,62px); line-height:.95; letter-spacing:-.02em; font-variation-settings:"opsz" 144, "SOFT" 30; }
+  .head h1 em { font-style:italic; font-weight:500; color:var(--amber); white-space:nowrap; }
+  .head .mono:first-child { display:block; margin-bottom:14px; }
+  .head .right { text-align:right; }
+
+  .deck { flex:1; min-height:0; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,1fr); gap:18px; padding:8px 44px 20px; }
+  .pcard { position:relative; border-radius:10px; overflow:hidden; cursor:pointer; min-height:0;
+    background:radial-gradient(90% 80% at 70% 20%, rgba(233,161,59,.2), transparent 60%), linear-gradient(160deg, var(--ink-2), var(--ink-0)); }
+  .pcard img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.88;
+    transition:transform .8s cubic-bezier(.19,1,.22,1), filter .8s, opacity .8s; }
+  .pcard:hover img, .pcard.on img { transform:scale(1.09); filter:saturate(1.12); opacity:1; }
+
+  /* the folded corner: page-colored, peels open to show the arrow */
+  .chip { position:absolute; top:0; right:0; width:70px; height:70px; background:var(--ink-1); z-index:3;
+    display:flex; align-items:center; justify-content:center; color:var(--amber);
+    clip-path:polygon(100% 0, 100% 100%, 0 0); transition:clip-path .55s cubic-bezier(.19,1,.22,1); }
+  .chip svg { width:22px; height:22px; transform:translate(12px,-12px); transition:transform .55s cubic-bezier(.19,1,.22,1); }
+  .pcard:hover .chip, .pcard.on .chip { clip-path:polygon(100% 0, 100% 100%, -100% 0); border-bottom-left-radius:10px; }
+  .pcard:hover .chip svg, .pcard.on .chip svg { transform:translate(6px,-6px) rotate(45deg); }
+
+  .idx { position:absolute; top:12px; left:18px; z-index:3; font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:46px; line-height:1;
+    color:transparent; -webkit-text-stroke:1px var(--bone); transition:color .5s; }
+  .pcard:hover .idx, .pcard.on .idx { color:var(--amber); -webkit-text-stroke-color:var(--amber); }
+
+  .metabar { position:absolute; left:0; right:0; bottom:0; z-index:3; background:linear-gradient(transparent, rgba(14,8,31,.9) 42%);
+    padding:56px 20px 18px; transform:translateY(34%); opacity:0; transition:transform .6s cubic-bezier(.19,1,.22,1), opacity .6s cubic-bezier(.19,1,.22,1); }
+  .pcard:hover .metabar, .pcard.on .metabar { transform:none; opacity:1; }
+  .metabar .name { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(22px,2vw,30px); letter-spacing:-.02em; line-height:1; color:var(--bone); }
+  .metabar p { font-size:16px; line-height:1.4; color:var(--lilac); margin-top:6px; }
+  .metabar .mono { color:var(--amber); display:block; margin-bottom:8px; }
+
+  .foot { display:flex; justify-content:space-between; padding:0 44px 22px; }
+  @media (max-width:860px){
+    .head { padding:88px 20px 16px; } .head .right { display:none; }
+    .deck { grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(3,1fr); gap:10px; padding:6px 20px 14px; }
+    .idx { font-size:32px; top:10px; left:12px; }
+    .chip { width:50px; height:50px; } .chip svg { width:18px; height:18px; }
+    .metabar { padding:40px 12px 12px; }
+    .metabar .name { font-size:20px; }
+    .metabar p { display:none; }
+    .metabar .mono { font-size:11px; margin-bottom:5px; }
+    .foot { padding:0 20px 16px; } .foot .mono:last-child { display:none; }
+  }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div><span class="mono">III · The street — 28/76</span><h1>The street, one door <em>at a time.</em></h1></div>
+    <span class="mono right" id="hint">Hover a card. Three moves at once.</span>
+  </div>
+
+  <div class="deck">
+    <div class="pcard"><img src="../assets/img/shop-dusk.jpg" alt="A small storefront at dusk with a lit window">
+      <span class="idx">01</span><div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+      <div class="metabar"><span class="mono">Door 01</span><div class="name">The bakery</div><p>Flour on the door frame by six.</p></div></div>
+    <div class="pcard"><img src="../assets/img/workshop.jpg" alt="A workbench under one hanging lamp">
+      <span class="idx">02</span><div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+      <div class="metabar"><span class="mono">Door 02</span><div class="name">The hardware store</div><p>Sells you one screw if that's all you need.</p></div></div>
+    <div class="pcard"><img src="../assets/img/main-street-lit.jpg" alt="A row of shops with the windows lit">
+      <span class="idx">03</span><div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+      <div class="metabar"><span class="mono">Door 03</span><div class="name">The barber</div><p>Hears everybody's news. Keeps it.</p></div></div>
+    <div class="pcard"><img src="../assets/img/market-lights.jpg" alt="String lights over market stalls">
+      <span class="idx">04</span><div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+      <div class="metabar"><span class="mono">Door 04</span><div class="name">The florist</div><p>Weddings, funerals, and plain old Tuesdays.</p></div></div>
+    <div class="pcard"><img src="../assets/img/town-ridge.jpg" alt="Valley town lights under mountain ridges">
+      <span class="idx">05</span><div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+      <div class="metabar"><span class="mono">Door 05</span><div class="name">The roofer</div><p>Up the ladder before the rain gets there.</p></div></div>
+    <div class="pcard"><img src="../assets/img/night-road.jpg" alt="A road curving into the hills with headlight trails">
+      <span class="idx">06</span><div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+      <div class="metabar"><span class="mono">Door 06</span><div class="name">The diner</div><p>The coffee's on before the sign is.</p></div></div>
+  </div>
+
+  <div class="foot"><span class="mono">Six doors, one Main Street</span><span class="mono">Kodak, TN · 35.97° N, 83.62° W</span></div>
+
+<script>
+/* touch: tap a card to open it. Idle: the cards take turns, so the effect shows itself */
+const cards = [...document.querySelectorAll('.pcard')];
+/* a missing picture shows the card's own lamp-lit ground instead of a broken icon */
+document.querySelectorAll('.pcard img').forEach(i => { const hide = () => i.style.visibility = 'hidden';
+  if (i.complete && !i.naturalWidth) hide(); else i.addEventListener('error', hide); });
+const touch = matchMedia('(hover:none)').matches;
+if (touch) document.getElementById('hint').textContent = 'Tap a card';
+let auto = 0, lastUser = -1e9, hovering = false;
+const open = i => cards.forEach((c, j) => c.classList.toggle('on', j === i));
+cards.forEach((c, i) => {
+  c.addEventListener('mouseenter', () => { hovering = true; open(-1); });
+  c.addEventListener('mouseleave', () => { hovering = false; lastUser = performance.now(); });
+  c.addEventListener('click', () => { if (touch){ lastUser = performance.now(); auto = i; open(i); } });
+});
+let running = true;
+addEventListener('scene:leave', () => running = false);
+addEventListener('scene:enter', () => running = true);
+SCENE.onFirstEnter(() => {
+  open(0);
+  setInterval(() => {
+    if (!running || hovering || performance.now() - lastUser < 5000) return;
+    auto = (auto + 1) % cards.length; open(auto);
+  }, 2200);
+});
+</script>
+<!-- signature cursor -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(234,231,244,.8); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=-100,my=-100,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button,.pcard');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

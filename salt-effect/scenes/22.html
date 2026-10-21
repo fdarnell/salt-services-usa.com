@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>Built by hand</title>
+<!-- 56/76 · PRISM material lab, re-made for Salt: one hopper salt crystal on a craftsman's bench under
+     a hanging lamp. Four finishes re-skin it (Indigo glass, Amber honey glass, Bone ceramic, clear Salt).
+     A switch dips the lamp and sweeps the new finish across the crystal; drag to turn it. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{--ink-0:#0e081f;--ink-1:#180f2f;--ink-2:#2b1d52;--amber:#e9a13b;--amber-hi:#f0b055;--bone:#f5f3ed;--bone-2:#ece9e0;--lilac:#eae7f4;--mist:#b3aacd;--plum:#635a7d;--ink-text:#201439}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  #gl { position:fixed; inset:0; touch-action:none; cursor:grab; }
+  #gl.drag { cursor:grabbing; }
+  /* a soft scrim so the copy always sits on dark, whatever the lamp is doing */
+  .scrim { position:fixed; inset:0; pointer-events:none; z-index:5;
+    background:radial-gradient(120% 70% at 0% 100%, rgba(14,8,31,.82) 0%, rgba(14,8,31,.45) 38%, rgba(14,8,31,0) 62%),
+               radial-gradient(140% 100% at 60% 40%, rgba(14,8,31,0) 55%, rgba(14,8,31,.55) 100%); }
+  .hud { position:fixed; z-index:10; }
+  .t1{ top:88px; left:32px; } .t2{ top:88px; right:32px; text-align:right; } .b2{ bottom:26px; right:32px; }
+  .copy { position:fixed; left:32px; bottom:26px; z-index:10; max-width:min(560px, calc(100vw - 32px)); }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(40px,5vw,76px); line-height:.98; letter-spacing:-.02em; color:var(--bone); }
+  h1 em { font-style:italic; font-weight:500; color:var(--amber-hi); }
+  .line { margin-top:14px; font-size:clamp(17px,1.4vw,19px); line-height:1.55; color:var(--lilac); }
+  .chips { margin-top:22px; display:flex; gap:8px; flex-wrap:wrap; }
+  .chips button { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:9px;
+    background:rgba(14,8,31,.45); border:1px solid rgba(179,170,205,.3); color:var(--mist); padding:11px 16px 11px 12px;
+    border-radius:999px; cursor:pointer; transition:background .3s,color .3s,border-color .3s; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .chips i { width:14px; height:14px; border-radius:50%; flex:none; box-shadow:inset 0 0 0 1px rgba(245,243,237,.35); }
+  .chips [data-m=indigo] i { background:radial-gradient(circle at 35% 30%, #8d7fe0, #2b1d52 70%); }
+  .chips [data-m=amber] i  { background:radial-gradient(circle at 35% 30%, #ffe0a6, #e9a13b 55%, #7a4510); }
+  .chips [data-m=bone] i   { background:radial-gradient(circle at 35% 30%, #fff, #ece9e0 60%, #b9b2a3); }
+  .chips [data-m=salt] i   { background:conic-gradient(from 40deg, #f5f3ed, #b3aacd, #f5f3ed, #eae7f4, #f5f3ed); }
+  .chips button.on { background:var(--bone); color:var(--ink-text); border-color:var(--bone); }
+  .chips button:hover:not(.on) { color:var(--bone); border-color:var(--bone); }
+  .chips button:focus-visible { outline:2px solid var(--amber); outline-offset:2px; }
+  #finish { margin-top:14px; min-height:18px; }
+  #finish b { font-weight:400; color:var(--amber-hi); }
+  @media (max-width:760px){
+    .t1{ left:16px; } .t2,.b2{ display:none; }
+    .copy { left:16px; right:16px; bottom:22px; }
+    .chips button { padding:10px 13px 10px 10px; }
+    .scrim { background:linear-gradient(to top, rgba(14,8,31,.92) 0%, rgba(14,8,31,.7) 30%, rgba(14,8,31,0) 50%),
+               radial-gradient(140% 90% at 50% 35%, rgba(14,8,31,0) 55%, rgba(14,8,31,.5) 100%); }
+  }
+</style>
+</head>
+<body>
+  <div id="gl" aria-hidden="true"></div>
+  <div class="scrim" aria-hidden="true"></div>
+  <span class="mono hud t1">V · The signal — 56/76</span>
+  <span class="mono hud t2">Material lab · 4 finishes · drag to turn</span>
+  <div class="copy">
+    <h1>Built by hand.<br><em>Owned by you.</em></h1>
+    <p class="line">Own it outright or rent it monthly.</p>
+    <div class="chips" role="group" aria-label="Finish">
+      <button data-m="indigo" aria-pressed="false"><i></i>Indigo</button>
+      <button data-m="amber" aria-pressed="false"><i></i>Amber</button>
+      <button data-m="bone" aria-pressed="false"><i></i>Bone</button>
+      <button data-m="salt" aria-pressed="true" class="on"><i></i>Salt</button>
+    </div>
+    <p class="mono" id="finish"><b>04</b> · Salt · clear crystal, n 1.54</p>
+  </div>
+  <span class="mono hud b2">Kodak, TN · 35.97° N, 83.62° W</span>
+
+<script type="importmap">
+{ "imports": { "three": "../kit/three/three.module.js",
+  "three/addons/": "../kit/three/addons/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const S = window.SCENE || {}, REDUCE = !!S.reduce;
+const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+let seed = 22;
+const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+
+const host = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = true;
+host.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0e081f);
+/* RoomEnvironment for believable reflections, plus the workshop's own lamp (amber, overhead) and indigo window */
+const room = new RoomEnvironment(renderer);
+const panel = (c, k, x, y, z, sx, sy, sz) => { const m = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+  m.material.color.setHex(c).multiplyScalar(k); m.position.set(x, y, z); m.scale.set(sx, sy, sz); room.add(m); };
+panel(0xf0b055, 26, -1, 15, 2, 5, .2, 5);
+panel(0x5241a8, 7, -15, 6, 6, .2, 6, 9);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(room, .04).texture;
+const camera = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, .1, 80);
+
+/* ---------- canvas textures: walnut-ish bench wood (amber stirred into ink) and a plank wall ---------- */
+function tex(w, h, draw, rep){
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; if (rep) t.repeat.set(rep[0], rep[1]);
+  t.anisotropy = 8; return t;
+}
+const grain = (g, w, h, base, dark, lite, n) => {
+  g.fillStyle = base; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < n; i++){
+    const y = rnd() * h, f = rnd() * 6;
+    g.strokeStyle = rnd() < .55 ? dark : lite; g.globalAlpha = .06 + rnd() * .22; g.lineWidth = .6 + rnd() * 2.4;
+    g.beginPath();
+    for (let x = 0; x <= w; x += 8){ const yy = y + Math.sin(x * .011 + f) * 3 + Math.sin(x * .0031 + f * 2) * 9; x ? g.lineTo(x, yy) : g.moveTo(x, yy); }
+    g.stroke();
+  }
+  g.globalAlpha = 1;
+};
+const woodTop = tex(1024, 512, (g, w, h) => grain(g, w, h, '#573b33', '#2a1a20', '#8a6040', 340), [2, 1]);
+const woodSide = tex(512, 256, (g, w, h) => grain(g, w, h, '#2d1d26', '#140b18', '#4a3030', 160), [3, 1]);
+const wall = tex(512, 512, (g, w, h) => {
+  for (let i = 0; i < 8; i++){
+    const x = i * 64, l = rnd();
+    g.fillStyle = l < .33 ? '#231845' : l < .66 ? '#281b4d' : '#2b1d52'; g.fillRect(x, 0, 64, h);
+    for (let k = 0; k < 6; k++){ g.globalAlpha = .04 + rnd() * .05; g.fillStyle = rnd() < .5 ? '#0e081f' : '#2b1d52'; g.fillRect(x + rnd() * 60, 0, 1 + rnd() * 2, h); }
+    g.globalAlpha = 1; g.fillStyle = '#0a0617'; g.fillRect(x, 0, 3, h);
+  }
+}, [7, 2]);
+
+/* ---------- the workshop: plank wall, bench, a turned walnut stand ---------- */
+const std = o => new THREE.MeshStandardMaterial(Object.assign({ envMapIntensity:.05 }, o));
+const wallM = new THREE.Mesh(new THREE.PlaneGeometry(56, 28), std({ map:wall, roughness:.92 }));
+wallM.position.set(0, 6, -3.6); wallM.receiveShadow = true; scene.add(wallM);
+
+const sideM = std({ map:woodSide, roughness:.8 });
+const bench = new THREE.Mesh(new THREE.BoxGeometry(30, 7, 5.2),
+  [sideM, sideM, std({ map:woodTop, roughness:.55, envMapIntensity:.08 }), sideM, sideM, sideM]);
+bench.position.set(0, -3.5, -.9); bench.receiveShadow = true; scene.add(bench);
+const lip = new THREE.Mesh(new THREE.BoxGeometry(30, .09, .09), std({ map:woodTop, roughness:.4, color:0xd8b48c, envMapIntensity:.3 }));
+lip.position.set(0, -.03, 1.7); scene.add(lip);
+
+const turn = new THREE.Group(); scene.add(turn);
+const standMat = std({ map:woodTop, roughness:.38, envMapIntensity:.14 });
+const stand = new THREE.Mesh(new THREE.CylinderGeometry(1.62, 1.72, .16, 72), standMat);
+stand.position.y = .08; stand.castShadow = stand.receiveShadow = true; turn.add(stand);
+
+/* loose grains of salt on the bench, shaken off the big one */
+const grains = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshPhysicalMaterial({ color:0xf5f3ed, roughness:.2, transmission:.4, thickness:.2, envMapIntensity:1.2 }), 46);
+{ const m = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+  for (let i = 0; i < 46; i++){
+    const a = rnd() * 6.283, r = 1.85 + Math.pow(rnd(), 2.2) * 3, s = .02 + rnd() * rnd() * .05;
+    e.set(0, rnd() * 6.283, 0); q.setFromEuler(e);
+    m.compose(V3(Math.max(-2.1, Math.cos(a) * r * 1.1 + .4), s / 2, Math.min(1.5, Math.sin(a) * r * .55 + .2)), q, V3(s, s, s));
+    grains.setMatrixAt(i, m);
+  } }
+grains.castShadow = true; scene.add(grains);
+
+/* ---------- the hopper crystal: a cube whose faces sink toward the centre in square terraces ---------- */
+const sparkPts = [];
+function hopper(){
+  const pos = [], N = 9;
+  const tri = (a, b, c, want) => {
+    const n = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a));
+    if (n.dot(want) < 0) [b, c] = [c, b];
+    pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+  };
+  const quad = (a, b, c, d, w) => { tri(a, b, c, w); tri(a, c, d, w); };
+  const F = [[V3(0,0,1), V3(1,0,0), V3(0,1,0)], [V3(0,0,-1), V3(-1,0,0), V3(0,1,0)], [V3(1,0,0), V3(0,0,-1), V3(0,1,0)],
+             [V3(-1,0,0), V3(0,0,1), V3(0,1,0)], [V3(0,1,0), V3(1,0,0), V3(0,0,-1)], [V3(0,-1,0), V3(1,0,0), V3(0,0,1)]];
+  const SQ = [[1, 1], [-1, 1], [-1, -1], [1, -1]];
+  for (const [n, u, v] of F){
+    const P = (x, y, z) => new THREE.Vector3().addScaledVector(u, x).addScaledVector(v, y).addScaledVector(n, z);
+    /* each face grows a little differently: step widths, depths and a drifting centre */
+    const a = [1], z = [1], ox = (rnd() - .5) * .08, oy = (rnd() - .5) * .08;
+    for (let i = 1; i <= N; i++){ const da = .07 + rnd() * .026; a.push(a[i - 1] - da); z.push(z[i - 1] - da * (.32 + rnd() * .3)); }
+    const w = a.map((x, i) => i < N ? (a[i] - a[i + 1]) * (.25 + rnd() * .2) : 0);
+    const C = (i, k, zz, e = 0) => { const f = i / N, r = a[i] + e; return P(SQ[k][0] * r + ox * f, SQ[k][1] * r + oy * f, zz); };
+    for (let i = 0; i < N; i++){
+      const zi = z[i], zs = zi - .012;                     // each terrace tips gently inward
+      for (let k = 0; k < 4; k++){
+        const k2 = (k + 1) % 4;
+        quad(C(i, k, zi), C(i, k2, zi), C(i + 1, k2, zs, w[i]), C(i + 1, k, zs, w[i]), n);
+        const m = C(i + 1, k, 0).add(C(i + 1, k2, 0)).multiplyScalar(-.5).projectOnPlane(n).normalize().add(n);
+        quad(C(i + 1, k, zs, w[i]), C(i + 1, k2, zs, w[i]), C(i + 1, k2, z[i + 1]), C(i + 1, k, z[i + 1]), m);
+        /* sparkle sits on the lip of each step, where a real crystal catches the lamp */
+        for (let s = 0; s < 3; s++){
+          const p = C(i + 1, k, zs, w[i]).lerp(C(i + 1, k2, zs, w[i]), rnd()).addScaledVector(n, .012);
+          sparkPts.push(p.x, p.y, p.z, rnd());
+        }
+      }
+    }
+    quad(C(N, 0, z[N]), C(N, 1, z[N]), C(N, 2, z[N]), C(N, 3, z[N]), n);
+  }
+  /* a grown thing is never quite square: a smooth wobble keyed to position, so shared edges stay shut */
+  const wob = (x, y, z) => .011 * (Math.sin(x * 3.1 + y * 1.7) + Math.sin(y * 2.3 - z * 3.7) + Math.sin(z * 2.9 + x * 1.3));
+  for (let i = 0; i < pos.length; i += 3){
+    const x = pos[i], y = pos[i + 1], z = pos[i + 2];
+    pos[i] += wob(y, z, x); pos[i + 1] += wob(z, x, y); pos[i + 2] += wob(x, y, z);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.computeVertexNormals();
+  return g;
+}
+const geo = hopper();
+
+/* ---------- four finishes ---------- */
+const phys = o => new THREE.MeshPhysicalMaterial(o);
+const MATS = {
+  indigo: phys({ color:0x5a48c8, transmission:.82, thickness:1.3, ior:1.52, roughness:.06, attenuationColor:0x5a46c0, attenuationDistance:1.2,
+                 specularIntensity:1, envMapIntensity:.45, clearcoat:.7, clearcoatRoughness:.05 }),
+  amber:  phys({ color:0xeea548, transmission:.75, thickness:1.3, ior:1.5, roughness:.04, attenuationColor:0xe9a13b, attenuationDistance:1.5,
+                 specularIntensity:1, specularColor:0xffe0b0, envMapIntensity:.9, clearcoat:1, clearcoatRoughness:.03, emissive:0xe9a13b, emissiveIntensity:.12 }),
+  bone:   phys({ color:0xe2ddd1, roughness:.6, metalness:0, sheen:.4, sheenColor:0xf5f3ed, sheenRoughness:.6,
+                 clearcoat:.25, clearcoatRoughness:.5, envMapIntensity:.22 }),
+  salt:   phys({ color:0xffffff, transmission:1, thickness:1.1, ior:1.544, roughness:.025, attenuationColor:0xe4def5, attenuationDistance:4,
+                 specularIntensity:1, envMapIntensity:1.4, iridescence:.15, iridescenceIOR:1.3 })
+};
+const ORDER = ['indigo', 'amber', 'bone', 'salt'];
+const LABEL = {
+  indigo: '<b>01</b> · Indigo · deep tinted glass',
+  amber:  '<b>02</b> · Amber · lamplit honey glass',
+  bone:   '<b>03</b> · Bone · hand-thrown ceramic',
+  salt:   '<b>04</b> · Salt · clear crystal, n 1.54'
+};
+for (const k of ORDER){ const m = MATS[k]; m.userData.plane = new THREE.Plane(V3(1, 0, 0), 1e3); m.clippingPlanes = [m.userData.plane]; }
+
+const crystal = new THREE.Group(); crystal.position.y = .16 + 1.02; crystal.scale.set(1.02, 1, .98);
+crystal.rotation.y = .12; turn.add(crystal);
+const meshA = new THREE.Mesh(geo, MATS.salt), meshB = new THREE.Mesh(geo, MATS.salt);
+meshA.castShadow = meshB.castShadow = true; meshB.visible = false;
+crystal.add(meshA, meshB);
+/* the bright seam where the new finish meets the old, drawn on the crystal's own surface */
+const seamU = { uD:{ value:new THREE.Vector3() }, uS:{ value:0 }, uK:{ value:0 } };
+const seamMesh = new THREE.Mesh(geo, new THREE.ShaderMaterial({ uniforms:seamU, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  polygonOffset:true, polygonOffsetFactor:-1, polygonOffsetUnits:-4,
+  vertexShader:`varying vec3 vW; void main(){ vec4 w=modelMatrix*vec4(position,1.); vW=w.xyz; gl_Position=projectionMatrix*viewMatrix*w; }`,
+  fragmentShader:`uniform vec3 uD; uniform float uS,uK; varying vec3 vW;
+    void main(){ float d=dot(uD,vW)-uS; float a=uK*(exp(-d*d*900.)+.35*exp(-d*d*40.)*step(d,0.));
+      gl_FragColor=vec4(vec3(1.,.78,.42)*a,a); }` }));
+seamMesh.visible = false; crystal.add(seamMesh);
+
+/* sparkle: tiny four-point stars on the terrace lips; they glint as the crystal turns past the lamp */
+const sg = new THREE.BufferGeometry(), sp = [], ph = [];
+for (let i = 0; i < sparkPts.length; i += 4){ sp.push(sparkPts[i], sparkPts[i + 1], sparkPts[i + 2]); ph.push(sparkPts[i + 3]); }
+sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+sg.setAttribute('ph', new THREE.Float32BufferAttribute(ph, 1));
+const sparkU = { uT:{ value:0 }, uSpin:{ value:0 }, uOn:{ value:1 }, uPx:{ value:renderer.getPixelRatio() } };
+const spark = new THREE.Points(sg, new THREE.ShaderMaterial({ uniforms:sparkU, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  vertexShader:`attribute float ph; uniform float uT,uSpin,uOn,uPx; varying float vA;
+    void main(){ vec4 mv=modelViewMatrix*vec4(position,1.);
+      float tw=pow(max(0.,sin(uSpin*4.+ph*40.+uT*.9)),22.);
+      vA=uOn*(.08+tw); gl_PointSize=uPx*(5.+30.*tw)*(6./-mv.z); gl_Position=projectionMatrix*mv; }`,
+  fragmentShader:`varying float vA;
+    void main(){ vec2 q=gl_PointCoord-.5; float d=length(q);
+      float x=max(0.,1.-abs(q.x)*16.)*max(0.,1.-abs(q.y)*2.2)+max(0.,1.-abs(q.y)*16.)*max(0.,1.-abs(q.x)*2.2);
+      float a=(exp(-d*d*90.)+x*.7)*vA; gl_FragColor=vec4(vec3(1.,.94,.84)*a,a); }` }));
+crystal.add(spark);
+
+/* ---------- the lamp: a hanging enamel shade, a warm bulb, a faint beam ---------- */
+const LAMP_Y = 3.55;
+const lampPivot = new THREE.Group(); lampPivot.position.set(-.35, 9, .55); scene.add(lampPivot);
+const lamp = new THREE.Group(); lamp.position.y = LAMP_Y - 9; lampPivot.add(lamp);
+const cord = new THREE.Mesh(new THREE.CylinderGeometry(.015, .015, 9, 6), std({ color:0x0e081f, roughness:.6 }));
+cord.position.y = 4.7; lamp.add(cord);
+const shadeGeo = new THREE.CylinderGeometry(.13, .56, .44, 64, 1, true);
+const shade = new THREE.Mesh(shadeGeo, std({ color:0x2b1d52, metalness:.55, roughness:.38, envMapIntensity:.6 }));
+shade.position.y = .22; lamp.add(shade);
+const shadeIn = new THREE.Mesh(shadeGeo, new THREE.MeshBasicMaterial({ color:0xf0b055, side:THREE.BackSide }));
+shadeIn.position.y = .22; shadeIn.scale.setScalar(.985); lamp.add(shadeIn);
+const cap = new THREE.Mesh(new THREE.CylinderGeometry(.07, .13, .12, 24), shade.material); cap.position.y = .49; lamp.add(cap);
+const bulb = new THREE.Mesh(new THREE.SphereGeometry(.11, 24, 16), new THREE.MeshBasicMaterial({ color:0xfff1d6 }));
+bulb.position.y = .1; lamp.add(bulb);
+const glowTex = tex(128, 128, (g) => { const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  r.addColorStop(0, 'rgba(255,236,200,1)'); r.addColorStop(.25, 'rgba(240,176,85,.55)'); r.addColorStop(1, 'rgba(233,161,59,0)'); g.fillStyle = r; g.fillRect(0, 0, 128, 128); });
+const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map:glowTex, blending:THREE.AdditiveBlending, depthWrite:false, transparent:true }));
+glow.scale.setScalar(2.2); glow.position.y = .02; lamp.add(glow);
+const beamU = { uK:{ value:1 } };
+const beam = new THREE.Mesh(new THREE.CylinderGeometry(.54, 2.4, LAMP_Y - .05, 48, 1, true), new THREE.ShaderMaterial({
+  uniforms:beamU, transparent:true, depthWrite:false, side:THREE.DoubleSide, blending:THREE.AdditiveBlending,
+  vertexShader:`varying vec2 vU; varying vec3 vN,vV; void main(){ vU=uv; vec4 mv=modelViewMatrix*vec4(position,1.);
+    vN=normalize(normalMatrix*normal); vV=normalize(-mv.xyz); gl_Position=projectionMatrix*mv; }`,
+  fragmentShader:`uniform float uK; varying vec2 vU; varying vec3 vN,vV;
+    void main(){ float edge=pow(abs(dot(vN,vV)),1.5); float a=.07*uK*edge*smoothstep(0.,.9,vU.y)*smoothstep(0.,.35,vU.y);
+      gl_FragColor=vec4(vec3(.94,.69,.33)*a,a); }` }));
+beam.position.y = -(LAMP_Y - .05) / 2; lamp.add(beam);
+
+const key = new THREE.SpotLight(0xf3b766, 0, 0, .78, .75, 2);
+key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -.0004; key.shadow.normalBias = .02;
+key.shadow.camera.near = .5; key.shadow.camera.far = 14;
+scene.add(key, key.target); key.target.position.set(0, .7, 0);
+const warm = new THREE.PointLight(0xe9a13b, 0, 0, 2); scene.add(warm);          // bounce off the shade, lights the wall
+const fill = new THREE.DirectionalLight(0x5241a8, 1.4); fill.position.set(-6, 2.5, 6); scene.add(fill);   // indigo window light
+const rim = new THREE.DirectionalLight(0x8a7cd0, 1.1); rim.position.set(5, 3.5, -5); scene.add(rim);
+const seam = new THREE.PointLight(0xf0b055, 0, 4.5, 2); scene.add(seam);         // the hand-held light that carries a new finish
+scene.add(new THREE.HemisphereLight(0x2b1d52, 0x0e081f, .5));
+
+/* ---------- finish switching: the lamp dips, the new finish sweeps across from the lamp side ---------- */
+const chips = [...document.querySelectorAll('.chips button')];
+const finish = document.getElementById('finish');
+const D = V3(.78, -.46, .42).normalize(), R = 1.85, TD = 1.75;
+let cur = 'salt', sw = null, userPicked = false, lastSwitch = 0, nudge = -10;
+const cWorld = new THREE.Vector3();
+function setPlane(m, sign, s){
+  const pl = m.userData.plane;
+  pl.normal.copy(D).multiplyScalar(sign);
+  pl.constant = sign > 0 ? -(D.dot(cWorld) + s) : D.dot(cWorld) + s;
+}
+function commit(){
+  if (!sw) return;
+  meshA.material = MATS[sw.to]; meshB.visible = false;
+  for (const k of ORDER) MATS[k].userData.plane.set(V3(1, 0, 0), 1e3);
+  cur = sw.to; sw = null;
+}
+function pick(i, byUser){
+  const to = ORDER[i];
+  if (byUser) userPicked = true;
+  chips.forEach((x, k) => { x.classList.toggle('on', k === i); x.setAttribute('aria-pressed', k === i); });
+  finish.innerHTML = LABEL[to];
+  commit();
+  lastSwitch = T;
+  if (to === cur) return;
+  if (REDUCE){ meshA.material = MATS[to]; cur = to; sparkU.uOn.value = to === 'salt' ? 1 : 0; draw(); return; }
+  sw = { from:cur, to, t0:T };
+  meshB.material = MATS[to]; meshB.visible = true;
+  nudge = T;
+}
+chips.forEach((b, i) => b.addEventListener('click', () => pick(i, true)));
+
+/* ---------- drag to turn (sideways), the stand keeps turning slowly on its own ---------- */
+let spin = .55, vel = 0, drag = null;
+host.addEventListener('pointerdown', e => { drag = { x:e.clientX, t:performance.now() }; host.classList.add('drag'); host.setPointerCapture(e.pointerId); });
+host.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const now = performance.now(), dx = e.clientX - drag.x, k = 5.2 / Math.min(innerWidth, 1200);
+  spin += dx * k; vel = vel * .4 + (dx * k / Math.max((now - drag.t) / 1000, .008)) * .6;
+  drag.x = e.clientX; drag.t = now;
+  if (REDUCE) draw();
+});
+const end = () => { drag = null; host.classList.remove('drag'); };
+host.addEventListener('pointerup', end); host.addEventListener('pointercancel', end);
+const mouse = { x:0, y:0 };
+addEventListener('pointermove', e => { mouse.x = e.clientX / innerWidth - .5; mouse.y = e.clientY / innerHeight - .5; });
+
+/* ---------- framing: the bench across the bottom, crystal right of the copy (above it on phones) ---------- */
+const aim = V3(0, 1.5, 0), view = { d:8, ox:0, oy:0, el:.2 };
+function frame(){
+  const W = innerWidth, H = innerHeight, a = W / H, tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  renderer.setSize(W, H); camera.aspect = a;
+  if (a < .9){ view.d = 4.2 / (2 * tan * a); view.ox = 0; view.oy = .075; view.el = .16; }
+  else { view.d = 9.2; view.ox = a > 1.3 ? -.16 : -.07; view.oy = -.05; view.el = .16; }
+  camera.setViewOffset(W, H, view.ox * W, view.oy * H, W, H);
+  camera.updateProjectionMatrix();
+  draw();
+}
+
+/* ---------- the loop ---------- */
+let T = 0, last = 0, on = true, pending = false, lampOn = 0, firstLit = null;
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const bump = (x, a, b, c, d) => x < a || x > d ? 0 : x < b ? (x - a) / (b - a) : x < c ? 1 : (d - x) / (d - c);
+function draw(){
+  const t = T;
+  /* lamp: switched on at first visit, sways after each nudge, dips while a finish changes */
+  const sinceOn = firstLit === null ? 0 : t - firstLit;
+  lampOn = firstLit === null ? 0 : Math.min(1, sinceOn / 1.1) * (sinceOn < .5 ? .75 + .25 * Math.sin(sinceOn * 60) : 1);
+  const tn = t - nudge, swing = .045 * Math.exp(-tn / 1.5) * Math.sin(tn * 2.9) * (tn > 0 ? 1 : 0);
+  lampPivot.rotation.z = swing + Math.sin(t * .6) * .006; lampPivot.rotation.x = swing * .4;
+  let dip = 0, k = 0;
+  if (sw){
+    const e = t - sw.t0;
+    dip = bump(e, 0, .32, 1.15, TD);
+    k = ease(Math.min(1, Math.max(0, (e - .28) / 1.05)));
+    const s = -R + 2 * R * k;
+    crystal.getWorldPosition(cWorld);
+    setPlane(MATS[sw.to], -1, s); setPlane(MATS[sw.from], 1, s);
+    seam.position.copy(cWorld).addScaledVector(D, s).add(V3(0, 0, 1.8));
+    seam.intensity = 8 * Math.sin(Math.PI * k);
+    seamMesh.visible = true; seamU.uD.value.copy(D); seamU.uS.value = D.dot(cWorld) + s; seamU.uK.value = Math.sin(Math.PI * k);
+    sparkU.uOn.value = sw.to === 'salt' ? k : sw.from === 'salt' ? 1 - k : 0;
+    if (e >= TD) commit();
+  } else { seam.intensity = 0; seamMesh.visible = false; sparkU.uOn.value = cur === 'salt' ? 1 : 0; }
+  const L = lampOn * (1 - .62 * dip);
+  lamp.updateMatrixWorld(true); bulb.getWorldPosition(key.position);
+  key.intensity = 70 * L; warm.position.copy(key.position).y += .3; warm.intensity = 40 * L;
+  bulb.material.color.setRGB(1, .945, .84).multiplyScalar(.15 + .85 * L);
+  shadeIn.material.color.setHex(0xf0b055).multiplyScalar(.1 + .9 * L);
+  glow.material.opacity = L; beamU.uK.value = L;
+
+  turn.rotation.y = spin;
+  sparkU.uT.value = t; sparkU.uSpin.value = spin;
+  const az = -mouse.x * .12, el = view.el + mouse.y * .05;
+  camera.position.set(aim.x + Math.sin(az) * Math.cos(el) * view.d, aim.y + Math.sin(el) * view.d, aim.z + Math.cos(az) * Math.cos(el) * view.d);
+  camera.lookAt(aim);
+  renderer.render(scene, camera);
+}
+function loop(now){
+  pending = false;
+  if (!on || document.hidden) return;
+  const dt = last ? Math.min(.05, (now - last) / 1000) : 0; last = now;
+  if (!REDUCE){
+    T += dt;
+    if (!drag){ vel += (.16 - vel) * Math.min(1, dt * 1.4); spin += vel * dt; }
+    if (!userPicked && !sw && firstLit !== null && T - lastSwitch > 4.6) pick((ORDER.indexOf(cur) + 1) % 4);
+  }
+  draw();
+  start();
+}
+function start(){ if (!pending){ pending = true; requestAnimationFrame(loop); } }
+
+if (REDUCE) firstLit = -100;
+S.onFirstEnter ? S.onFirstEnter(() => { if (!REDUCE){ firstLit = T; lastSwitch = T; } }) : (firstLit = 0);
+addEventListener('scene:leave', () => { on = false; last = 0; });
+addEventListener('scene:enter', () => { on = true; start(); });
+document.addEventListener('visibilitychange', () => { last = 0; if (!document.hidden) start(); });
+addEventListener('resize', frame);
+frame(); start();
+</script>
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  dot.style.opacity=ring.style.opacity='0';   /* hidden until the first mouse move, so nothing parks over the copy */
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{if(ring.style.opacity){rx=e.clientX;ry=e.clientY;dot.style.opacity=ring.style.opacity='';}mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

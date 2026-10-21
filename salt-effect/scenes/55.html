@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · An idea has gravity</title>
+<!-- Scene 7/76 · from template 55 SPIRAL Galaxy.
+     A rotating spiral of 6,000 specks, amber at the core and salt-white in the arms; the cursor's
+     (or finger's) gravity bends the arms, and holding down spins it faster. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif;
+    -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  canvas { position:fixed; inset:0; width:100%; height:100%; touch-action:pan-y; }
+  .shade { position:fixed; inset:0; pointer-events:none; background:linear-gradient(20deg, rgba(14,8,31,.85) 0%, rgba(14,8,31,.3) 34%, transparent 55%); }
+  .panel { position:fixed; left:5vw; bottom:9vh; z-index:5; pointer-events:none; max-width:min(560px, 90vw); }
+  .panel h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(44px,6vw,92px); letter-spacing:-.02em; line-height:.95; color:var(--bone); }
+  .panel h1 em { font-style:italic; font-weight:500; color:var(--amber); }
+  .panel p { margin-top:22px; font-size:clamp(17px,1.4vw,19px); line-height:1.55; max-width:27em; color:var(--lilac); }
+  .panel .mono { display:block; margin-top:18px; }
+  .hud { position:fixed; z-index:10; }
+  .t1{ top:88px; left:32px; } .t2{ top:88px; right:32px; } .b2{ bottom:26px; right:32px; }
+  .touch-only { display:none; }
+  @media (hover:none){ .touch-only{ display:inline } .mouse-only{ display:none } }
+  @media (max-width:640px){
+    .t1{ left:20px } .t2{ right:20px } .b2{ display:none }
+    .panel { left:20px; right:20px; bottom:5vh; }
+    .panel h1 { font-size:clamp(42px,12.5vw,54px); }
+    .shade { background:linear-gradient(0deg, rgba(14,8,31,.92) 0%, rgba(14,8,31,.5) 30%, transparent 50%); }
+  }
+</style>
+</head>
+<body>
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <div class="shade" aria-hidden="true"></div>
+  <div class="panel">
+    <h1>An idea has<br><em>gravity.</em></h1>
+    <p>It pulls in savings, nerve, late nights, and the first people willing to help.</p>
+    <span class="mono"><span class="mouse-only">Move to stir the arms · hold to spin</span><span class="touch-only">Drag to stir the arms · hold to spin</span></span>
+  </div>
+  <span class="mono hud t1">I · The grain — 7/76</span>
+  <span class="mono hud t2" id="specks">6,000 specks</span>
+  <span class="mono hud b2">35.97° N, 83.62° W</span>
+
+<script>
+const STARS = innerWidth < 640 ? 4200 : 6000, ARMS = 3;
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let W, H, CX, CY, R;
+const fit = () => {
+  W = cv.width = innerWidth; H = cv.height = innerHeight;
+  const phone = W < 640;
+  CX = phone ? W * .5 : W * .6; CY = phone ? H * .36 : H * .46;
+  R = phone ? Math.min(W * .62, H * .4) : Math.min(W, H) * .44;
+  ctx.fillStyle = '#0e081f'; ctx.fillRect(0, 0, W, H);
+};
+fit(); addEventListener('resize', fit);
+
+/* each star: radius, angle offset from its arm, arm index, tint, twinkle phase */
+const stars = Array.from({ length: STARS }, () => {
+  const rr = Math.pow(Math.random(), .6);              /* denser core */
+  return {
+    r: rr, arm: Math.floor(Math.random()*ARMS),
+    scatter: (Math.random()-.5) * .5 * (1 - rr * .6),  /* arms tighten outward */
+    tint: Math.random(),
+    tw: Math.random()*Math.PI*2
+  };
+});
+
+/* colour: amber core, salt-white arms, a few lilac specks at the rim */
+const AMBER = [240,176,85], SALT = [245,243,237], LILAC = [179,170,205];
+function colour(s){
+  const core = Math.max(0, 1 - s.r * 2.2);           /* 1 at the centre, 0 by r=.45 */
+  const base = s.tint > .9 ? LILAC : SALT;
+  const k = s.tint < .12 ? 1 : core;                 /* a scattering of amber specks out in the arms */
+  return [0,1,2].map(i => Math.round(base[i] + (AMBER[i] - base[i]) * k));
+}
+stars.forEach(s => { const c = colour(s); s.rgb = `${c[0]},${c[1]},${c[2]}`; });
+document.getElementById('specks').textContent = STARS.toLocaleString('en-US') + ' specks';
+/* a far field of faint salt specks behind the galaxy */
+const field = Array.from({ length: 220 }, () => ({ x: Math.random(), y: Math.random(), a: Math.random() * .35 + .08, s: Math.random() < .15 ? 1.6 : 1 }));
+
+let rot = 0, spin = .0016, targetSpin = .0016, held = false;
+let mx = -9999, my = -9999, lastMove = -1e9;
+addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+addEventListener('pointerdown', e => { held = true; mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+addEventListener('pointerup', () => held = false);
+addEventListener('pointercancel', () => held = false);
+addEventListener('blur', () => held = false);
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+(function loop(){
+  requestAnimationFrame(loop);
+  const t = performance.now() / 1000;
+  if (performance.now() - lastMove > 3000){
+    /* nobody touching: an invisible hand wanders through the arms */
+    mx = CX + Math.cos(t * .5) * R * .7;
+    my = CY + Math.sin(t * .65) * R * .5;
+  }
+  targetSpin = held ? .012 : .0016;
+  spin += (targetSpin - spin) * .04;
+  rot += spin;
+
+  ctx.fillStyle = 'rgba(14,8,31,.32)';
+  ctx.fillRect(0, 0, W, H);
+
+  /* core glow: warm at the heart, indigo haze around it */
+  const cg = ctx.createRadialGradient(CX, CY, 0, CX, CY, R * .42);
+  cg.addColorStop(0, 'rgba(240,176,85,.26)');
+  cg.addColorStop(.35, 'rgba(233,161,59,.07)');
+  cg.addColorStop(.7, 'rgba(43,29,82,.10)');
+  cg.addColorStop(1, 'rgba(43,29,82,0)');
+  ctx.fillStyle = cg;
+  ctx.fillRect(0, 0, W, H);
+
+  for (const f of field){ ctx.fillStyle = `rgba(245,243,237,${f.a})`; ctx.fillRect(f.x * W, f.y * H, f.s, f.s); }
+
+  const G = R * R * .1;                                 /* gravity reach scales with the galaxy */
+  ctx.globalCompositeOperation = 'lighter';
+  for (const s of stars){
+    /* spiral: angle grows with radius; inner stars orbit faster */
+    const baseA = s.arm * (Math.PI * 2 / ARMS) + s.r * 3.1 + s.scatter + rot * (1.6 - s.r);
+    const rad = s.r * R;
+    let x = CX + Math.cos(baseA) * rad;
+    let y = CY + Math.sin(baseA) * rad * .58;           /* elliptical tilt */
+    /* cursor gravity bends nearby stars */
+    const dx = mx - x, dy = my - y;
+    const d2 = dx*dx + dy*dy;
+    if (d2 < G){
+      const f = (1 - d2/G) * 14;
+      const d = Math.sqrt(d2) || 1;
+      x += dx/d * f; y += dy/d * f;
+    }
+    const twinkle = .55 + Math.sin(s.tw + t * 2) * .45;
+    const core = 1 - s.r;
+    ctx.fillStyle = `rgba(${s.rgb},${(0.16 + core * .5) * twinkle})`;
+    const size = (s.r < .12 ? 1.8 : 1.15) * twinkle;
+    ctx.fillRect(x, y, size, size);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+})();
+</script>
+<!-- signature cursor, brand colours, off on touch -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .2s; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.8); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .2s; }
+  .cur-on #wlDot, .cur-on #wlRing { opacity:1; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  const R=document.documentElement;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';R.classList.add('cur-on');});
+  document.addEventListener('mouseleave',()=>R.classList.remove('cur-on'));
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

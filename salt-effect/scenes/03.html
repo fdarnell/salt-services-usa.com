@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="scroll">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>The next pinch · The Salt Effect</title>
+<!-- No. 03 ARCHIVE/26 Kinetic Type, re-skinned: words rise on first enter, a giant outline strip
+     scrubs sideways, the paragraph inks in letter by letter, story pictures un-zoom, the closer pops.
+     Scroll scene (~440vh), GSAP + ScrollTrigger on native window scroll. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:var(--ink-0); }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; overflow-x:hidden; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  #bar { position:fixed; bottom:0; left:0; height:2px; width:100%; background:var(--amber); box-shadow:0 0 10px rgba(233,161,59,.6);
+    transform-origin:left; transform:scaleX(0); z-index:60; }
+
+  section { position:relative; }
+  .hero { height:100svh; display:flex; flex-direction:column; justify-content:center; padding:72px 6vw 0;
+    background:radial-gradient(60% 50% at 80% 70%, rgba(233,161,59,.08), transparent 70%); }
+  .hero h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(48px, min(15vw, 18vh), 176px); line-height:.95; letter-spacing:-.02em; color:var(--bone); }
+  .hero h1 .word { display:inline-block; overflow:hidden; vertical-align:top; padding:0 .02em .14em; margin-bottom:-.14em; }
+  .hero h1 .word span { display:inline-block; transform:translateY(115%); }
+  .hero h1 .accent { color:var(--amber); }
+  .hero .mono { margin-top:34px; opacity:0; }
+
+  .strip { padding:6vh 0; overflow:hidden; }
+  .strip h2 { white-space:nowrap; font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(84px,16vw,240px); letter-spacing:-.02em; line-height:1;
+    color:transparent; -webkit-text-stroke:1.5px rgba(179,170,205,.32); }
+  .strip h2 b { color:var(--bone); -webkit-text-stroke:0; font-weight:600; }
+
+  .manifesto { min-height:76svh; display:flex; align-items:center; padding:6vh 8vw; }
+  .manifesto p { font-family:'Fraunces',Georgia,serif; font-size:clamp(28px,3.6vw,54px); font-weight:500; line-height:1.22; max-width:1100px; letter-spacing:-.02em; color:var(--bone); }
+  .manifesto .char { opacity:.12; }
+  .manifesto .hl { color:var(--amber); }
+
+  .gallery { display:flex; gap:3vw; padding:6vh 6vw 2vh; align-items:flex-start; }
+  .gcol { flex:1; display:flex; flex-direction:column; gap:3vw; }
+  .gcol:nth-child(2) { margin-top:9vh; }
+  .frame { overflow:hidden; border-radius:6px; background:var(--ink-1); }
+  .frame .ph { overflow:hidden; border-radius:6px; aspect-ratio:18/11; }
+  .frame img { width:100%; height:100%; object-fit:cover; display:block; transform:scale(1.25); filter:grayscale(.35) contrast(1.05); }
+  .frame figcaption { padding:12px 2px; background:var(--ink-0); }
+
+  .outro { height:64svh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 20px;
+    background:radial-gradient(50% 45% at 50% 55%, rgba(233,161,59,.1), transparent 70%); }
+  .outro h3 { font-family:'Fraunces',Georgia,serif; font-size:clamp(56px,9vw,150px); font-weight:600; letter-spacing:-.02em; line-height:.95; color:var(--bone); }
+  .outro h3 em { font-style:normal; color:var(--amber); }
+  .badge { position:fixed; bottom:18px; right:24px; z-index:50; pointer-events:none; }
+  /* inside the story: the story page draws the progress bar and the scene label */
+  html.scene-embedded #bar, html.scene-embedded .badge { display:none; }
+  html.scene-embedded .hero .mono { visibility:hidden; }
+  /* inside the story, copy fades out before it reaches the story header (top 88px) */
+  html.scene-embedded body::after { content:''; position:fixed; left:0; right:0; top:0; height:128px; z-index:55; pointer-events:none;
+    background:linear-gradient(var(--ink-0) 88px, rgba(14,8,31,0)); }
+
+  @media (max-width:700px){
+    .hero { padding:72px 16px 0; }
+    .gallery { flex-direction:column; padding:6vh 16px 2vh; gap:20px; }
+    .gcol { gap:20px; width:100%; }
+    .gcol:nth-child(2) { margin-top:0; }
+    .manifesto { padding:6vh 16px; }
+    .badge { right:16px; bottom:14px; }
+  }
+  @media (pointer:fine){
+    * { cursor:none !important; }
+    #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+    #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+    #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(245,243,237,.7); transform:translate(-50%,-50%); }
+    .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+    @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+  }
+</style>
+</head>
+<body>
+  <div id="bar"></div>
+
+  <section class="hero">
+    <h1 id="heroTitle">Your business is the next pinch of salt.</h1>
+    <div class="mono">VII · Your turn — 73/76 · Scroll slow</div>
+  </section>
+
+  <section class="strip" aria-hidden="true"><h2 id="stripLine">Found — Answered — <b>Chosen</b> — Found — Answered — <b>Chosen</b> — Found</h2></section>
+
+  <section class="manifesto">
+    <p id="manifestoText">You can't see a pinch of salt once it hits the water. You can taste it in every drop. A good business works like that. Do the job right for one family, then the next one, and the whole town starts to taste different.</p>
+  </section>
+
+  <section class="gallery">
+    <div class="gcol">
+      <figure class="frame"><div class="ph"><img src="../assets/img/shop-dusk.jpg" alt="A small storefront at dusk with its window lit"></div><figcaption class="mono">01 — The door</figcaption></figure>
+      <figure class="frame"><div class="ph"><img src="../assets/img/workshop.jpg" alt="A workshop bench under one hanging lamp"></div><figcaption class="mono">03 — The work</figcaption></figure>
+    </div>
+    <div class="gcol">
+      <figure class="frame"><div class="ph"><img src="../assets/img/main-street-lit.jpg" alt="A row of small-town shops with their windows lit"></div><figcaption class="mono">02 — The street</figcaption></figure>
+      <figure class="frame"><div class="ph"><img src="../assets/img/town-ridge.jpg" alt="A valley town's lights under the mountain ridges"></div><figcaption class="mono">04 — The town</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="outro">
+    <span class="mono" style="margin-bottom:26px">Kodak, Tennessee · 35.97° N, 83.62° W</span>
+    <h3>Your <em>turn.</em></h3>
+  </section>
+  <div class="mono badge">VII · Your turn — 73/76</div>
+
+<script src="../kit/gsap/gsap.min.js"></script>
+<script src="../kit/gsap/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* hero: word-by-word rise, when the visitor gets here */
+const LINES = [
+  [{ t:'Your' }, { t:'business' }],
+  [{ t:'is' }, { t:'the' }, { t:'next' }],
+  [{ t:'pinch', accent:true }, { t:'of' }, { t:'salt.' }]
+];
+document.getElementById('heroTitle').innerHTML = LINES.map(line =>
+  line.map(w => `<span class="word${w.accent ? ' accent' : ''}"><span>${w.t}</span></span>`).join(' ')
+).join('<br>');
+document.getElementById('heroTitle').setAttribute('aria-label', 'Your business is the next pinch of salt.');
+SCENE.onFirstEnter(() => {
+  gsap.to('.hero .word > span', { y:0, duration:1.3, stagger:.07, ease:'power4.out', delay:.25 });
+  gsap.fromTo('.hero .mono', { opacity:0, y:20 }, { opacity:1, y:0, duration:1, delay:1.1 });
+});
+
+/* progress bar */
+gsap.to('#bar', { scaleX:1, ease:'none', scrollTrigger:{ trigger:document.body, start:'top top', end:'bottom bottom', scrub:.3 } });
+
+/* giant strip: horizontal scrub */
+gsap.to('#stripLine', { xPercent:-46, ease:'none',
+  scrollTrigger:{ trigger:'.strip', start:'top bottom', end:'bottom top', scrub:1 } });
+
+/* manifesto: letter-by-letter ink-in */
+const m = document.getElementById('manifestoText');
+const HL = 'every drop';
+const txt = m.textContent, hs = txt.indexOf(HL);
+m.setAttribute('aria-label', txt);
+m.innerHTML = txt.split('').map((c, i) => c === ' ' ? ' ' :
+  `<span class="char${i >= hs && i < hs + HL.length ? ' hl' : ''}" aria-hidden="true">${c}</span>`).join('');
+gsap.to('.manifesto .char', { opacity:1, stagger:.012, ease:'none',
+  scrollTrigger:{ trigger:'.manifesto', start:'top 72%', end:'center 40%', scrub:.6 } });
+
+/* gallery: parallax un-zoom + rise */
+document.querySelectorAll('.frame img').forEach(img => {
+  gsap.to(img, { scale:1, filter:'grayscale(0) contrast(1)', ease:'none',
+    scrollTrigger:{ trigger:img, start:'top 95%', end:'top 30%', scrub:.8 } });
+});
+document.querySelectorAll('.frame').forEach(f => {
+  gsap.from(f, { y:70, opacity:0, duration:1.1, ease:'power3.out',
+    scrollTrigger:{ trigger:f, start:'top 92%' } });
+});
+
+/* outro pop */
+gsap.from('.outro h3', { scale:.85, opacity:0, duration:1.2, ease:'power4.out',
+  scrollTrigger:{ trigger:'.outro', start:'top 88%' } });
+addEventListener('load', () => ScrollTrigger.refresh());
+
+(function(){
+  if (!matchMedia('(pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=-99,my=-99,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

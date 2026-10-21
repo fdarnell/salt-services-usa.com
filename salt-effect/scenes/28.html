@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Word of mouth · The Salt Effect</title>
+<!-- 26/76 · III The street · effect: Sticker Chaos Hero (template 28).
+     Floating stickers you can grab and throw (mouse or finger), bouncing off the walls,
+     over a wobbling headline. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @media (hover:hover) and (pointer:fine){ * { cursor:none; } }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-1); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  /* a busy street at night: the glow of the diner window down low */
+  body::before { content:''; position:fixed; inset:0; pointer-events:none;
+    background:
+      radial-gradient(60vmax 36vmax at 50% 100%, rgba(233,161,59,.16), transparent 70%),
+      repeating-radial-gradient(circle at 50% 50%, rgba(179,170,205,.035) 0 2px, transparent 2px 46px),
+      radial-gradient(120vmax 90vmax at 50% 40%, transparent 40%, var(--ink-0) 100%); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  .center { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; pointer-events:none; text-align:center; padding:0 20px; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:620; font-size:clamp(60px,11vw,168px); line-height:.9; letter-spacing:-.03em;
+    font-variation-settings:"opsz" 144, "SOFT" 100, "WONK" 1; }
+  h1 .w { display:inline-block; animation:wobble 2.6s ease-in-out infinite; }
+  h1 .w:nth-child(2n){ animation-delay:.35s; }
+  h1 .w:nth-child(3n){ animation-delay:.7s; }
+  h1 .w.hi { color:var(--amber); font-style:italic; font-weight:560; }
+  @keyframes wobble { 0%,100%{ transform:rotate(-2.2deg) translateY(0) } 50%{ transform:rotate(2.2deg) translateY(-8px) } }
+  @media (prefers-reduced-motion:reduce){ h1 .w { animation:none; } }
+  .center .line { margin-top:28px; font-size:clamp(17px,1.5vw,21px); line-height:1.5; color:var(--lilac); max-width:30ch; }
+  .center .mono:first-child { margin-bottom:24px; }
+
+  .sticker { position:fixed; left:0; top:0; z-index:20; user-select:none; -webkit-user-select:none; touch-action:none; will-change:transform; cursor:grab;
+    filter:drop-shadow(3px 5px 0 rgba(14,8,31,.6)); }
+  .sticker .in { display:block; }
+  .sticker.txt .in { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(17px,1.6vw,23px); letter-spacing:-.01em; white-space:nowrap;
+    background:var(--bone); color:var(--ink-text); border:2.5px solid var(--ink-0); border-radius:999px; padding:12px 22px 14px; box-shadow:4px 5px 0 var(--ink-0); }
+  .sticker.txt.am .in { background:var(--amber); }
+  .sticker.txt.li .in { background:var(--lilac); font-style:italic; }
+  .sticker.txt.mo .in { background:var(--ink-2); color:var(--lilac); border-color:var(--mist); box-shadow:4px 5px 0 var(--ink-0);
+    font-family:'Space Mono',ui-monospace,monospace; font-weight:700; font-size:clamp(12px,1.1vw,15px); letter-spacing:.08em; text-transform:uppercase; }
+  /* speech-bubble tail on the pills */
+  .sticker.txt .in { position:relative; }
+  .sticker.txt .in::after { content:''; position:absolute; left:26px; bottom:-11px; width:16px; height:12px; background:inherit;
+    border:inherit; border-top:0; border-right:0; transform:skewX(-30deg); border-radius:0 0 0 4px; }
+  .sticker.pic .in { width:clamp(72px,7vw,104px); height:clamp(72px,7vw,104px); border-radius:50%; border:3px solid var(--bone); box-shadow:4px 5px 0 var(--ink-0); }
+  .sticker.hand .in { background:var(--ink-0) url('../assets/logo/salt-logo.png') center/84% no-repeat; border-color:var(--amber); }
+  .sticker.mark .in { background:url('../assets/logo/salt-mark.svg') center/cover no-repeat; border-radius:24%; }
+  .sticker.dots .in { background:var(--amber); display:flex; align-items:center; justify-content:center; gap:7px; border-radius:50% 50% 50% 10%; }
+  .sticker.dots .in i { width:11px; height:11px; border-radius:50%; background:var(--ink-text); }
+  footer { position:fixed; bottom:0; left:0; right:0; z-index:30; display:flex; justify-content:space-between; padding:22px 30px; pointer-events:none; }
+  @media (max-width:640px){ footer { padding:18px 20px; } footer .mono:last-child { display:none; } }
+</style>
+</head>
+<body>
+  <div class="center">
+    <span class="mono">III · The street — 26/76</span>
+    <h1><span class="w">Loud.</span> <span class="w">Messy.</span><br><span class="w">The</span> <span class="w hi">best.</span></h1>
+    <p class="line">Word of mouth is loud, messy, and still the best marketing there is.</p>
+  </div>
+
+  <footer><span class="mono" id="hint">Grab a sticker and throw it</span><span class="mono">Kodak, TN · 35.97° N, 83.62° W</span></footer>
+
+<script>
+const STICKERS = [
+  { t:'you have to try this', cls:'txt' },
+  { t:'tell them I sent you', cls:'txt am' },
+  { t:'worth the drive', cls:'txt li' },
+  { t:'call these folks', cls:'txt mo' },
+  { t:'go early', cls:'txt' },
+  { t:'they fixed it same day', cls:'txt mo' },
+  { t:'', cls:'pic hand' },
+  { t:'', cls:'pic mark' },
+  { t:'<i></i><i></i><i></i>', cls:'pic dots' }
+];
+if (matchMedia('(hover:none)').matches) document.getElementById('hint').textContent = 'Grab a sticker and fling it';
+
+const bodies = [];
+const small = innerWidth < 640;
+STICKERS.forEach((s, i) => {
+  if (small && i === 5) return;          /* a little less chaos on a phone */
+  const el = document.createElement('div');
+  el.className = 'sticker ' + s.cls;
+  el.innerHTML = `<span class="in">${s.t}</span>`;
+  document.body.appendChild(el);
+  const b = {
+    /* start in the bands above and below the words, alternating */
+    el, x: innerWidth * (.14 + Math.random() * .72), y: innerHeight * (i % 2 ? .74 + Math.random() * .12 : .14 + Math.random() * .12),
+    vx: (Math.random()-.5) * 3, vy: (Math.random()-.5) * 3,
+    rot: (Math.random()-.5) * 24, vr: (Math.random()-.5) * .8,
+    hw: 45, hh: 45, held: false, pid: null
+  };
+  bodies.push(b);
+  el.addEventListener('pointerdown', e => {
+    b.held = true; b.pid = e.pointerId; b.ox = e.clientX - b.x; b.oy = e.clientY - b.y;
+    b.px = e.clientX; b.py = e.clientY;
+    try { el.setPointerCapture(e.pointerId); } catch (_) {}
+    el.style.zIndex = 25; el.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+});
+const measure = () => bodies.forEach(b => { b.hw = b.el.offsetWidth / 2; b.hh = b.el.offsetHeight / 2; });
+measure(); addEventListener('resize', measure);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+
+let mouseX = 0, mouseY = 0;
+addEventListener('pointermove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+const drop = e => bodies.forEach(b => { if (b.held && (e.pointerId == null || b.pid === e.pointerId)) { b.held = false; b.el.style.zIndex = ''; b.el.style.cursor = ''; } });
+addEventListener('pointerup', drop);
+addEventListener('pointercancel', drop);
+
+let keep = [];
+const keepEls = [...document.querySelectorAll('.center .line, .center .mono')];
+const readKeep = () => keep = keepEls.map(e => e.getBoundingClientRect());
+readKeep(); addEventListener('resize', readKeep);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(readKeep);
+
+let running = true;
+addEventListener('scene:leave', () => running = false);
+addEventListener('scene:enter', () => running = true);
+
+(function physics(){
+  requestAnimationFrame(physics);
+  if (!running) return;
+  const top = 80;                          /* stay clear of the story header */
+  bodies.forEach(b => {
+    if (b.held){
+      b.vx = (mouseX - b.px) * .55; b.vy = (mouseY - b.py) * .55;
+      b.px = mouseX; b.py = mouseY;
+      b.x = mouseX - b.ox; b.y = mouseY - b.oy;
+      b.vr = b.vx * .12;
+    } else {
+      b.x += b.vx; b.y += b.vy;
+      b.vx *= .992; b.vy *= .992;
+      const sp = Math.hypot(b.vx, b.vy);
+      if (sp < .35){ b.vx += (Math.random()-.5)*.12; b.vy += (Math.random()-.5)*.12; }
+      const mx = Math.min(b.hw, innerWidth / 2), my = b.hh;
+      if (b.x < mx){ b.x = mx; b.vx = Math.abs(b.vx) * .85; }
+      if (b.x > innerWidth - mx){ b.x = innerWidth - mx; b.vx = -Math.abs(b.vx) * .85; }
+      if (b.y < my + top){ b.y = my + top; b.vy = Math.abs(b.vy) * .85; }
+      if (b.y > innerHeight - my - 50){ b.y = innerHeight - my - 50; b.vy = -Math.abs(b.vy) * .85; }
+    }
+    /* the sentence stays readable: loose stickers get nudged off it */
+    if (!b.held) keep.forEach(r => {
+      const dx = Math.max(r.left - b.x, 0, b.x - r.right), dy = Math.max(r.top - b.y, 0, b.y - r.bottom);
+      if (dx < b.hw && dy < b.hh){
+        const cy = (r.top + r.bottom) / 2;
+        b.vy += (b.y < cy ? -1 : 1) * .55;
+      }
+    });
+    b.rot += b.vr; b.vr *= .97;
+    b.el.style.transform = `translate(${b.x - b.hw}px, ${b.y - b.hh}px) rotate(${b.rot}deg)`;
+  });
+})();
+</script>
+<!-- signature cursor -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:8px; height:8px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:38px; height:38px; border-radius:50%; border:2px solid var(--lilac); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2.5px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:76px; height:76px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=-100,my=-100,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button,.sticker');
+    ring.style.width = hit ? '64px' : '38px'; ring.style.height = hit ? '64px' : '38px';
+  });
+})();
+</script>
+</body>
+</html>

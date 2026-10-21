@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · Idea</title>
+<!-- Scene 4/76 · from template 59 SOFTWONK Variable Font Breathing.
+     Each letter of "Idea" swells in weight and softness near the cursor (or finger) and
+     breathes in a slow wave when left alone. Real Fraunces axes: opsz, wght, SOFT, WONK. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-1); color:var(--bone); font-family:'Fraunces',Georgia,serif;
+    display:flex; align-items:center; justify-content:center; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  /* a kitchen lamp hanging over the table, the only light in the room */
+  .lamp { position:fixed; left:50%; top:0; width:1px; height:12vh; background:linear-gradient(var(--ink-2), rgba(234,231,244,.35)); }
+  .lamp::after { content:''; position:absolute; left:50%; bottom:-6px; width:12px; height:12px; border-radius:50%; transform:translateX(-50%);
+    background:var(--amber-hi); box-shadow:0 0 18px 6px rgba(240,176,85,.55), 0 0 70px 20px rgba(233,161,59,.25); }
+  .pool { position:fixed; inset:0; pointer-events:none;
+    background:
+      radial-gradient(42% 52% at 50% 16%, rgba(233,161,59,.20), transparent 70%),
+      radial-gradient(70% 60% at 50% 60%, rgba(43,29,82,.75), transparent 75%); }
+  .table { position:fixed; left:0; right:0; bottom:0; height:22vh; pointer-events:none;
+    background:linear-gradient(180deg, transparent, rgba(14,8,31,.65)); }
+
+  .stage { position:relative; text-align:center; padding:72px 5vw 40px; }
+  .line { font-size:clamp(130px,27vw,380px); line-height:.92; letter-spacing:-.01em; white-space:nowrap;
+    font-variation-settings:'opsz' 144, 'wght' 340, 'SOFT' 0, 'WONK' 0;
+    text-shadow:0 0 60px rgba(233,161,59,.12); }
+  .line .ch { display:inline-block; will-change:font-variation-settings; transition:color .3s; }
+  .line .ch.hot { color:var(--amber); }
+  .stage p { font-family:'Instrument Sans',system-ui,sans-serif; font-size:clamp(17px,1.5vw,20px); line-height:1.55; color:var(--lilac);
+    max-width:31em; margin:34px auto 0; }
+
+  .corner { position:fixed; z-index:10; }
+  .c1{ top:88px; left:32px; } .c2{ top:88px; right:32px; } .c3{ bottom:26px; left:32px; } .c4{ bottom:26px; right:32px; }
+  .touch-only { display:none; }
+  @media (hover:none){ .touch-only{ display:inline } .mouse-only{ display:none } }
+  @media (max-width:640px){
+    .c1{ left:20px } .c3{ left:20px } .c2, .c4{ display:none }
+    .line { font-size:clamp(110px,40vw,168px); }
+    .lamp { height:19vh; }
+    .pool { background:radial-gradient(70% 40% at 50% 22%, rgba(233,161,59,.2), transparent 70%), radial-gradient(90% 60% at 50% 60%, rgba(43,29,82,.75), transparent 75%); }
+    .stage { padding:72px 20px 40px; }
+    .stage p { font-size:17px; }
+  }
+</style>
+</head>
+<body>
+  <div class="pool" aria-hidden="true"></div>
+  <div class="lamp" aria-hidden="true"></div>
+  <div class="table" aria-hidden="true"></div>
+
+  <span class="mono corner c1">I · The grain — 4/76</span>
+  <span class="mono corner c2">Fraunces · wght 340–900 · SOFT 0–100</span>
+  <span class="mono corner c3"><span class="mouse-only">Move close. It breathes in.</span><span class="touch-only">Touch a letter. It breathes in.</span></span>
+  <span class="mono corner c4">35.97° N, 83.62° W</span>
+
+  <div class="stage">
+    <h1 class="line" data-text="Idea." aria-label="Idea."></h1>
+    <p>It grows quietly. On napkins, in work trucks, at the kitchen table after the kids are asleep.</p>
+  </div>
+
+<script>
+const chars = [];
+const line = document.querySelector('.line');
+line.textContent = '';
+line.dataset.text.split('').forEach(c => {
+  const s = document.createElement('span');
+  s.className = 'ch'; s.setAttribute('aria-hidden', 'true');
+  s.innerHTML = c === ' ' ? '&nbsp;' : c;
+  line.appendChild(s);
+  chars.push({ el: s, w: 340, soft: 0 });
+});
+/* breath radius follows the letter size, so it feels the same on a phone and a big screen */
+let RADIUS = 220;
+const fitR = () => { RADIUS = Math.max(140, parseFloat(getComputedStyle(line).fontSize) * .9); };
+fitR(); addEventListener('resize', fitR);
+
+let mx = -9999, my = -9999, lastMove = -1e9;
+addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+addEventListener('pointerdown', e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+
+(function loop(){
+  requestAnimationFrame(loop);
+  const t = performance.now() / 1000;
+  const idle = performance.now() - lastMove > 2800;
+  chars.forEach((c, i) => {
+    let target = 340, targetSoft = 0;
+    if (idle){
+      /* a slow breathing wave rolls through the word */
+      const wave = Math.sin(t * 1.6 - i * .55) * .5 + .5;
+      target = 340 + wave * 480;
+      targetSoft = wave * 80;
+    } else {
+      const r = c.el.getBoundingClientRect();
+      const d = Math.hypot(r.left + r.width/2 - mx, r.top + r.height/2 - my);
+      if (d < RADIUS){
+        const f = 1 - d / RADIUS;
+        target = 340 + f * 560;
+        targetSoft = f * 100;
+      }
+    }
+    c.w += (target - c.w) * .12;
+    c.soft += (targetSoft - c.soft) * .12;
+    c.el.style.fontVariationSettings = `'opsz' 144, 'wght' ${c.w.toFixed(0)}, 'SOFT' ${c.soft.toFixed(0)}, 'WONK' ${c.w > 700 ? 1 : 0}`;
+    c.el.classList.toggle('hot', c.w > 760);
+  });
+})();
+</script>
+<!-- signature cursor, brand colours, off on touch -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .2s; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(234,231,244,.75); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .2s; }
+  .cur-on #wlDot, .cur-on #wlRing { opacity:1; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  const R=document.documentElement;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';R.classList.add('cur-on');});
+  document.addEventListener('mouseleave',()=>R.classList.remove('cur-on'));
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

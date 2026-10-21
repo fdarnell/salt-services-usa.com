@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Every visit leaves a trail · The Salt Effect</title>
+<!-- 27/76 · III The street · effect: Image Trail Cursor (template 07).
+     Move the pointer (or drag a finger): pictures of the street spawn along the path and melt away.
+     Left alone, the dot strolls by itself. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @media (hover:hover) and (pointer:fine){ * { cursor:none; } }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; touch-action:pan-y; }
+  body::before { content:''; position:fixed; inset:0; pointer-events:none;
+    background:radial-gradient(70vmax 50vmax at 50% 50%, rgba(43,29,82,.7), transparent 75%); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  .corner { position:fixed; z-index:30; }
+  .c3{ bottom:26px; left:32px; } .c4{ bottom:26px; right:32px; }
+
+  .center { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:20;
+    pointer-events:none; text-align:center; padding:0 5vw; text-shadow:0 2px 30px rgba(14,8,31,.65), 0 1px 3px rgba(14,8,31,.5); }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(50px,8vw,124px); line-height:.95; letter-spacing:-.02em; color:var(--lilac);
+    font-variation-settings:"opsz" 144, "SOFT" 50; }
+  h1 em { font-style:italic; font-weight:500; color:var(--amber-hi); }
+  .center .mono { color:var(--lilac); opacity:.85; }
+  .center .mono:first-child { margin-bottom:26px; }
+  .center .mono:last-child { margin-top:28px; }
+
+  .trail-img { position:fixed; width:230px; height:290px; object-fit:cover; pointer-events:none; z-index:10;
+    transform:translate(-50%,-50%); border-radius:6px; will-change:transform,opacity;
+    background:var(--ink-2); box-shadow:0 18px 40px -16px rgba(0,0,0,.7); outline:1px solid rgba(233,161,59,.25); outline-offset:-1px; }
+
+  #cursorDot { position:fixed; left:0; top:0; width:9px; height:9px; background:var(--amber); border-radius:50%;
+    transform:translate(-100px,-100px); pointer-events:none; z-index:40; box-shadow:0 0 16px rgba(233,161,59,.8); }
+  @media (max-width:640px){
+    .trail-img { width:150px; height:190px; }
+    .c3 { left:20px; bottom:20px; } .c4 { display:none; }
+  }
+</style>
+</head>
+<body>
+  <span class="mono corner c3" id="hint">Move the mouse down the street</span>
+  <span class="mono corner c4">Kodak, TN · 35.97° N, 83.62° W</span>
+
+  <div class="center">
+    <span class="mono">III · The street — 27/76</span>
+    <h1>Every visit<br>leaves <em>a trail.</em></h1>
+    <span class="mono">The bakery · the bridge · the counter · the road home</span>
+  </div>
+  <div id="cursorDot"></div>
+
+<script>
+const IMAGES = ['shop-dusk','counter','market-lights','bridge-river','workshop','main-street-lit','night-road','window-rain','town-ridge']
+  .map(n => '../assets/img/' + n + '-tall.jpg');
+IMAGES.forEach(src => { const i = new Image(); i.src = src; });
+if (matchMedia('(hover:none)').matches) document.getElementById('hint').textContent = 'Drag a finger down the street';
+
+const SPAWN_DIST = () => innerWidth < 640 ? 80 : 110;
+const LIFE = 1100;
+let lastX = -1, lastY = -1, idx = 0, live = 0, lastMove = 0;
+
+const dot = document.getElementById('cursorDot');
+const moveDot = (x, y) => dot.style.transform = `translate(${x - 4.5}px, ${y - 4.5}px)`;
+
+function track(x, y){
+  moveDot(x, y);
+  lastMove = performance.now();
+  if (lastX < 0){ lastX = x; lastY = y; return; }
+  const dx = x - lastX, dy = y - lastY;
+  if (Math.hypot(dx, dy) < SPAWN_DIST() || live > 12) return;
+  lastX = x; lastY = y;
+  spawn(x, y, dx, dy);
+}
+addEventListener('mousemove', e => track(e.clientX, e.clientY));
+addEventListener('touchmove', e => { const t = e.touches[0]; if (t) track(t.clientX, t.clientY); }, { passive:true });
+
+function spawn(x, y, dx, dy){
+  const img = document.createElement('img');
+  img.className = 'trail-img';
+  img.alt = '';
+  img.src = IMAGES[idx++ % IMAGES.length];
+  img.style.left = x + 'px'; img.style.top = y + 'px';
+  document.body.appendChild(img); live++;
+  const rot = (Math.random() - .5) * 14;
+  const driftX = dx * 1.4, driftY = dy * 1.4 + 40;
+  img.animate([
+    { transform:`translate(-50%,-50%) scale(.35) rotate(${rot * 2}deg)`, opacity:0 },
+    { transform:`translate(-50%,-50%) scale(1) rotate(${rot}deg)`, opacity:1, offset:.25 },
+    { transform:`translate(calc(-50% + ${driftX}px), calc(-50% + ${driftY}px)) scale(.92) rotate(${rot}deg)`, opacity:0 }
+  ], { duration:LIFE, easing:'cubic-bezier(.19,1,.22,1)', fill:'forwards' });
+  setTimeout(() => { img.remove(); live--; }, LIFE + 40);
+}
+
+/* idle auto-motion so the street never looks empty; pauses when the scene is off screen */
+let running = true;
+addEventListener('scene:leave', () => running = false);
+addEventListener('scene:enter', () => running = true);
+(function idle(){
+  requestAnimationFrame(idle);
+  if (!running || performance.now() - lastMove < 2600) return;
+  const t = performance.now() / 950;
+  const x = innerWidth/2  + Math.cos(t) * innerWidth  * .27;
+  const y = innerHeight/2 + Math.sin(t * 1.4) * innerHeight * .22;
+  moveDot(x, y);
+  if (lastX < 0){ lastX = x; lastY = y; }
+  if (Math.hypot(x - lastX, y - lastY) >= SPAWN_DIST() * .7 && live <= 12){
+    const dx = x - lastX, dy = y - lastY; lastX = x; lastY = y; spawn(x, y, dx * .3, dy * .3);
+  }
+})();
+</script>
+</body>
+</html>

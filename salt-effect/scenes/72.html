@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>Questions · Salt Effect 19/76</title>
+<!-- ANSWERS FAQ ink expand: a question opens with an ink sweep across its row; the plus twists into a minus; one open at a time. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; font-size:17px; line-height:1.55;
+    background:
+      radial-gradient(50% 60% at 0% 100%, rgba(233,161,59,.1), transparent 70%),
+      var(--ink-1); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  .mono b { color:var(--amber); font-weight:400; }
+
+  .wrap { height:100%; display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr); gap:clamp(30px,6vw,110px); align-items:center;
+    padding:96px clamp(20px,6vw,96px) 64px; max-width:1500px; margin:0 auto; }
+  .intro .tag { display:block; margin-bottom:26px; }
+  .intro h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(40px,5.2vw,84px); line-height:.98; letter-spacing:-.02em; color:var(--bone); }
+  .intro h1 em { font-style:italic; font-weight:500; color:var(--amber); }
+  .intro p { margin-top:24px; max-width:22em; color:var(--mist); }
+
+  .faq { width:100%; min-height:clamp(380px,50vh,450px); }   /* room for the open answer, so rows don't jump */
+  .item { position:relative; border-top:1px solid var(--ink-2); overflow:hidden; }
+  .item:last-child { border-bottom:1px solid var(--ink-2); }
+  .item .ink { position:absolute; inset:0; background:linear-gradient(90deg, var(--ink-2), rgba(43,29,82,.55)); transform:scaleX(0); transform-origin:left;
+    transition:transform .6s cubic-bezier(.76,0,.24,1); }
+  .item .ink::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--amber); }
+  .item.open .ink { transform:scaleX(1); }
+  .q { position:relative; z-index:2; display:flex; align-items:center; gap:20px; padding:clamp(18px,2.6vh,26px) 18px; cursor:pointer; width:100%;
+    background:none; border:0; color:inherit; text-align:left; font:inherit; }
+  .q .idx { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; color:var(--plum); transition:color .4s; flex:none; width:22px; }
+  .item.open .q .idx { color:var(--amber); }
+  .q h3 { font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:clamp(21px,2.1vw,30px); line-height:1.2; letter-spacing:-.01em; color:var(--bone);
+    transition:color .4s, transform .5s cubic-bezier(.19,1,.22,1); }
+  .item.open .q h3 { color:var(--amber-hi); transform:translateX(10px); }
+  .q .plus { margin-left:auto; width:30px; height:30px; position:relative; flex-shrink:0; }
+  .q .plus::before, .q .plus::after { content:''; position:absolute; left:50%; top:50%; background:var(--mist);
+    transition:transform .5s cubic-bezier(.76,0,.24,1), background .4s; }
+  .q .plus::before { width:16px; height:1.5px; transform:translate(-50%,-50%); }
+  .q .plus::after  { width:1.5px; height:16px; transform:translate(-50%,-50%); }
+  .item.open .q .plus::before { background:var(--amber); transform:translate(-50%,-50%) rotate(180deg); }
+  .item.open .q .plus::after  { background:var(--amber); transform:translate(-50%,-50%) rotate(270deg); }
+  .a { position:relative; z-index:2; max-height:0; overflow:hidden; transition:max-height .6s cubic-bezier(.76,0,.24,1); }
+  .a p { padding:0 18px clamp(20px,3vh,30px) 70px; font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400;
+    font-size:clamp(22px,2vw,28px); line-height:1.3; color:var(--lilac); max-width:640px; }
+
+  .foot { position:fixed; left:clamp(20px,6vw,96px); bottom:26px; }
+  @media (max-width:860px){
+    .wrap { grid-template-columns:1fr; align-content:center; gap:26px; padding:100px 20px 40px; }
+    .intro .tag { margin-bottom:16px; }
+    .intro h1 { font-size:clamp(38px,10vw,56px); }
+    .intro p { display:none; }
+    .faq { min-height:400px; }
+    .q { padding:16px 10px; gap:14px; }
+    .q h3 { font-size:20px; }
+    .a p { padding:0 10px 20px 46px; font-size:21px; }
+    .foot { display:none; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="intro">
+      <span class="mono tag"><b>II · The door</b> — 19/76</span>
+      <h1>Questions every new business <em>hears</em></h1>
+      <p>Somebody asks every one of these, sooner or later. The answers decide whether they come back.</p>
+    </div>
+
+    <div class="faq" id="faq">
+      <div class="item"><div class="ink"></div>
+        <button class="q" type="button"><span class="idx">Q1</span><h3>Are you open Saturdays?</h3><span class="plus"></span></button>
+        <div class="a"><p>We are now. You asked.</p></div>
+      </div>
+      <div class="item"><div class="ink"></div>
+        <button class="q" type="button"><span class="idx">Q2</span><h3>Do you take small jobs?</h3><span class="plus"></span></button>
+        <div class="a"><p>Small jobs are how the big ones start.</p></div>
+      </div>
+      <div class="item"><div class="ink"></div>
+        <button class="q" type="button"><span class="idx">Q3</span><h3>Who answers the phone?</h3><span class="plus"></span></button>
+        <div class="a"><p>A person. Usually the owner.</p></div>
+      </div>
+      <div class="item"><div class="ink"></div>
+        <button class="q" type="button"><span class="idx">Q4</span><h3>Will you still be here next year?</h3><span class="plus"></span></button>
+        <div class="a"><p>That’s the plan. It’s why we answer the phone.</p></div>
+      </div>
+    </div>
+  </div>
+  <span class="mono foot">Kodak, TN · 35.97° N, 83.62° W</span>
+
+<script>
+const items = [...document.querySelectorAll('.item')];
+let lastAct = 0, autoIdx = 0, onScreen = true;
+function toggle(it){
+  const isOpen = it.classList.contains('open');
+  items.forEach(x => { x.classList.remove('open'); x.querySelector('.a').style.maxHeight = 0; });
+  if (!isOpen){
+    it.classList.add('open');
+    const a = it.querySelector('.a');
+    a.style.maxHeight = a.scrollHeight + 'px';
+  }
+}
+items.forEach((it, i) => it.querySelector('.q').addEventListener('click', () => { toggle(it); autoIdx = i; lastAct = performance.now(); }));
+toggle(items[0]);
+/* idle tour while the scene is on screen */
+addEventListener('scene:leave', () => onScreen = false);
+addEventListener('scene:enter', () => onScreen = true);
+setInterval(() => {
+  if (onScreen && performance.now() - lastAct > 4200){ autoIdx = (autoIdx + 1) % items.length; toggle(items[autoIdx]); }
+}, 3400);
+</script>
+<!-- SIGNATURE CURSOR (amber) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  dot.style.opacity=ring.style.opacity='0';   /* hidden until the first pointer move, so nothing parks over the copy */
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{if(ring.style.opacity){rx=e.clientX;ry=e.clientY;dot.style.opacity=ring.style.opacity='';}mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button,.q');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

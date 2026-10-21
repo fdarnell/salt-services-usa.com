@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>Hard to find</title>
+<!-- 50/76 · SHY TYPE: letters flee the cursor and spring back home. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{--ink-0:#0e081f;--ink-1:#180f2f;--ink-2:#2b1d52;--amber:#e9a13b;--amber-hi:#f0b055;--bone:#f5f3ed;--bone-2:#ece9e0;--lilac:#eae7f4;--mist:#b3aacd;--plum:#635a7d;--ink-text:#201439}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @media (hover:hover) and (pointer:fine){ * { cursor:none; } }
+  html,body { height:100%; overflow:hidden; }
+  body { background:radial-gradient(ellipse 70% 60% at 50% 55%, var(--ink-1), var(--ink-0)); color:var(--bone); font-family:'Instrument Sans',system-ui,sans-serif;
+    display:flex; align-items:center; justify-content:center; touch-action:pan-y; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  .stage { text-align:center; padding:0 16px; }
+  .line { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(40px,9.2vw,140px); line-height:1.02; letter-spacing:-.02em; white-space:nowrap; user-select:none; }
+  .line .ch { display:inline-block; will-change:transform; }
+  .line .ch.sp { width:.24em; }
+  .line:nth-child(2) .ch { font-style:italic; font-weight:500; color:transparent; -webkit-text-stroke:1.5px var(--amber); }
+  .stage .note { display:block; margin:30px auto 0; max-width:34ch; font-size:clamp(17px,1.4vw,19px); line-height:1.55; color:var(--lilac); }
+
+  .corner { position:fixed; z-index:10; }
+  .c1{ top:88px; left:32px; } .c3{ bottom:26px; left:32px; } .c4{ bottom:26px; right:32px; }
+  #cursorDot { position:fixed; left:-50px; top:-50px; width:10px; height:10px; background:var(--amber); border-radius:50%; box-shadow:0 0 18px 4px rgba(233,161,59,.45);
+    transform:translate(-50%,-50%); pointer-events:none; z-index:20; }
+  @media (max-width:760px){ .line{ font-size:13.6vw; } .c1,.c3{ left:16px; } .c4{ display:none; } .line:nth-child(2) .ch{ -webkit-text-stroke-width:1.2px; } }
+  @media (hover:none){ .hint-fine{ display:none; } }
+  @media (hover:hover){ .hint-touch{ display:none; } }
+</style>
+</head>
+<body>
+  <span class="mono corner c1">V · The signal — 50/76</span>
+  <span class="mono corner c3"><span class="hint-fine">Try to catch the letters</span><span class="hint-touch">Drag through the letters</span></span>
+  <span class="mono corner c4">Kodak, TN · 35.97° N, 83.62° W</span>
+
+  <div class="stage">
+    <div class="line" data-text="Hard to find" aria-hidden="true"></div>
+    <div class="line" data-text="is easy to skip." aria-hidden="true"></div>
+    <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Hard to find is easy to skip.</h1>
+    <span class="note">If people have to chase you, they'll pick someone easier to reach.</span>
+  </div>
+  <div id="cursorDot"></div>
+
+<script>
+const chars = [];
+document.querySelectorAll('.line').forEach(line => {
+  line.textContent = '';
+  line.dataset.text.split('').forEach(c => {
+    const s = document.createElement('span');
+    s.className = 'ch' + (c === ' ' ? ' sp' : '');
+    s.textContent = c === ' ' ? ' ' : c;
+    line.appendChild(s);
+    chars.push({ el:s, hx:0, hy:0, x:0, y:0, vx:0, vy:0 });
+  });
+});
+let R = 150;
+/* measure each glyph's home once (and on resize), not every frame */
+function measure(){
+  R = Math.max(90, Math.min(170, innerWidth * .12));
+  chars.forEach(c => { c.el.style.transform = 'none'; });
+  chars.forEach(c => { const r = c.el.getBoundingClientRect(); c.hx = r.left + r.width/2; c.hy = r.top + r.height/2; });
+}
+measure();
+document.fonts && document.fonts.ready.then(measure);
+addEventListener('resize', measure);
+
+const dot = document.getElementById('cursorDot');
+let mx = -999, my = -999, lastMove = -1e9;
+const take = (x, y) => { mx = x; my = y; lastMove = performance.now(); dot.style.left = mx + 'px'; dot.style.top = my + 'px'; };
+addEventListener('pointermove', e => take(e.clientX, e.clientY));
+addEventListener('touchmove', e => take(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+addEventListener('touchstart', e => take(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+
+(function loop(){
+  requestAnimationFrame(loop);
+  /* idle sweep so it performs on its own */
+  if (performance.now() - lastMove > 2800){
+    const t = performance.now() / 1100;
+    mx = innerWidth/2 + Math.cos(t) * innerWidth * .3;
+    my = innerHeight/2 + Math.sin(t * 2) * innerHeight * .1;
+    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+  }
+  chars.forEach(c => {
+    const dx = (c.hx + c.x) - mx, dy = (c.hy + c.y) - my;
+    const dist = Math.hypot(dx, dy);
+    if (dist < R && dist > 0){
+      const f = (R - dist) / R;
+      c.vx += (dx / dist) * f * 3.4;
+      c.vy += (dy / dist) * f * 3.4;
+    }
+    c.vx += -c.x * .085; c.vy += -c.y * .085;
+    c.vx *= .86; c.vy *= .86;
+    c.x += c.vx; c.y += c.vy;
+    c.el.style.transform = `translate(${c.x.toFixed(2)}px, ${c.y.toFixed(2)}px) rotate(${(c.x * .08).toFixed(2)}deg)`;
+  });
+})();
+</script>
+</body>
+</html>

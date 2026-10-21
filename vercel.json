@@ -74,6 +74,11 @@
       "source": "/copy-of-websitebuildinfo",
       "destination": "/contact/",
       "permanent": true
+    },
+    {
+      "source": "/salt-effect",
+      "destination": "/salt-effect/",
+      "permanent": true
     }
   ],
   "headers": [
@@ -99,6 +104,49 @@
         {
           "key": "Content-Security-Policy",
           "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://*.leadconnectorhq.com https://*.msgsndr.com https://crm.saltservicesusa.com; style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://*.leadconnectorhq.com https://*.msgsndr.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.bunny.net https://*.leadconnectorhq.com https://*.msgsndr.com; connect-src 'self' https://*.leadconnectorhq.com https://*.msgsndr.com https://crm.saltservicesusa.com; frame-src https://*.leadconnectorhq.com https://*.msgsndr.com; media-src 'self' https:; upgrade-insecure-requests"
+        }
+      ]
+    },
+    {
+      "source": "/salt-effect/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://my.saltservicesusa.com; frame-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; upgrade-insecure-requests"
+        }
+      ]
+    },
+    {
+      "source": "/salt-effect/kit/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/salt-effect/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },

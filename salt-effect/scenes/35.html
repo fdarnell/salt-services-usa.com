@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>Now serving · Salt Effect 13/76</title>
+<!-- TERMINAL split-flap board: every character rolls through the alphabet to spell each line. Click to reshuffle. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+    --cw: min(44px, calc((100vw - 80px) / 17));
+    --ch: calc(var(--cw) * 1.42);
+    --gap: max(2px, calc(var(--cw) * .12));
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; font-size:17px; line-height:1.55; display:flex; flex-direction:column;
+    background:
+      radial-gradient(60% 50% at 50% 46%, rgba(233,161,59,.07), transparent 70%),
+      radial-gradient(100% 70% at 50% 100%, var(--ink-0), transparent 80%),
+      var(--ink-1); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  header { display:flex; justify-content:space-between; gap:16px; padding:88px clamp(20px,4vw,48px) 0; }
+  header b { color:var(--amber); font-weight:400; }
+  .stage { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 0 20px; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(40px,6vw,84px); line-height:.95; letter-spacing:-.02em; color:var(--bone); margin-bottom:clamp(14px,2.4vh,26px); }
+  h1 em { font-style:italic; font-weight:500; color:var(--amber); }
+
+  .panel { position:relative; padding:clamp(14px,2vw,26px); border-radius:14px; background:linear-gradient(180deg, #120a26, var(--ink-0));
+    box-shadow:0 0 0 1px rgba(43,29,82,.9), 0 30px 80px rgba(0,0,0,.45), 0 0 90px rgba(233,161,59,.06); }
+  .heads { display:flex; justify-content:space-between; margin-bottom:12px; padding:0 2px; }
+  .heads .mono { font-size:11px; }
+  .heads .live { color:var(--amber); }
+  .blink { color:var(--amber); animation:bl 1.2s steps(2) infinite; }
+  @keyframes bl { 50%{ opacity:0 } }
+
+  .board { display:flex; flex-direction:column; gap:calc(var(--gap) * 2.2); }
+  .row { display:flex; align-items:center; gap:var(--gap); }
+  .row .spacer { width:calc(var(--cw) * .4); }
+  .lamp { width:calc(var(--cw) * .26); height:calc(var(--cw) * .26); margin-left:calc(var(--cw) * .3); border-radius:50%; background:#2b1d52; transition:background .4s, box-shadow .4s; }
+  .lamp.on { background:var(--amber-hi); box-shadow:0 0 10px 2px rgba(240,176,85,.7), 0 0 26px 6px rgba(233,161,59,.3); }
+  .cell { width:var(--cw); height:var(--ch); background:linear-gradient(180deg, #24183f 0%, #1d1336 49.6%, #170f2d 50.4%, #1b1233 100%); border-radius:max(3px, calc(var(--cw) * .1)); overflow:hidden;
+    position:relative; box-shadow:inset 0 -2px 0 rgba(0,0,0,.5), inset 0 1px 0 rgba(234,231,244,.07); }
+  .cell::after { content:''; position:absolute; left:0; right:0; top:50%; height:1.5px; background:rgba(14,8,31,.85); z-index:3; }
+  .cell .col { position:absolute; left:0; right:0; top:0; transition:transform .06s linear; text-align:center; }
+  .cell .ch { height:var(--ch); display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono',ui-monospace,monospace; font-weight:700; font-size:calc(var(--cw) * .66); color:var(--bone); }
+  .status .cell .ch { color:var(--amber-hi); }
+
+  footer { display:flex; justify-content:space-between; gap:16px; padding:0 clamp(20px,4vw,48px) 26px; }
+  @media (max-width:700px){
+    header { flex-direction:column; gap:4px; }
+    :root { --ch: calc(var(--cw) * 1.8); }
+    .board { gap:calc(var(--gap) * 4); }
+    h1 { margin-bottom:22px; }
+    footer .mono:last-child { display:none; }
+    .panel { padding:12px; }
+  }
+</style>
+</head>
+<body>
+  <header><span class="mono"><b>II · The door</b> — 13/76</span><span class="mono">First customer · 7:02 AM <span class="blink">●</span></span></header>
+
+  <div class="stage">
+    <h1>Now <em>serving</em></h1>
+    <div class="panel">
+      <div class="heads"><span class="mono">Town</span><span class="mono live">Status</span></div>
+      <div class="board" id="board"></div>
+    </div>
+  </div>
+
+  <footer><span class="mono">Tap or click to reshuffle</span><span class="mono">Sevier, Knox &amp; Blount counties, TN</span></footer>
+
+<script>
+/* SLOT: the towns Salt serves, and their status */
+const TOWNS = ['KODAK', 'SEVIERVILLE', 'PIGEON FORGE', 'GATLINBURG', 'KNOXVILLE', 'MARYVILLE'];
+const STATUS = 'OPEN';
+const CHARS = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:·-.';
+const TC = 12, SC = 4;
+
+const boardEl = document.getElementById('board');
+function buildCells(parent, n){
+  const cells = [];
+  for (let i = 0; i < n; i++){
+    const cell = document.createElement('div'); cell.className = 'cell';
+    const col = document.createElement('div'); col.className = 'col';
+    col.innerHTML = CHARS.split('').map(c => `<div class="ch">${c === ' ' ? '&nbsp;' : c}</div>`).join('');
+    cell.appendChild(col); parent.appendChild(cell);
+    cells.push({ col, cur:0, timer:0 });
+  }
+  return cells;
+}
+const rows = TOWNS.map(() => {
+  const row = document.createElement('div'); row.className = 'row';
+  const t = document.createElement('div'); t.className = 'row'; t.style.gap = 'var(--gap)';
+  const sp = document.createElement('div'); sp.className = 'spacer';
+  const s = document.createElement('div'); s.className = 'row status'; s.style.gap = 'var(--gap)';
+  const lamp = document.createElement('div'); lamp.className = 'lamp';
+  row.append(t, sp, s, lamp); boardEl.appendChild(row);
+  return { town: buildCells(t, TC), status: buildCells(s, SC), lamp };
+});
+
+/* roll every cell forward through the strip to its letter; staggered start, slows near the end */
+function setCells(cells, text, base, done){
+  const padded = text.toUpperCase().padEnd(cells.length).slice(0, cells.length);
+  let left = cells.length;
+  cells.forEach((c, i) => {
+    clearTimeout(c.timer);
+    const target = Math.max(0, CHARS.indexOf(padded[i]));
+    const distance = (target - c.cur + CHARS.length) % CHARS.length;
+    let step = 0;
+    c.timer = setTimeout(function roll(){
+      if (step >= distance){ c.cur = target; if (--left === 0 && done) done(); return; }
+      step++;
+      c.cur = (c.cur + 1) % CHARS.length;
+      c.col.style.transform = `translateY(calc(${-c.cur} * var(--ch)))`;
+      c.timer = setTimeout(roll, 30 + step * 1.1);
+    }, base + i * 55 + Math.random() * 80);
+  });
+}
+
+let order = TOWNS.map((_, i) => i);
+function show(){
+  rows.forEach((r, k) => {
+    r.lamp.classList.remove('on');
+    setCells(r.town, TOWNS[order[k]], k * 260, null);
+    setCells(r.status, STATUS, k * 260 + 700, () => r.lamp.classList.add('on'));
+  });
+}
+/* the board shifts its lines up one place now and then, the way departure boards do */
+function shift(){ order.push(order.shift()); show(); }
+function shuffle(){
+  for (let i = order.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  show();
+}
+
+let cycle;
+function start(){ clearInterval(cycle); show(); cycle = setInterval(shift, 7200); }
+SCENE.onFirstEnter(start);
+addEventListener('scene:enter', start);
+addEventListener('scene:leave', () => clearInterval(cycle));
+addEventListener('click', () => { shuffle(); clearInterval(cycle); cycle = setInterval(shift, 7200); });
+</script>
+<!-- SIGNATURE CURSOR (board amber) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  dot.style.opacity=ring.style.opacity='0';   /* hidden until the first pointer move, so nothing parks over the copy */
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{if(ring.style.opacity){rx=e.clientX;ry=e.clientY;dot.style.opacity=ring.style.opacity='';}mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

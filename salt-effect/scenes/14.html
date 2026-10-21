@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>After hours · The Salt Effect</title>
+<!-- NOIR cursor spotlight, re-cut for The Salt Effect (scene 32/76).
+     The shop lives in the dark; the cursor is the work lamp. Press to flare the beam.
+     Idle, the lamp searches on its own. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @media (hover:hover) and (pointer:fine){ * { cursor:none; } }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  /* the shop that hides in the dark */
+  #world { position:fixed; inset:0; will-change:mask-image, -webkit-mask-image; background:var(--ink-1);
+    -webkit-mask-image:radial-gradient(circle 1px at -100px -100px, #000, transparent); mask-image:radial-gradient(circle 1px at -100px -100px, #000, transparent); }
+  .grid { position:absolute; top:0; bottom:0; right:0; width:62%; display:grid; grid-template-columns:repeat(3,1fr); gap:1.8vw;
+    padding:14vh 4vw 12vh 2vw; align-items:center; }
+  .cell { position:relative; }
+  .cell img { display:block; width:100%; aspect-ratio:3/4; max-height:62vh; object-fit:cover; border-radius:4px; background:var(--ink-2);
+    filter:contrast(1.05) saturate(.95); }
+  .cell:nth-child(2) { margin-top:9vh; }
+  .cell .mono { display:block; margin-top:10px; color:var(--amber-hi); }
+  .hidden-line { position:absolute; top:0; bottom:0; right:0; width:62%; display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:0 4vw; pointer-events:none;
+    /* the line lives only in the lamp's bright core: its own tight mask, set per frame, multiplies the world's */
+    -webkit-mask-image:linear-gradient(transparent,transparent); mask-image:linear-gradient(transparent,transparent); }
+  .hidden-line p { font-family:'Fraunces',Georgia,serif; font-weight:540; font-size:clamp(38px,4.6vw,72px); line-height:1; letter-spacing:-.02em;
+    color:var(--bone); text-shadow:0 2px 30px rgba(14,8,31,.95), 0 0 80px rgba(14,8,31,.8); max-width:13ch; text-wrap:balance; }
+  .hidden-line p span { color:var(--amber-hi); }
+
+  /* warm light where the lamp points */
+  #lamp { position:fixed; inset:0; pointer-events:none; z-index:12; mix-blend-mode:screen; }
+
+  /* always-visible layer: the told half */
+  .told { position:fixed; z-index:20; left:clamp(16px,4vw,64px); top:0; bottom:0; width:min(36%,520px); display:flex; flex-direction:column;
+    justify-content:center; gap:22px; pointer-events:none; }
+  .told::before { content:''; position:fixed; left:0; top:0; bottom:0; width:44%; z-index:-1;
+    background:linear-gradient(90deg, rgba(14,8,31,.92) 0%, rgba(14,8,31,.7) 70%, transparent 100%); }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(44px,5.6vw,92px); line-height:.95; letter-spacing:-.02em;
+    color:var(--bone); font-variation-settings:'opsz' 144, 'SOFT' 40; }
+  h1 span { color:var(--amber); }
+  .line { font-size:clamp(17px,1.35vw,20px); line-height:1.55; color:var(--lilac); max-width:32ch; }
+  .hud { position:fixed; z-index:20; bottom:26px; }
+  .b1 { left:clamp(16px,4vw,64px); } .b2 { right:32px; text-align:right; }
+  .touch { display:none; }
+  @media (hover:none) { .touch { display:inline; } .fine { display:none; } }
+  #beamRing { position:fixed; border:1px solid rgba(240,176,85,.4); border-radius:50%;
+    transform:translate(-50%,-50%); pointer-events:none; z-index:15; will-change:width,height; }
+
+  @media (max-width:760px){
+    .told { top:88px; bottom:auto; width:auto; right:16px; left:16px; gap:14px; justify-content:flex-start; }
+    .told::before { width:100%; height:330px; bottom:auto;
+      background:linear-gradient(180deg, rgba(14,8,31,.95) 0%, rgba(14,8,31,.8) 75%, transparent 100%); }
+    h1 { font-size:clamp(40px,11.5vw,56px); }
+    .grid { width:100%; top:auto; height:auto; bottom:64px; grid-template-columns:repeat(2,1fr); gap:12px; padding:0 16px; align-items:end; }
+    .cell:nth-child(3) { display:none; }
+    .cell img { max-height:none; }
+    .cell:nth-child(2) { margin-top:0; margin-bottom:28px; }
+    .hidden-line { width:100%; top:auto; bottom:calc(84px + 80vw); height:auto; align-items:flex-end; }
+    .hidden-line p { font-size:clamp(32px,9vw,42px); }
+    .b2 { display:none; } .b1 { bottom:20px; }
+  }
+</style>
+</head>
+<body>
+  <div id="world">
+    <div class="grid">
+      <div class="cell"><img src="../assets/img/workshop-tall.jpg" alt=""><span class="mono">9:40 PM · The bench</span></div>
+      <div class="cell"><img src="../assets/img/counter-tall.jpg" alt=""><span class="mono">10:15 PM · The books</span></div>
+      <div class="cell"><img src="../assets/img/shop-dusk-tall.jpg" alt=""><span class="mono">11:05 PM · Lights out</span></div>
+    </div>
+    <div class="hidden-line"><p>This is where a business <span>really gets built.</span></p></div>
+  </div>
+  <div id="lamp"></div>
+  <div id="beamRing"></div>
+
+  <div class="told">
+    <span class="mono">III · The street — 32/76</span>
+    <h1>After hours, the light’s <span>still on.</span></h1>
+    <p class="line">Somebody’s finishing the books, fixing tomorrow’s order, answering one more email.</p>
+  </div>
+  <span class="mono hud b1 fine">Move the lamp to look around · press to brighten</span>
+  <span class="mono hud b1 touch">Tap to point the lamp</span>
+  <span class="mono hud b2">Kodak, TN · 35.97° N, 83.62° W</span>
+
+<script>
+const world = document.getElementById('world');
+const ring = document.getElementById('beamRing');
+const lamp = document.getElementById('lamp');
+const hidden = document.querySelector('.hidden-line');
+let hb = hidden.getBoundingClientRect();
+const measure = () => { hb = hidden.getBoundingClientRect(); };
+addEventListener('resize', measure);
+if (document.fonts) document.fonts.ready.then(measure);
+let mx = innerWidth * .7, my = innerHeight/2, x = mx, y = my;
+let r = 0, lastMove = -1e9;
+const baseR = () => innerWidth < 760 ? 130 : 190;
+let targetR = baseR();
+addEventListener('resize', () => targetR = baseR());
+
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
+  mx = e.clientX; my = e.clientY; lastMove = performance.now();
+});
+addEventListener('pointerdown', e => {
+  mx = e.clientX; my = e.clientY; lastMove = performance.now() + (e.pointerType === 'mouse' ? 0 : 1600);
+  targetR = baseR() * 2.2;
+  if (e.pointerType !== 'mouse') setTimeout(() => targetR = baseR(), 900);
+});
+addEventListener('pointerup', e => { if (e.pointerType === 'mouse') targetR = baseR(); });
+
+(function loop(){
+  requestAnimationFrame(loop);
+  const W = innerWidth, H = innerHeight, phone = W < 760;
+  if (performance.now() - lastMove > 2800){   /* idle: the lamp searches the shop by itself */
+    const t = performance.now() / 1700;
+    mx = W * (phone ? .5 + Math.cos(t) * .34 : .64 + Math.cos(t) * .26);
+    my = H * (phone ? .64 + Math.sin(t * 1.25) * .18 : .5 + Math.sin(t * 1.25) * .27);
+  }
+  x += (mx - x) * .12; y += (my - y) * .12;
+  r += (targetR - r) * .09;
+  const soft = r * 1.7;
+  const m = `radial-gradient(circle ${soft}px at ${x}px ${y}px, #000 ${r * .45}px, rgba(0,0,0,.55) ${r}px, transparent ${soft}px)`;
+  world.style.webkitMaskImage = m; world.style.maskImage = m;
+  /* the line shows only inside the bright core (the ring, radius r*.45); past it, nothing */
+  const hm = `radial-gradient(circle ${r * .45}px at ${x - hb.left}px ${y - hb.top}px, #000 ${r * .3}px, transparent ${r * .45}px)`;
+  hidden.style.webkitMaskImage = hm; hidden.style.maskImage = hm;
+  lamp.style.background = `radial-gradient(circle ${soft * 1.2}px at ${x}px ${y}px, rgba(233,161,59,.16), rgba(233,161,59,.05) ${r}px, transparent ${soft * 1.2}px)`;
+  ring.style.left = x + 'px'; ring.style.top = y + 'px';
+  ring.style.width = ring.style.height = r * .9 + 'px';
+})();
+</script>
+</body>
+</html>

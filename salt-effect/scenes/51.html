@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Small sparks travel · The Salt Effect</title>
+<!-- COMET spark-trail cursor, re-cut for The Salt Effect (scene 31/76).
+     The cursor is a comet: a glowing head with a tail of embers that scatter with your speed.
+     Click (or tap) showers sparks. Idle, the comet orbits on its own. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @media (hover:hover) and (pointer:fine){ * { cursor:none; } }
+  html,body { height:100%; overflow:hidden; }
+  body { background:radial-gradient(ellipse at 50% 60%, #1d1338 0%, var(--ink-1) 45%, var(--ink-0) 100%); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  canvas { position:fixed; inset:0; width:100%; height:100%; }
+  /* the night around the comet: far salt specks and a soft indigo vignette */
+  .sky { position:fixed; inset:0; pointer-events:none; z-index:2;
+    background:
+      radial-gradient(1.5px 1.5px at 12% 22%, rgba(245,243,237,.55), transparent 60%),
+      radial-gradient(1px 1px at 27% 74%, rgba(245,243,237,.45), transparent 60%),
+      radial-gradient(1.5px 1.5px at 41% 14%, rgba(245,243,237,.4), transparent 60%),
+      radial-gradient(1px 1px at 58% 86%, rgba(245,243,237,.5), transparent 60%),
+      radial-gradient(1.5px 1.5px at 73% 28%, rgba(240,176,85,.6), transparent 60%),
+      radial-gradient(1px 1px at 86% 64%, rgba(245,243,237,.45), transparent 60%),
+      radial-gradient(1px 1px at 93% 18%, rgba(245,243,237,.35), transparent 60%),
+      radial-gradient(1.5px 1.5px at 6% 58%, rgba(245,243,237,.4), transparent 60%),
+      radial-gradient(1px 1px at 66% 52%, rgba(245,243,237,.3), transparent 60%),
+      radial-gradient(1px 1px at 34% 40%, rgba(245,243,237,.3), transparent 60%),
+      radial-gradient(120% 90% at 50% 55%, transparent 45%, rgba(14,8,31,.75) 100%); }
+  .center { position:fixed; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; pointer-events:none; mix-blend-mode:screen; padding:72px 20px 40px; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(54px,9.4vw,148px); line-height:.95; letter-spacing:-.02em;
+    color:var(--bone); font-variation-settings:'opsz' 144, 'SOFT' 50, 'WONK' 1; }
+  h1 span { color:var(--amber); }
+  .line { margin-top:26px; max-width:30ch; text-wrap:balance; font-size:clamp(17px,1.5vw,21px); line-height:1.55; color:var(--lilac); }
+  .center .mono { margin-top:22px; }
+  .hud { position:fixed; z-index:10; bottom:26px; }
+  .b1 { left:32px; } .b2 { right:32px; text-align:right; }
+  .touch { display:none; }
+  @media (hover:none) { .touch { display:inline; } .fine { display:none; } }
+  @media (max-width:600px){
+    .hud { bottom:18px; } .b1 { left:16px; } .b2 { right:16px; }
+    .b2 { display:none; }
+    .line { max-width:22ch; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="cv"></canvas>
+  <div class="sky"></div>
+  <div class="center">
+    <h1>Small sparks<br><span>travel.</span></h1>
+    <p class="line">A good experience gets retold. A great one gets retold for years.</p>
+    <span class="mono fine">Move fast, the tail grows · click to throw sparks</span>
+    <span class="mono touch">Tap to throw sparks</span>
+  </div>
+  <span class="mono hud b1">III · The street — 31/76</span>
+  <span class="mono hud b2">Kodak, TN · 35.97° N, 83.62° W</span>
+
+<script>
+/* ember colors: amber, amber-hi, salt white, lilac */
+const EMBERS = [[233,161,59],[240,176,85],[245,243,237],[233,161,59],[234,231,244]];
+/* trail fade: a soft erase most frames, a firm one every 5th so no faint ghost of the orbit is left behind */
+const FADE = 'rgba(0,0,0,.13)', FADE_FIRM = 'rgba(0,0,0,.55)';
+let frame = 0;
+
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let W, H, DPR;
+const fit = () => {
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+};
+fit(); addEventListener('resize', fit);
+
+let mx = W/2, my = H/2, hx = mx, hy = my, lastMove = -1e9;
+const sparks = [];
+const small = () => W < 600;
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;      /* touch scrolls the story; taps throw sparks */
+  mx = e.clientX; my = e.clientY; lastMove = performance.now();
+});
+function shower(x, y){
+  for (let i = 0; i < 46; i++){
+    const a = Math.random()*Math.PI*2, f = Math.random()*7 + 2;
+    sparks.push({ x, y, vx:Math.cos(a)*f, vy:Math.sin(a)*f, life:1, c:EMBERS[i % EMBERS.length], s:Math.random()*2+1 });
+  }
+}
+addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse') { shower(hx, hy); return; }
+  mx = hx = e.clientX; my = hy = e.clientY; lastMove = performance.now() - 1200;
+  shower(e.clientX, e.clientY);
+});
+
+(function loop(){
+  requestAnimationFrame(loop);
+  /* idle: the comet orbits by itself */
+  if (performance.now() - lastMove > 2800){
+    const t = performance.now() / 1200;
+    mx = W/2 + Math.cos(t) * W * (small() ? .36 : .3);
+    my = H/2 + Math.sin(t * 1.7) * H * .22;
+  }
+  /* head eases after the target; velocity = ember energy */
+  const pvx = mx - hx, pvy = my - hy;
+  hx += pvx * .2; hy += pvy * .2;
+  const speed = Math.hypot(pvx, pvy);
+
+  /* spawn embers along the movement */
+  const n = Math.min(6, 1 + speed * .12);
+  for (let i = 0; i < n; i++){
+    sparks.push({
+      x: hx + (Math.random()-.5)*6, y: hy + (Math.random()-.5)*6,
+      vx: -pvx * .06 + (Math.random()-.5)*1.4,
+      vy: -pvy * .06 + (Math.random()-.5)*1.4 - .3,
+      life: 1, c: EMBERS[Math.floor(Math.random()*EMBERS.length)],
+      s: Math.random()*2.2 + .8
+    });
+  }
+  if (sparks.length > 900) sparks.splice(0, sparks.length - 900);
+
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.fillStyle = (++frame % 5) ? FADE : FADE_FIRM;
+  ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = sparks.length - 1; i >= 0; i--){
+    const s = sparks[i];
+    s.x += s.vx; s.y += s.vy;
+    s.vy += .015;                         /* embers rise then sink */
+    s.life -= .022;
+    if (s.life <= 0){ sparks.splice(i, 1); continue; }
+    ctx.fillStyle = `rgba(${s.c[0]},${s.c[1]},${s.c[2]},${s.life * .9})`;
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.s * s.life, 0, 7); ctx.fill();
+  }
+  /* the comet head: layered glow, salt-white core, amber halo */
+  const R = 26 + speed * .6;
+  const g = ctx.createRadialGradient(hx, hy, 0, hx, hy, R);
+  g.addColorStop(0, 'rgba(245,243,237,.95)');
+  g.addColorStop(.25, 'rgba(240,176,85,.55)');
+  g.addColorStop(1, 'rgba(233,161,59,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(hx, hy, R, 0, 7); ctx.fill();
+  ctx.globalCompositeOperation = 'source-over';
+})();
+</script>
+</body>
+</html>

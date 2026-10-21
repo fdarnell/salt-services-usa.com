@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="scroll">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>One window, one town · The Salt Effect</title>
+<!-- PORTAL zoom-through scroll, re-cut for The Salt Effect (scene 34/76).
+     Scroll opens a round aperture until you pass through it into the next, wider world:
+     one window → one street → one town. Three apertures in a row, each opening from the last. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:var(--ink-0); }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; overflow-x:hidden; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  #rail { height:460vh; }
+  .stage { position:sticky; top:0; height:100vh; overflow:hidden;
+    background:radial-gradient(ellipse at 50% 50%, var(--ink-1) 0%, var(--ink-0) 70%); }
+  .world { position:absolute; inset:0; }
+  .world .frame { position:absolute; inset:0; clip-path:circle(0 at 50% 50%); will-change:clip-path;
+    background:radial-gradient(60% 60% at 50% 45%, rgba(233,161,59,.22), transparent 70%), linear-gradient(170deg, var(--ink-2), var(--ink-1)); }
+  .world img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; will-change:transform; }
+  /* a little dusk on every picture so the type sits on it */
+  .world .frame::after { content:''; position:absolute; inset:0;
+    background:radial-gradient(90% 70% at 50% 50%, transparent 40%, rgba(14,8,31,.55) 100%), linear-gradient(180deg, rgba(14,8,31,.35), transparent 35%, transparent 65%, rgba(14,8,31,.55)); }
+  /* the world you are in dims while the next porthole opens in it */
+  .shade { position:absolute; inset:0; background:var(--ink-0); opacity:0; pointer-events:none; }
+  .ring { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); border:1px solid rgba(240,176,85,.6);
+    border-radius:50%; width:0; height:0; pointer-events:none; opacity:0; will-change:width,height,opacity; }
+  .cap { position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap; opacity:0; color:var(--lilac); }
+  .stitle { position:absolute; left:50%; top:20%; transform:translate(-50%,-50%); z-index:5; text-align:center; pointer-events:none; opacity:0; width:92vw; }
+  .stitle h2 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(48px,7vw,112px); line-height:.95; letter-spacing:-.02em;
+    color:var(--bone); font-variation-settings:'opsz' 144, 'SOFT' 40; text-shadow:0 2px 40px rgba(14,8,31,.85); }
+  .stitle h2 span { color:var(--amber); }
+  .stitle p { margin-top:16px; font-size:clamp(17px,1.4vw,20px); color:var(--lilac); text-shadow:0 1px 18px rgba(14,8,31,.95); }
+  .label { position:absolute; left:32px; bottom:26px; z-index:8; }
+  .count { position:absolute; right:32px; bottom:26px; z-index:8; text-align:right; }
+  .count b { color:var(--amber); font-weight:400; }
+  .hint { position:absolute; left:50%; bottom:26px; transform:translateX(-50%); z-index:8; }
+  @media (max-width:600px){
+    .label { left:16px; bottom:18px; } .count { right:16px; bottom:18px; } .hint { display:none; }
+    .stitle { top:19%; }
+  }
+</style>
+</head>
+<body>
+  <div id="rail"><div class="stage">
+    <div class="world" id="w1"><div class="frame"><img src="../assets/img/shop-dusk.jpg" alt="A small storefront at dusk, its window lit"></div><div class="shade"></div><div class="ring"></div><div class="cap mono">01 · A lit window on the corner</div></div>
+    <div class="world" id="w2"><div class="frame"><img src="../assets/img/main-street-lit.jpg" alt="A row of small-town shops, windows lit amber"></div><div class="shade"></div><div class="ring"></div><div class="cap mono">02 · Main Street after six</div></div>
+    <div class="world" id="w3"><div class="frame"><img src="../assets/img/town-ridge.jpg" alt="A valley town's lights under mountain ridges"></div><div class="ring"></div><div class="cap mono">03 · The valley, ridge to ridge</div></div>
+
+    <div class="stitle" id="t1"><h2>One <span>window.</span></h2></div>
+    <div class="stitle" id="t2"><h2>One <span>street.</span></h2></div>
+    <div class="stitle" id="t3"><h2>One <span>town.</span></h2><p>Every light out there started as one.</p></div>
+
+    <span class="mono label">IV · The town — 34/76</span>
+    <span class="mono hint">Scroll to step through</span>
+    <span class="mono count" id="count"><b>01</b> / 03</span>
+  </div></div>
+
+<script>
+const rail = document.getElementById('rail');
+const W = [...document.querySelectorAll('.world')].map(w => ({ shade:w.querySelector('.shade'), frame:w.querySelector('.frame'), img:w.querySelector('img'), ring:w.querySelector('.ring'), cap:w.querySelector('.cap') }));
+const T = ['t1','t2','t3'].map(id => document.getElementById(id));
+const count = document.getElementById('count'), hint = document.querySelector('.hint');
+let p = 0, sp = 0;
+const read = () => { p = Math.max(0, Math.min(1, scrollY / Math.max(1, rail.offsetHeight - innerHeight))); };
+addEventListener('scroll', read, { passive:true }); read();
+const ease = t => t*t*(3-2*t);
+const clamp = t => Math.max(0, Math.min(1, t));
+const seg = (v, a, b) => clamp((v - a) / (b - a));
+
+/* each world: [porthole appears from, porthole full at, aperture fully open at] */
+const PH = [[-1, 0, .27], [.31, .38, .62], [.66, .73, .95]];
+
+(function loop(){
+  requestAnimationFrame(loop);
+  sp += (p - sp) * .08;
+  const R0 = innerWidth < 600 ? 31 : 19;                 /* porthole radius, vmin */
+  let active = 0;
+  W.forEach((w, i) => {
+    const [a, b, c] = PH[i];
+    const pop = i === 0 ? 1 : ease(seg(sp, a, b));        /* porthole grows in */
+    const z = ease(seg(sp, b, c));                         /* aperture opens past the viewport */
+    const R = pop * R0 + z * 175;
+    w.frame.style.clipPath = `circle(${R}vmin at 50% 50%)`;
+    /* gentle push-in that settles once you are through */
+    w.img.style.transform = `scale(${1.32 - z * .2 - ease(seg(sp, c, Math.min(1, c + .2))) * .08})`;
+    const ringSize = `calc(${R * 2}vmin + 24px)`;
+    w.ring.style.width = w.ring.style.height = ringSize;
+    w.ring.style.opacity = pop * (1 - clamp((z - .3) / .4));
+    w.cap.style.top = `calc(50% + ${R}vmin + 30px)`;
+    w.cap.style.opacity = pop * (1 - clamp(z * 3));
+    w.pop = pop; w.z = z;
+    if (pop > .5) active = i;
+  });
+  W.forEach((w, i) => { if (w.shade) { const n = W[i + 1]; w.shade.style.opacity = n.pop * (1 - n.z) * .62; } });
+  /* titles: window and street sit above their porthole, the town lands in the middle */
+  const o1 = 1 - clamp(ease(seg(sp, 0, .27)) * 2.4);
+  const o2 = ease(seg(sp, .33, .4)) * (1 - clamp(ease(seg(sp, .38, .62)) * 2.4));
+  const early = sp < .8;
+  const o3 = early ? ease(seg(sp, .69, .76)) * (1 - clamp(ease(seg(sp, .73, .95)) * 2.4)) : ease(seg(sp, .86, .97));
+  T[2].style.top = early ? '20%' : '50%';
+  T[2].querySelector('p').style.visibility = early ? 'hidden' : 'visible';
+  T[0].style.opacity = o1; T[0].style.transform = `translate(-50%,-50%) translateY(${(1 - o1) * -60}px)`;
+  T[1].style.opacity = o2; T[1].style.transform = `translate(-50%,-50%) translateY(${(1 - o2) * (sp < .4 ? 30 : -60)}px)`;
+  T[2].style.opacity = o3; T[2].style.transform = `translate(-50%,-50%) translateY(${(1 - o3) * 50}px)`;
+  count.innerHTML = `<b>0${active + 1}</b> / 03`;
+  hint.style.opacity = 1 - clamp(sp * 8);
+})();
+</script>
+<!-- signature cursor · inverting -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:#fff; transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(255,255,255,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid #fff; mix-blend-mode:difference; transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring); dot.style.left=dot.style.top=ring.style.left=ring.style.top='-100px';
+  let mx=-100,my=-100,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

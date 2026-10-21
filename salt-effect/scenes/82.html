@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>The Salt Effect · Finale</title>
+<!-- No. 82 EVERYTHING The Grand Finale, re-skinned: rising embers and salt specks, a title that
+     decodes itself (scramble, on first enter), scramble links, a magnetic CTA, glow cards and a
+     live clock set to Kodak, Tennessee time. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  #embers { position:fixed; inset:0; display:block; }
+  .halo { position:fixed; inset:0; pointer-events:none; background:radial-gradient(45% 40% at 50% 46%, rgba(233,161,59,.1), transparent 70%); }
+
+  .stage { position:fixed; inset:0; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px; text-align:center; padding:80px 5vw 150px; }
+  .stage > * { opacity:0; transform:translateY(18px); transition:opacity 1s ease, transform 1s cubic-bezier(.19,1,.22,1); }
+  .on .stage > * { opacity:1; transform:none; }
+  .on .stage > :nth-child(2) { transition-delay:.1s; } .on .stage > :nth-child(3) { transition-delay:.9s; }
+  .on .stage > :nth-child(4) { transition-delay:1.2s; } .on .stage > :nth-child(5) { transition-delay:1.5s; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(64px,20vw,150px); line-height:.92; letter-spacing:-.02em; color:var(--bone); }
+  h1 .w { display:block; white-space:nowrap; }
+  h1 em { font-style:normal; color:var(--amber); text-shadow:0 0 40px rgba(233,161,59,.3); }
+  .line { font-size:clamp(18px,1.7vw,24px); line-height:1.45; color:var(--lilac); max-width:28ch; }
+  .cta { pointer-events:auto; display:inline-block; font-family:'Instrument Sans',system-ui,sans-serif; font-weight:600; font-size:17px;
+    color:var(--ink-0); background:var(--amber); text-decoration:none; padding:18px 36px; border-radius:999px;
+    will-change:transform; transition:background .3s; box-shadow:0 10px 40px -10px rgba(233,161,59,.55); }
+  .cta:hover { background:var(--amber-hi); }
+  .cta:focus-visible, .links a:focus-visible { outline:2px solid var(--amber-hi); outline-offset:4px; }
+  .links { display:flex; gap:26px; align-items:center; flex-wrap:wrap; justify-content:center; }
+  .links a { color:var(--mist); text-decoration:none; transition:color .3s; display:inline-flex; align-items:center; min-width:4ch; min-height:44px; }
+  .links a:hover { color:var(--bone); }
+  #clock { color:var(--amber); font-variant-numeric:tabular-nums; }
+
+  .cards { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); z-index:15; display:flex; gap:12px; }
+  .gcard { --mx:50%; --my:50%; width:236px; border-radius:12px; padding:1.5px; overflow:hidden; background:var(--ink-2);
+    background-image:radial-gradient(150px circle at var(--mx) var(--my), rgba(240,176,85,.75), transparent 60%); }
+  .gcard .in { border-radius:10.5px; background:var(--ink-1); padding:16px 18px; text-align:left; }
+  .gcard b { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:20px; letter-spacing:-.01em; color:var(--bone); display:block; }
+  .gcard .mono { display:block; margin-top:6px; }
+  @media (max-width:760px){ .cards{ display:none; } .stage { padding:80px 16px 40px; gap:22px; } .links { gap:18px; } }
+  @media (max-height:700px) and (min-width:761px){ .cards { display:none; } .stage { padding-bottom:40px; } }
+  @media (pointer:fine){
+    * { cursor:none !important; }
+    #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+    #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+    #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.9); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+    .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+    @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+  }
+</style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+  <div class="halo" aria-hidden="true"></div>
+
+  <div class="stage">
+    <span class="mono">VII · Your turn — 75/76</span>
+    <h1 aria-label="The Salt Effect"><span class="w" data-title>The Salt</span><em class="w" data-title>Effect</em></h1>
+    <p class="line">One business, done right, changes everything around it.</p>
+    <a class="cta magnetic" href="https://saltservicesusa.com/contact/" target="_top">Get your free growth plan</a>
+    <div class="links mono">
+      <a href="https://saltservicesusa.com/services/" target="_top" data-scramble>Services</a>
+      <a href="https://saltservicesusa.com/work/" target="_top" data-scramble>Our work</a>
+      <a href="https://saltservicesusa.com/contact/" target="_top" data-scramble>Contact</a>
+      <span>Kodak, TN <span id="clock">--:--:--</span></span>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="gcard"><div class="in"><b>Get found</b><span class="mono">Website · SEO &amp; AEO</span></div></div>
+    <div class="gcard"><div class="in"><b>Get answered</b><span class="mono">CRM · AI follow-up</span></div></div>
+    <div class="gcard"><div class="in"><b>Get chosen</b><span class="mono">All five · one pipeline</span></div></div>
+  </div>
+
+<script>
+/* embers and salt specks, rising */
+const cv = document.getElementById('embers'), ctx = cv.getContext('2d');
+let W, H;
+const fit = () => { W = cv.width = innerWidth; H = cv.height = innerHeight; };
+fit(); addEventListener('resize', fit);
+const embers = Array.from({ length: innerWidth < 700 ? 60 : 100 }, () => ({
+  x:Math.random()*W, y:Math.random()*H, v:Math.random()*.8+.25, r:Math.random()*2+.7, ph:Math.random()*7, salt:Math.random() < .3
+}));
+/* reduced motion: one settled frame of embers, no loop */
+const still = SCENE.reduce;
+function amb(){
+  if (!still) requestAnimationFrame(amb);
+  ctx.fillStyle = still ? '#0e081f' : 'rgba(14,8,31,.2)'; ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation = 'lighter';
+  const t = still ? 0 : performance.now()/1000;
+  for (const e of embers){
+    if (!still){ e.y -= e.v; e.x += Math.sin(e.ph + t)*0.4; }
+    if (e.y < -10){ e.y = H+10; e.x = Math.random()*W; }
+    const f = .5+Math.sin(e.ph+t*4)*.5;
+    if (e.salt){ ctx.fillStyle = `rgba(245,243,237,${.12+f*.3})`; ctx.fillRect(e.x, e.y, e.r*.9, e.r*.9); continue; }
+    ctx.fillStyle = `rgba(${233+f*7},${161+f*15},${59+f*26},${.14+f*.3})`;
+    ctx.beginPath(); ctx.arc(e.x,e.y,e.r*(0.6+f*.7),0,7); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+amb();
+if (still) addEventListener('resize', () => { embers.forEach(e => { e.x = Math.random()*W; e.y = Math.random()*H; }); amb(); });
+
+/* scramble: links on hover, the title once when the visitor arrives */
+const GLYPHS = '!<>-_/[]{}—=+*^?#';
+function scramble(el, speed){
+  if (el.__iv || SCENE.reduce) return;      /* reduced motion: the words just sit still */
+  const orig = el.dataset.orig || (el.dataset.orig = el.textContent);
+  let frame = 0;
+  el.__iv = setInterval(() => {
+    el.textContent = orig.split('').map((c, i) =>
+      c === ' ' || i < frame / 2 ? c : GLYPHS[Math.floor(Math.random()*GLYPHS.length)]).join('');
+    if (frame++ > orig.length * 2){ clearInterval(el.__iv); el.__iv = null; el.textContent = orig; }
+  }, speed || 28);
+}
+document.querySelectorAll('[data-scramble]').forEach(a => {
+  a.addEventListener('mouseenter', () => scramble(a));
+  a.addEventListener('focus', () => scramble(a));
+});
+SCENE.onFirstEnter(() => {
+  document.body.classList.add('on');
+  document.querySelectorAll('[data-title]').forEach((el, i) => setTimeout(() => scramble(el, 55), i * 260));
+  setTimeout(() => document.querySelectorAll('[data-scramble]').forEach((a, i) => setTimeout(() => scramble(a), i * 120)), 1500);
+});
+
+/* magnetic CTA */
+if (!SCENE.reduce) document.querySelectorAll('.magnetic').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.transform = `translate(${(e.clientX-r.left-r.width/2)*.32}px, ${(e.clientY-r.top-r.height/2)*.32}px)`;
+  });
+  el.addEventListener('mouseleave', () => {
+    el.animate([{transform:el.style.transform},{transform:'translate(0,0)'}],{duration:480,easing:'cubic-bezier(.34,1.56,.64,1)'});
+    el.style.transform = '';
+  });
+});
+
+/* glow cards */
+const gcards = [...document.querySelectorAll('.gcard')];
+addEventListener('mousemove', e => gcards.forEach(c => {
+  const r = c.getBoundingClientRect();
+  c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+  c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+}));
+
+/* live clock, Kodak time */
+const clock = document.getElementById('clock');
+const tick = () => { try { clock.textContent = new Date().toLocaleTimeString('en-US', { timeZone:'America/New_York' }); } catch(e) { clock.textContent = new Date().toLocaleTimeString(); } };
+tick(); setInterval(tick, 1000);
+
+(function(){
+  if (!matchMedia('(pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=-99,my=-99,rx=mx,ry=my;
+  dot.style.left=dot.style.top=ring.style.left=ring.style.top='-99px';   /* off screen until the pointer moves */
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';
+    if(SCENE.reduce){ring.style.left=mx+'px';ring.style.top=my+'px';}});   /* reduced motion: the ring sits on the dot, no trailing */
+  if (!SCENE.reduce) (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{if(SCENE.reduce)return;const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button,.gcard');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

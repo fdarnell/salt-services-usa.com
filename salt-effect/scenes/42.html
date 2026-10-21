@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Say hello · The Salt Effect</title>
+<!-- No. 42 SECRETS Easter Egg Kit, re-skinned: three hidden delights. Type HELLO (salt-grain
+     confetti, the lights come on, and a hello back with Salt's phone and email), click the hand
+     five times (barrel roll), or sit still 12 seconds (screensaver, armed only while on screen). -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+    --bg:var(--ink-1); --fg:var(--bone); --mut:var(--mist); --acc:var(--amber);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:radial-gradient(70% 55% at 50% 42%, rgba(233,161,59,.07), transparent 70%), var(--bg); color:var(--fg);
+    font-family:'Instrument Sans',system-ui,sans-serif; transition:background .8s, color .8s; }
+  body.flip { --bg:var(--bone); --fg:var(--ink-text); --mut:var(--plum); --acc:var(--ink-text); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mut); transition:color .8s; }
+
+  .center { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:72px 20px 90px; }
+  #logo { width:84px; height:84px; cursor:pointer; user-select:none; -webkit-user-drag:none; display:block; margin-bottom:18px;
+    filter:drop-shadow(0 0 18px rgba(233,161,59,.35)); transition:filter .8s, transform .2s; border:0; background:none; padding:0; }
+  #logo img { width:100%; height:100%; display:block; pointer-events:none; }
+  #logo:active { transform:scale(.94); }
+  body.flip #logo img { filter:invert(12%) sepia(40%) saturate(2000%) hue-rotate(240deg) brightness(.45); }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(56px,9vw,136px); letter-spacing:-.02em; line-height:.95; }
+  h1 span { color:var(--acc); transition:color .8s; }
+  body.flip h1 span { text-decoration:underline; text-decoration-color:var(--amber); text-decoration-thickness:.07em; text-underline-offset:.1em; }
+  .hints { margin-top:28px; display:flex; flex-direction:column; gap:10px; }
+  .hints b { font-weight:400; color:var(--acc); }
+
+  .field { margin-top:26px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+  #say { font-family:'Space Mono',ui-monospace,monospace; font-size:18px; letter-spacing:.3em; text-transform:uppercase; text-align:center;
+    width:220px; padding:10px 0; background:transparent; border:0; border-bottom:1.5px solid var(--mut); color:var(--fg); outline:none; border-radius:0; }
+  #say::placeholder { color:var(--mut); opacity:.8; letter-spacing:.2em; }
+  #say:focus { border-bottom-color:var(--amber); }
+
+  .reveal { margin-top:26px; max-width:30ch; font-size:clamp(19px,1.8vw,26px); line-height:1.5; display:none; }
+  .reveal.on { display:block; animation:rise .8s cubic-bezier(.19,1,.22,1) both; }
+  .reveal a { color:inherit; text-decoration:underline; text-decoration-color:var(--amber); text-decoration-thickness:2px; text-underline-offset:4px; white-space:nowrap; }
+  .reveal a:hover { color:var(--amber); }
+  body.flip .reveal a:hover { color:var(--plum); }
+  @keyframes rise { from { opacity:0; transform:translateY(16px); } }
+
+  footer { position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-between; padding:24px 32px; pointer-events:none; }
+
+  @keyframes roll { to { transform:rotate(360deg); } }
+  body.rolling { animation:roll 1s cubic-bezier(.68,-0.15,.27,1.15) 1; }
+  .conf { position:fixed; top:-20px; z-index:99; pointer-events:none; will-change:transform; border-radius:1px; }
+
+  #saver { position:fixed; inset:0; z-index:80; background:var(--ink-0); display:none; flex-direction:column; justify-content:center; overflow:hidden; cursor:pointer; }
+  body.idle #saver { display:flex; }
+  #saver .roll { white-space:nowrap; font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:16vw; letter-spacing:-.02em; color:transparent;
+    -webkit-text-stroke:1.5px var(--plum); animation:slide 18s linear infinite; }
+  #saver .roll em { font-style:normal; -webkit-text-stroke:1.5px rgba(233,161,59,.6); }
+  #saver .mono { position:absolute; bottom:28px; left:0; right:0; text-align:center; color:var(--mist); }
+  @keyframes slide { to { transform:translateX(-50%); } }
+  #typed { position:fixed; bottom:70px; left:50%; transform:translateX(-50%); font-family:'Space Mono',ui-monospace,monospace;
+    font-size:14px; letter-spacing:.5em; color:var(--amber); z-index:20; pointer-events:none; }
+
+  @media (max-width:640px){ footer { padding:20px 16px; } .hints { margin-top:20px; } #logo { width:68px; height:68px; } }
+  @media (pointer:fine){
+    * { cursor:none !important; }
+    #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+    #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+    #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.9); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+    .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+    @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+  }
+</style>
+</head>
+<body>
+  <div class="center">
+    <button id="logo" aria-label="The Salt hand (click it five times)"><img src="../assets/logo/salt-logo.png" alt=""></button>
+    <h1 id="title">Say <span>hello.</span></h1>
+    <div class="hints" id="hints">
+      <span class="mono" id="h1n">① Type <b>hello</b> anywhere</span>
+      <span class="mono">② Click the hand five times</span>
+      <span class="mono">③ Or just wait 12 seconds</span>
+    </div>
+    <label class="field"><span class="mono" style="position:absolute;left:-9999px">Type hello</span>
+      <input id="say" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="type here">
+    </label>
+    <p class="reveal" id="reveal">Call <a href="tel:+18667217258" target="_top">(866) 721-7258</a> or write <a href="mailto:info@saltservicesusa.com" target="_top">info@saltservicesusa.com</a>.</p>
+  </div>
+  <div id="typed" aria-live="polite"></div>
+
+  <div id="saver" aria-hidden="true"><div class="roll">Still there? <em>Say hello.</em> Still there? <em>Say hello.</em> </div><span class="mono">Move to wake it up</span></div>
+  <footer><span class="mono" id="count">Egg 0 / 3 found</span><span class="mono">VII · Your turn — 72/76</span></footer>
+
+<script>
+const SECRET_WORD = 'HELLO';
+const IDLE_SECONDS = 12;
+const found = new Set();
+const counter = document.getElementById('count');
+function score(name){ found.add(name); counter.textContent = `Egg ${found.size} / 3 found`; }
+
+/* egg 1: the secret word -> salt-grain confetti, lights on, a hello back */
+let buffer = '';
+const typedEl = document.getElementById('typed'), say = document.getElementById('say');
+function feed(ch){
+  buffer = (buffer + ch.toUpperCase()).slice(-SECRET_WORD.length);
+  typedEl.textContent = buffer;
+  clearTimeout(typedEl.__t); typedEl.__t = setTimeout(() => typedEl.textContent = '', 1200);
+  if (buffer === SECRET_WORD){ buffer = ''; hello(); }
+}
+function hello(){
+  confetti(); document.body.classList.toggle('flip'); score('word');
+  document.getElementById('title').innerHTML = 'Hello <span>back.</span>';
+  document.getElementById('hints').style.display = 'none';
+  document.querySelector('.field').style.display = 'none';
+  document.getElementById('reveal').classList.add('on');
+}
+addEventListener('keydown', e => {
+  if (e.target === say || e.key.length !== 1 || e.metaKey || e.ctrlKey) return;
+  feed(e.key);
+});
+say.addEventListener('input', e => {
+  if (e.inputType && e.inputType.startsWith('delete')) return;
+  const v = say.value.toUpperCase();
+  if (v.includes(SECRET_WORD)){ say.value = ''; say.blur(); typedEl.textContent = SECRET_WORD; hello(); return; }
+  feed(v.slice(-1));
+});
+function confetti(){
+  const COLORS = ['#e9a13b','#f0b055','#f5f3ed','#eae7f4','#b3aacd'];
+  for (let i = 0; i < 110; i++){
+    const c = document.createElement('div');
+    c.className = 'conf';
+    const s = 4 + Math.random() * 7;            /* little cubes of salt */
+    c.style.cssText = `left:${Math.random()*100}vw; width:${s}px; height:${s}px; background:${COLORS[i % COLORS.length]};`;
+    document.body.appendChild(c);
+    c.animate([
+      { transform:'translateY(0) rotate(0turn)', opacity:1 },
+      { transform:`translateY(${innerHeight + 60}px) translateX(${(Math.random()-.5)*300}px) rotate(${2 + Math.random()*3}turn)`, opacity:.9 }
+    ], { duration:1800 + Math.random()*1600, easing:'cubic-bezier(.15,.6,.4,1)', fill:'forwards' });
+    setTimeout(() => c.remove(), 3600);
+  }
+}
+
+if (matchMedia('(hover: none)').matches) { document.getElementById('h1n').innerHTML = '① Type <b>hello</b> below'; document.querySelector('#saver .mono').textContent = 'Tap to wake it up'; }
+
+/* egg 2: the hand x5 -> barrel roll */
+let clicks = 0, clickT;
+document.getElementById('logo').addEventListener('click', () => {
+  clicks++;
+  clearTimeout(clickT); clickT = setTimeout(() => clicks = 0, 1600);
+  if (clicks >= 5){
+    clicks = 0;
+    document.body.classList.remove('rolling'); void document.body.offsetWidth;
+    document.body.classList.add('rolling'); score('roll');
+  }
+});
+
+/* egg 3: sit still -> screensaver (only while the scene is on screen) */
+let idleT, armed = false;
+function armIdle(){
+  document.body.classList.remove('idle');
+  clearTimeout(idleT);
+  if (!armed) return;
+  idleT = setTimeout(() => { document.body.classList.add('idle'); score('idle'); }, IDLE_SECONDS * 1000);
+}
+['pointermove','keydown','click','scroll','wheel','touchstart'].forEach(ev => addEventListener(ev, armIdle, { passive:true }));
+SCENE.onFirstEnter(() => { armed = true; armIdle(); });
+addEventListener('scene:enter', () => { armed = true; armIdle(); });
+addEventListener('scene:leave', () => { armed = false; armIdle(); });
+
+(function(){
+  if (!matchMedia('(pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=-99,my=-99,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button,input');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

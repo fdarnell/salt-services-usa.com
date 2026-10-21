@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="scroll">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>What a good business gives a town · The Salt Effect</title>
+<!-- CHAPTERS pinned story, re-cut for The Salt Effect (scene 36/76).
+     The viewport is pinned; scrolling turns the pages: picture and chapter crossfade
+     with a slow parallax zoom. Four things a good business gives a town. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:var(--ink-0); }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; overflow-x:hidden; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  #rail { height:440vh; }
+  .stage { position:sticky; top:0; height:100vh; overflow:hidden;
+    background:radial-gradient(60% 60% at 60% 40%, rgba(233,161,59,.12), transparent 70%), linear-gradient(170deg, var(--ink-2), var(--ink-0)); }
+
+  .ch { position:absolute; inset:0; }
+  .ch .img { position:absolute; inset:0; opacity:0; }
+  .ch .img img { width:100%; height:100%; object-fit:cover; filter:brightness(.7) saturate(.95); transform:scale(1.12); will-change:transform; }
+  .ch .img::after { content:''; position:absolute; inset:0;
+    background:linear-gradient(20deg, rgba(14,8,31,.92) 0%, rgba(14,8,31,.55) 38%, rgba(14,8,31,0) 70%),
+               linear-gradient(180deg, rgba(14,8,31,.55) 0%, transparent 28%); }
+  .ch .txt { position:absolute; z-index:10; left:8vw; bottom:12vh; max-width:640px; will-change:transform, clip-path; visibility:hidden; }
+  .ch .txt .mono { color:var(--amber-hi); display:block; margin-bottom:16px; }
+  .ch h2 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(52px,7vw,112px); line-height:.95; letter-spacing:-.02em;
+    color:var(--bone); font-variation-settings:'opsz' 144, 'SOFT' 40; }
+  .ch h2 span { color:var(--amber); }
+  .ch p { margin-top:18px; font-size:clamp(18px,1.6vw,23px); line-height:1.5; color:var(--lilac); max-width:28ch; text-wrap:balance; }
+
+  .head { position:fixed; left:8vw; top:clamp(92px,13vh,124px); z-index:20; max-width:min(560px,80vw); }
+  .head .mono { display:block; margin-bottom:12px; }
+  .head h1 { font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:clamp(24px,2.4vw,36px); line-height:1.1; letter-spacing:-.01em; color:var(--bone); text-wrap:balance;
+    font-variation-settings:'opsz' 48; text-shadow:0 1px 20px rgba(14,8,31,.8); }
+  .counter { position:fixed; right:38px; bottom:26px; z-index:20; color:var(--lilac); }
+  .counter b { color:var(--amber); font-weight:400; }
+  .hint { position:fixed; right:38px; top:clamp(96px,13vh,128px); z-index:20; }
+  .bar { position:fixed; left:38px; top:50%; transform:translateY(-50%); z-index:20; width:1px; height:34vh; background:rgba(234,231,244,.2); }
+  .bar i { position:absolute; top:0; left:0; width:100%; height:0%; background:var(--amber); }
+  @media (max-width:700px){
+    .bar { left:12px; height:28vh; }
+    .head { left:28px; right:16px; top:88px; }
+    .ch .txt { left:28px; right:16px; bottom:76px; }
+    .ch .img::after { background:linear-gradient(0deg, rgba(14,8,31,.94) 0%, rgba(14,8,31,.5) 42%, rgba(14,8,31,0) 65%),
+      linear-gradient(180deg, rgba(14,8,31,.7) 0%, transparent 30%); }
+    .counter { right:16px; bottom:22px; } .hint { display:none; }
+    .ch h2 { font-size:clamp(40px,11.5vw,56px); }
+  }
+</style>
+</head>
+<body>
+  <div class="bar"><i id="chBar"></i></div>
+
+  <div id="rail"><div class="stage" id="stage">
+    <div class="ch"><div class="img"><img src="../assets/img/workshop.jpg" alt="A workshop at night, one lamp over the bench"></div>
+      <div class="txt"><span class="mono">01 · What it gives</span><h2><span>Paychecks.</span></h2><p>Jobs for neighbors, and first jobs for their kids.</p></div></div>
+    <div class="ch"><div class="img"><img src="../assets/img/market-lights.jpg" alt="String lights over market stalls"></div>
+      <div class="txt"><span class="mono">02 · What it gives</span><h2><span>Sponsorships.</span></h2><p>The jersey says your name.</p></div></div>
+    <div class="ch"><div class="img"><img src="../assets/img/bridge-river.jpg" alt="An arched bridge with lamp posts reflected in the river"></div>
+      <div class="txt"><span class="mono">03 · What it gives</span><h2>A <span>place.</span></h2><p>Somewhere to meet, wait, celebrate.</p></div></div>
+    <div class="ch"><div class="img"><img src="../assets/img/town-ridge.jpg" alt="A valley town's lights under mountain ridges"></div>
+      <div class="txt"><span class="mono">04 · What it gives</span><h2>A reason <span>to stay.</span></h2><p>Towns keep people when people have somewhere to go.</p></div></div>
+  </div></div>
+
+  <div class="head"><span class="mono">IV · The town — 36/76</span><h1>What a good business gives a town</h1></div>
+  <span class="mono hint">Scroll to turn the page</span>
+  <span class="mono counter" id="chCount"><b>01</b> / 04</span>
+
+<script>
+const chapters = [...document.querySelectorAll('.ch')].map(c => ({ el:c, img:c.querySelector('img'), txt:c.querySelector('.txt') }));
+const rail = document.getElementById('rail');
+const measure = () => chapters.forEach(c => { c.h = c.txt.offsetHeight; });
+measure(); addEventListener('resize', measure);
+if (document.fonts) document.fonts.ready.then(measure);
+const count = document.getElementById('chCount'), bar = document.getElementById('chBar');
+let p = 0, sp = 0, shown = -1;
+const read = () => { p = Math.max(0, Math.min(1, scrollY / Math.max(1, rail.offsetHeight - innerHeight))); };
+addEventListener('scroll', read, { passive:true }); read();
+(function loop(){
+  requestAnimationFrame(loop);
+  sp += (p - sp) * .09;
+  /* each page holds, then turns: remap the float so pages dwell and the crossfade is quick */
+  const raw = sp * (chapters.length - 1), base = Math.floor(raw), fr = raw - base;
+  const k = Math.max(0, Math.min(1, (fr - .22) / .56));
+  const f = Math.min(chapters.length - 1, base + k * k * (3 - 2 * k));
+  /* overlapped crossfade: the next picture fades in OVER the current one, which stays at full
+     strength underneath, so some picture is always whole. The words roll: the old page slides up
+     out of a window while the new one rises in under it, both at full strength, never overlapping. */
+  const cur = Math.floor(f), t = f - cur;
+  const u0 = Math.max(0, Math.min(1, (t - .1) / .36)), u = u0 * u0 * (3 - 2 * u0);
+  const nxt = chapters[cur + 1], hw = Math.max(chapters[cur].h, nxt ? nxt.h : 0) + 6;
+  for (let i = 0; i < chapters.length; i++) { const c = chapters[i];
+    const d = f - i;                          /* distance from active */
+    let img = 0, ty = 0, show = false;
+    if (i === cur) { img = 1; show = u < 1; ty = nxt ? -u * (nxt.h + 40) : 0; }
+    else if (i === cur + 1) { const a = Math.min(1, t / .62); img = a * a * (3 - 2 * a); show = u > 0; ty = (1 - u) * (c.h + 40); }
+    c.img.parentNode.style.opacity = img;
+    c.img.parentNode.style.zIndex = i + 1;
+    c.img.style.transform = `scale(${1.12 - Math.max(0, Math.min(1, 1 - Math.abs(d))) * .06}) translateY(${d * -30}px)`;
+    c.txt.style.visibility = show ? 'visible' : 'hidden';
+    if (!show) continue;
+    c.txt.style.transform = `translateY(${ty}px)`;
+    c.txt.style.clipPath = `inset(${Math.max(-30, c.h - hw - ty)}px -60px ${Math.max(-30, ty)}px -60px)`;
+  }
+  const active = cur + (u > .5 && nxt ? 1 : 0);
+  if (active !== shown) { shown = active; count.innerHTML = `<b>0${active + 1}</b> / 04`; }
+  bar.style.height = sp * 100 + '%';
+})();
+</script>
+<!-- signature cursor · inverting -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:#fff; transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(255,255,255,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid #fff; mix-blend-mode:difference; transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring); dot.style.left=dot.style.top=ring.style.left=ring.style.top='-100px';
+  let mx=-100,my=-100,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

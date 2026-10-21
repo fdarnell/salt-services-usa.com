@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<script src="_bridge.js"></script>
+<title>Everything moves · Salt Services</title>
+<!-- RIPPLE · WebGL distortion hover. Each picture is water: it ripples away from the cursor with an
+     RGB split, and the ripple carries on into the other two pictures a beat later. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:radial-gradient(ellipse at 50% 40%, var(--ink-1) 0%, var(--ink-0) 75%); color:var(--bone); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  .corner { position:fixed; z-index:20; }
+  .c3 { bottom:30px; left:36px; } .c4 { bottom:30px; right:36px; text-align:right; }
+  #gl { position:fixed; inset:0; width:100%; height:100%; }
+  .cap { position:fixed; z-index:15; pointer-events:none; color:var(--lilac); }
+  .cap b { color:var(--amber); font-weight:400; margin-right:8px; }
+  h1 { position:fixed; left:50%; transform:translateX(-50%); z-index:10; font-family:'Fraunces',Georgia,serif; font-weight:560;
+    font-size:clamp(34px,4.4vw,66px); letter-spacing:-.02em; width:min(92vw,1100px); text-align:center; line-height:.98; pointer-events:none; }
+  h1 em { font-style:italic; font-weight:500; color:var(--amber); }
+  #fallback { display:none; position:fixed; inset:0; align-items:center; justify-content:center; text-align:center; line-height:2; }
+  @media (max-width:700px){
+    .c3 { left:20px; bottom:24px; } .c4 { left:20px; right:auto; text-align:left; bottom:46px; }
+    h1 { font-size:36px; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <span class="mono cap" id="cap0"><b>01</b>The bridge</span>
+  <span class="mono cap" id="cap1"><b>02</b>The market</span>
+  <span class="mono cap" id="cap2"><b>03</b>The road</span>
+  <h1 id="h">Touch one thing and <em>everything moves.</em></h1>
+  <span class="mono corner c3">VI · The world — 64/76</span>
+  <span class="mono corner c4" id="hint">Move across one · watch the other two</span>
+  <div id="fallback" class="mono">The pictures are resting.</div>
+
+<script type="importmap">
+{ "imports": { "three": "../kit/three/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const narrow = innerWidth / innerHeight < .8;
+const IMAGES = ['bridge-river', 'market-lights', 'night-road'].map(n => `../assets/img/${n}${narrow ? '' : '-tall'}.jpg`);
+if (matchMedia('(hover:none)').matches) document.getElementById('hint').textContent = 'Touch one · watch the other two';
+
+const canvas = document.getElementById('gl');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true }); }
+catch(e){ document.getElementById('fallback').style.display = 'flex'; throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(0, 1, 1, 0, .1, 10);   /* px space, y up */
+camera.position.z = 1;
+
+const vert = `varying vec2 vUv;
+  void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`;
+const frag = `
+  uniform sampler2D uTex; uniform vec2 uMouse; uniform float uStrength; uniform float uTime;
+  uniform vec2 uSize; uniform vec2 uCover; uniform float uReady;
+  varying vec2 vUv;
+  void main(){
+    vec2 d = vUv - uMouse;
+    d.x *= uSize.x / uSize.y;                       /* round ripples on any panel shape */
+    float dist = length(d);
+    float influence = exp(-dist * 6.5) * uStrength;
+    vec2 dir = dist > 0.0001 ? normalize(d) : vec2(0.);
+    dir.x *= uSize.y / uSize.x;
+    float wave = sin(dist * 26.0 - uTime * 5.5);
+    vec2 uv = vUv - dir * influence * 0.085 * wave;
+    uv = (uv - .5) * uCover + .5;                   /* cover-crop the picture into the panel */
+    float shift = influence * 0.014;
+    float r = texture2D(uTex, uv + vec2(shift, 0.)).r;
+    float g = texture2D(uTex, uv).g;
+    float b = texture2D(uTex, uv - vec2(shift, 0.)).b;
+    vec3 col = mix(vec3(.169,.114,.322), vec3(r, g, b), uReady);
+    float vig = smoothstep(1.05, .55, distance(vUv, vec2(.5)));
+    col *= 0.72 + 0.28 * vig;
+    /* a touch of amber light in the crest of the wave */
+    col += vec3(.914,.631,.231) * max(wave, 0.) * influence * .12;
+    /* rounded corners, 10px */
+    vec2 q = abs(vUv - .5) * uSize - (uSize * .5 - 10.);
+    float a = 1. - smoothstep(-.5, .5, length(max(q, 0.)) - 10.);
+    gl_FragColor = vec4(col, a);
+  }`;
+
+const loader = new THREE.TextureLoader();
+const panels = IMAGES.map((src, i) => {
+  const u = {
+    uTex: { value: null }, uMouse: { value: new THREE.Vector2(.5, .5) }, uStrength: { value: 0 }, uTime: { value: 0 },
+    uSize: { value: new THREE.Vector2(1, 1) }, uCover: { value: new THREE.Vector2(1, 1) }, uReady: { value: 0 }
+  };
+  const p = { u, aspect: narrow ? 1800/1100 : 1100/1400, rect: { x:0, y:0, w:1, h:1 }, echo: 0, cap: document.getElementById('cap' + i) };
+  loader.load(src, t => { t.colorSpace = THREE.SRGBColorSpace; u.uTex.value = t; p.aspect = t.image.width / t.image.height; cover(p); u.uReady.value = 1; });
+  p.mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.ShaderMaterial({ uniforms:u, vertexShader:vert, fragmentShader:frag, transparent:true }));
+  scene.add(p.mesh);
+  return p;
+});
+function cover(p){
+  const pa = p.rect.w / p.rect.h;
+  p.u.uCover.value.set(pa < p.aspect ? pa / p.aspect : 1, pa < p.aspect ? 1 : p.aspect / pa);
+}
+
+/* layout: a row of three tall panels, or a stack of three wide ones on a phone */
+const h1 = document.getElementById('h');
+function fit(){
+  const W = innerWidth, H = innerHeight;
+  renderer.setSize(W, H, false);
+  camera.left = 0; camera.right = W; camera.top = H; camera.bottom = 0; camera.updateProjectionMatrix();
+  let rects;
+  if (narrow) {
+    const gap = 12, w = W - 40, top = 84, avail = H - top - 230, h = Math.min(w * .56, (avail - gap * 2) / 3);
+    rects = [0, 1, 2].map(i => ({ x:20, y:top + i * (h + gap), w, h }));
+    h1.style.top = (top + 3 * h + 2 * gap + 22) + 'px'; h1.style.bottom = 'auto';
+  } else {
+    const gap = Math.max(16, W * .016), maxH = H - 92 - 240;
+    let w = Math.min((W * .84 - gap * 2) / 3, maxH * 1100/1400), h = w * 1400/1100;
+    const total = w * 3 + gap * 2, x0 = (W - total) / 2, top = Math.max(88, (H - h - 190) / 2);
+    rects = [0, 1, 2].map(i => ({ x:x0 + i * (w + gap), y:top + (i === 1 ? 0 : 14), w, h }));
+    h1.style.top = (top + h + 14 + 44) + 'px'; h1.style.bottom = 'auto';
+  }
+  panels.forEach((p, i) => {
+    const r = p.rect = rects[i];
+    p.mesh.scale.set(r.w, r.h, 1);
+    p.mesh.position.set(r.x + r.w/2, H - (r.y + r.h/2), 0);
+    p.u.uSize.value.set(r.w, r.h);
+    cover(p);
+    p.cap.style.left = (r.x + 4) + 'px';
+    p.cap.style.top = (r.y + r.h + 10) + 'px';
+    p.cap.style.display = narrow ? 'none' : '';
+  });
+}
+fit(); addEventListener('resize', fit);
+
+/* pointer → panel uv. The touched panel ripples with the pointer's speed;
+   the other two pick up the same ripple a beat later, softer. */
+let active = -1, lastX = 0, lastY = 0, lastMove = -1e9;
+function poke(e, kick){
+  active = -1;
+  panels.forEach((p, i) => {
+    const r = p.rect, u = (e.clientX - r.x) / r.w, v = 1 - (e.clientY - r.y) / r.h;
+    if (u >= -0.05 && u <= 1.05 && v >= -0.05 && v <= 1.05) {
+      active = i;
+      p.u.uMouse.value.set(Math.max(0, Math.min(1, u)), Math.max(0, Math.min(1, v)));
+      const speed = kick || Math.hypot(e.clientX - lastX, e.clientY - lastY);
+      p.u.uStrength.value = Math.min(p.u.uStrength.value + speed * .0075, 1.15);
+    }
+  });
+  lastX = e.clientX; lastY = e.clientY; lastMove = performance.now();
+}
+addEventListener('pointermove', e => poke(e, 0));
+addEventListener('pointerdown', e => poke(e, 120));
+
+let running = true;
+addEventListener('scene:leave', () => running = false);
+addEventListener('scene:enter', () => running = true);
+addEventListener('scene:progress', () => running = true);
+const clock = new THREE.Clock();
+(function loop(){
+  requestAnimationFrame(loop);
+  if (!running) return;
+  const t = clock.getElapsedTime();
+  /* idle: the water breathes on its own, wandering from one picture to the next */
+  if (performance.now() - lastMove > 3000){
+    const k = t * .7, i = Math.floor(t / 4.2) % 3, p = panels[i];
+    p.u.uMouse.value.set(.5 + Math.cos(k) * .3, .5 + Math.sin(k * 1.35) * .3);
+    p.u.uStrength.value = Math.max(p.u.uStrength.value, .6);
+    active = i;
+  }
+  const lead = active >= 0 ? panels[active] : null;
+  panels.forEach((p, i) => {
+    p.u.uTime.value = t;
+    if (lead && i !== active) {
+      /* the echo: follows the lead panel's ripple, delayed and softer */
+      p.echo += (lead.u.uStrength.value * .6 - p.echo) * .035;
+      p.u.uMouse.value.lerp(lead.u.uMouse.value, .05);
+      p.u.uStrength.value = Math.max(p.u.uStrength.value * .955, p.echo);
+    } else {
+      p.u.uStrength.value *= .955;            /* the water calms down */
+      p.echo *= .95;
+    }
+  });
+  renderer.render(scene, camera);
+})();
+</script>
+<!-- signature cursor: inverting dot and ring (fine pointers only) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; mix-blend-mode:difference; opacity:0; transition:opacity .3s; }
+  .cur-on #wlDot,.cur-on #wlRing{ opacity:1; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:#fff; transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(255,255,255,.85); transform:translate(-50%,-50%); }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid #fff; mix-blend-mode:difference; transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{document.body.classList.add('cur-on');mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

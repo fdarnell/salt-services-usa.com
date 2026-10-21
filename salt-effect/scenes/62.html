@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Small business is not small · The Salt Effect</title>
+<!-- SCOREBOARD counter stats, re-cut for The Salt Effect (scene 37/76).
+     Odometer roll-up eased like a slot machine that decided in your favor, with replay.
+     The only statistics on the page: SBA Office of Advocacy, 2025 Small Business Profile. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:radial-gradient(70% 55% at 50% 100%, rgba(233,161,59,.09), transparent 70%), var(--ink-1); color:var(--lilac);
+    font-family:'Instrument Sans',system-ui,sans-serif; display:flex; flex-direction:column; justify-content:center; padding-top:64px; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  .intro { display:flex; flex-direction:column; align-items:center; text-align:center; padding:0 20px clamp(26px,5vh,56px); }
+  .intro .mono { margin-bottom:20px; }
+  .intro h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(44px,6.4vw,100px); letter-spacing:-.02em; line-height:.95;
+    color:var(--bone); font-variation-settings:'opsz' 144, 'SOFT' 30; }
+  .intro h1 span { color:var(--amber); }
+
+  .board { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--ink-2); border-block:1px solid var(--ink-2); }
+  .stat { background:var(--ink-1); padding:clamp(28px,6vh,64px) 2.4vw; text-align:center; display:flex; flex-direction:column; align-items:center; }
+  .num { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(46px,5.4vw,88px); letter-spacing:-.02em; line-height:1; color:var(--bone);
+    font-variant-numeric:tabular-nums lining-nums; font-variation-settings:'opsz' 144; white-space:nowrap; }
+  .num .suffix { color:var(--amber); font-size:.42em; letter-spacing:0; margin-left:.12em; font-weight:500; }
+  .what { display:block; margin:16px 0 22px; font-size:17px; line-height:1.4; color:var(--lilac); max-width:22ch; text-wrap:balance; }
+  .bar { width:min(220px,80%); height:2px; background:rgba(234,231,244,.12); margin-top:auto; position:relative; overflow:hidden; flex:none; }
+  .bar i { position:absolute; inset:0; background:var(--amber); transform:scaleX(0); transform-origin:left; transition:transform 1.6s cubic-bezier(.19,1,.22,1) .3s; }
+  .bar.rule i { background:var(--mist); opacity:.5; }
+  .board.in .bar i { transform:scaleX(var(--fill)); }
+
+  .outro { display:flex; align-items:center; justify-content:space-between; gap:20px 32px; padding:clamp(20px,4vh,36px) clamp(16px,3vw,48px) 0; }
+  .src { font-size:16px; line-height:1.5; color:var(--mist); max-width:70ch; }
+  .src b { color:var(--lilac); font-weight:500; }
+  #replay { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist);
+    background:none; border:1px solid var(--ink-2); padding:12px 22px; border-radius:999px; cursor:pointer; transition:color .3s, border-color .3s; white-space:nowrap; }
+  #replay:hover, #replay:focus-visible { color:var(--bone); border-color:var(--amber); outline:none; }
+
+  @media (max-width:900px){
+    .board { grid-template-columns:1fr 1fr; }
+    .stat { padding:26px 12px; }
+    .num { font-size:clamp(38px,11vw,64px); }
+    .what { font-size:16px; margin:10px 0 14px; }
+    .outro { flex-direction:column; align-items:flex-start; padding:20px 16px 0; }
+    #replay { padding:10px 18px; }
+  }
+  @media (max-width:900px) and (max-height:700px){ .intro h1 { font-size:40px; } .stat { padding:16px 10px; } }
+</style>
+</head>
+<body>
+  <div class="intro">
+    <span class="mono">IV · The town — 37/76</span>
+    <h1>Small business<br><span>is not small.</span></h1>
+  </div>
+
+  <div class="board" id="board">
+    <div class="stat"><div class="num" data-to="36.2" data-dec="1" data-suffix="million">0</div><span class="what">small businesses in the U.S.</span><div class="bar rule" style="--fill:1"><i></i></div></div>
+    <div class="stat"><div class="num" data-to="46" data-suffix="%">0</div><span class="what">of private-sector jobs</span><div class="bar" style="--fill:.46"><i></i></div></div>
+    <div class="stat"><div class="num" data-to="9" data-suffix="in 10">0</div><span class="what">net new jobs, March 2023 to March 2024</span><div class="bar" style="--fill:.9"><i></i></div></div>
+    <div class="stat"><div class="num" data-to="1.1" data-dec="1" data-suffix="million">0</div><span class="what">new establishments opened in that year</span><div class="bar rule" style="--fill:1"><i></i></div></div>
+  </div>
+
+  <div class="outro">
+    <p class="src"><b>Source:</b> U.S. Small Business Administration, Office of Advocacy, 2025 Small Business Profile.</p>
+    <button id="replay" type="button">↻ Roll the numbers again</button>
+  </div>
+
+<script>
+const nums = [...document.querySelectorAll('.num')];
+const board = document.getElementById('board');
+const ease = t => 1 - Math.pow(1 - t, 4);
+const fmt = (v, d) => v.toLocaleString('en-US', { minimumFractionDigits:d, maximumFractionDigits:d });
+let runs = [];
+
+function show(n, v){
+  n.innerHTML = fmt(v, +(n.dataset.dec || 0)) + `<span class="suffix">${n.dataset.suffix}</span>`;
+}
+nums.forEach(n => show(n, 0));
+
+function roll(){
+  board.classList.remove('in'); void board.offsetWidth; board.classList.add('in');
+  const id = {}; runs = [id];
+  nums.forEach(n => {
+    const to = +n.dataset.to, d = +(n.dataset.dec || 0), unit = Math.pow(10, -d);
+    const t0 = performance.now(), dur = 1800 + Math.random()*500;
+    (function step(now){
+      if (runs[0] !== id) return;
+      const p = Math.min(1, (now - t0) / dur);
+      show(n, p < 1 ? Math.floor(ease(p) * to / unit) * unit : to);
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  });
+}
+SCENE.onFirstEnter(roll);
+let firstDone = false;
+addEventListener('scene:enter', () => { if (firstDone) roll(); firstDone = true; });
+document.getElementById('replay').addEventListener('click', roll);
+</script>
+<!-- signature cursor · matched (amber) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:#e9a13b; transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid #e9a13b; transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring); dot.style.left=dot.style.top=ring.style.left=ring.style.top='-100px';
+  let mx=-100,my=-100,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>
