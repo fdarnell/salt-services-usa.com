@@ -331,8 +331,8 @@ addEventListener('DOMContentLoaded', () => {
 // ---------- all-time view count ----------
 // One small ping per page load to the Salt portal. `first` is true only on this
 // browser's first visit. Skipped for automated browsers (screenshots, crawlers).
-// >>> VIEW_URL: replace __PAGE_VIEW_ENDPOINT__ with the portal's page-view path. <<<
-const VIEW_URL = 'https://my.saltservicesusa.com/__PAGE_VIEW_ENDPOINT__';
+// All-time view counter, kept by the Salt portal (Admin → Dashboard → Agency Sites).
+const VIEW_URL = 'https://my.saltservicesusa.com/api/auth/page-view';
 (() => {
   if (navigator.webdriver || /HeadlessChrome/.test(navigator.userAgent) || !navigator.sendBeacon) return;
   let first = false;
