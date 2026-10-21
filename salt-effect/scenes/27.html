@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="scroll">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>How far it's felt · The Salt Effect</title>
+<!-- MONTFORT horizontal journey, re-cut for The Salt Effect (scene 35/76).
+     Vertical scroll drives a sideways trip through five stops, parallax inside each panel:
+     the shop, the street, the square, the county, the region. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:var(--ink-0); }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; overflow-x:hidden; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  #rail { height:480vh; }
+  .stage { position:sticky; top:0; height:100vh; overflow:hidden; }
+  #track { display:flex; height:100%; will-change:transform; }
+  .panel { position:relative; flex:0 0 100vw; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .panel { background:radial-gradient(50% 50% at 50% 60%, rgba(233,161,59,.18), transparent 70%), linear-gradient(170deg, var(--ink-2), var(--ink-0)); }
+  .panel .bg { position:absolute; inset:-8%; background-size:cover; background-position:center; will-change:transform; }
+  .panel .veil { position:absolute; inset:0;
+    background:radial-gradient(70% 60% at 50% 52%, rgba(14,8,31,.62), rgba(14,8,31,.2) 80%), linear-gradient(180deg, rgba(14,8,31,.35), rgba(14,8,31,.55)); }
+  .panel .txt { position:relative; z-index:3; text-align:center; max-width:620px; padding:0 20px; will-change:transform; }
+  .panel .txt .mono { color:var(--lilac); opacity:.85; display:block; margin-bottom:18px; }
+  .panel .txt .mono b { color:var(--amber-hi); font-weight:400; }
+  .panel h2 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(52px,7.4vw,118px); line-height:.95; letter-spacing:-.02em;
+    color:var(--bone); font-variation-settings:'opsz' 144, 'SOFT' 40; text-shadow:0 2px 40px rgba(14,8,31,.6); }
+  .panel h2 span { color:var(--amber); }
+  .panel p { margin:20px auto 0; max-width:34ch; text-wrap:balance; font-size:clamp(17px,1.4vw,20px); line-height:1.55; color:var(--lilac); text-shadow:0 1px 16px rgba(14,8,31,.9); }
+  .kicker { position:absolute; top:clamp(96px,16vh,150px); left:0; right:0; text-align:center; z-index:3; }
+
+  .dots { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); z-index:20; display:flex; gap:8px; }
+  .dots i { width:26px; height:2px; background:rgba(234,231,244,.3); transition:background .3s; }
+  .dots i.on { background:var(--amber); }
+  .label { position:fixed; bottom:26px; left:32px; z-index:20; }
+  .hint { position:fixed; bottom:26px; right:32px; z-index:20; }
+  @media (max-width:700px){
+    .label { left:16px; bottom:48px; } .hint { display:none; }
+    .dots { bottom:24px; left:16px; transform:none; }
+    .panel .txt { padding:0 24px; }
+  }
+</style>
+</head>
+<body>
+  <div id="rail"><div class="stage"><div id="track">
+    <section class="panel">
+      <div class="bg" style="background-image:url('../assets/img/workshop.jpg')"></div><div class="veil"></div>
+      <span class="mono kicker">How far a good business is felt</span>
+      <div class="txt"><span class="mono"><b>01</b> / 05 · Behind the bench</span><h2>The <span>shop.</span></h2><p>Felt first by the people who work there. Steady hours, and a boss who shows up.</p></div>
+    </section>
+    <section class="panel">
+      <div class="bg" style="background-image:url('../assets/img/main-street-lit.jpg')"></div><div class="veil"></div>
+      <div class="txt"><span class="mono"><b>02</b> / 05 · Next door</span><h2>The <span>street.</span></h2><p>Then by the neighbors. Your customers park out front and wander into the shop beside you.</p></div>
+    </section>
+    <section class="panel">
+      <div class="bg" style="background-image:url('../assets/img/market-lights.jpg')"></div><div class="veil"></div>
+      <div class="txt"><span class="mono"><b>03</b> / 05 · Where people gather</span><h2>The <span>square.</span></h2><p>Then wherever folks meet. Your name on the banner, your cookies at the fall festival.</p></div>
+    </section>
+    <section class="panel">
+      <div class="bg" style="background-image:url('../assets/img/night-road.jpg')"></div><div class="veil"></div>
+      <div class="txt"><span class="mono"><b>04</b> / 05 · Sevier County</span><h2>The <span>county.</span></h2><p>Then down the road. People drive past two closer places because somebody told them about yours.</p></div>
+    </section>
+    <section class="panel">
+      <div class="bg" style="background-image:url('../assets/img/map-glow.jpg')"></div><div class="veil"></div>
+      <div class="txt"><span class="mono"><b>05</b> / 05 · East Tennessee</span><h2>The <span>region.</span></h2><p>Then further than you’ll ever drive. A name passed along the valley by people you’ll never meet.</p></div>
+    </section>
+  </div></div></div>
+
+  <div class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+  <span class="mono label">IV · The town — 35/76</span>
+  <span class="mono hint">Scroll down, travel sideways</span>
+
+<script>
+const track = document.getElementById('track');
+const rail = document.getElementById('rail');
+const panels = [...document.querySelectorAll('.panel')];
+const bgs = panels.map(p => p.querySelector('.bg'));
+const txts = panels.map(p => p.querySelector('.txt'));
+const dots = [...document.querySelectorAll('.dots i')];
+let target = 0, cur = 0;
+
+const read = () => {
+  const max = Math.max(1, rail.offsetHeight - innerHeight);
+  target = Math.max(0, Math.min(1, scrollY / max));
+};
+addEventListener('scroll', read, { passive:true }); read();
+
+(function loop(){
+  requestAnimationFrame(loop);
+  cur += (target - cur) * .075;                       /* eased travel */
+  const x = cur * (panels.length - 1) * innerWidth;
+  track.style.transform = `translate3d(${-x}px,0,0)`;
+  /* parallax: each background counter-drifts, the words lead a little */
+  panels.forEach((p, i) => {
+    const local = cur * (panels.length - 1) - i;      /* -1..1 around center */
+    bgs[i].style.transform = `translateX(${local * 12}%) scale(1.06)`;
+    txts[i].style.transform = `translateX(${local * -6}vw)`;
+    txts[i].style.opacity = 1 - Math.min(1, Math.abs(local) * .9);
+  });
+  const active = Math.round(cur * (panels.length - 1));
+  dots.forEach((d, i) => d.classList.toggle('on', i === active));
+})();
+</script>
+<!-- signature cursor · inverting (best over pictures) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:#fff; transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(255,255,255,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid #fff; mix-blend-mode:difference; transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring); dot.style.left=dot.style.top=ring.style.left=ring.style.top='-100px';
+  let mx=-100,my=-100,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

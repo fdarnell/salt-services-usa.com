@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>The Salt Effect · Shop, street, town</title>
+<!-- No. 20 SWARM Particle Morph, rebuilt as market string lights. Story position 42/76,
+     Chapter IV · The town. The particles are warm bulbs on thin catenary wires strung across a
+     dark square: they drop off the wire and re-string themselves into SHOP, then STREET, then
+     TOWN (each word spreads wider), sway gently, and the bulbs left over hang on the edge wires.
+     Starts on first enter, replays on enter, pauses on leave. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{background:var(--ink-0);color:var(--lilac);font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .mono{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mist)}
+  .hud{position:fixed;z-index:10;pointer-events:none}
+  .b1{bottom:26px;left:32px} .b2{bottom:26px;right:32px;text-align:right}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .steps{position:fixed;left:50%;bottom:11vh;transform:translateX(-50%);z-index:10;display:flex;gap:28px;align-items:baseline;white-space:nowrap;pointer-events:none}
+  .steps span{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.01em;font-size:clamp(18px,1.6vw,24px);color:var(--plum);transition:color .6s ease}
+  .steps span b{font-family:'Space Mono',ui-monospace,monospace;font-weight:400;font-size:12px;letter-spacing:.08em;margin-right:8px;color:inherit}
+  .steps span.on{color:var(--bone)}
+  .steps span.on b{color:var(--amber)}
+  .steps i{display:block;width:34px;height:1px;background:var(--ink-2);align-self:center}
+  .touch{display:none}
+  @media (hover:none){ .fine{display:none} .touch{display:inline} }
+  @media (max-width:640px){
+    .b1{left:16px;bottom:18px} .b2{display:none}
+    .steps{gap:14px;bottom:13vh} .steps i{width:16px}
+  }
+</style>
+</head>
+<body>
+  <canvas id="c" role="img" aria-label="Market string lights over a dark town square re-string themselves to spell shop, then street, then town."></canvas>
+  <h1 class="sr">Shop, then street, then town.</h1>
+  <div class="steps" aria-hidden="true">
+    <span><b>01</b>Shop</span><i></i><span><b>02</b>Street</span><i></i><span><b>03</b>Town</span>
+  </div>
+  <span class="mono hud b1">IV · The town — 42/76</span>
+  <span class="mono hud b2"><span class="fine">Brush the lights with your cursor</span><span class="touch">Touch the lights</span></span>
+
+<script>
+(function(){
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const bg = document.createElement('canvas'), g = bg.getContext('2d');
+const reduce = !!SCENE.reduce;
+if (reduce) document.querySelector('.b2').style.display = 'none';
+const WORDS = ['SHOP', 'STREET', 'TOWN'];
+const stepEls = [...document.querySelectorAll('.steps span')];
+function rng(s){ return () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const ease = t => t <= 0 ? 0 : t >= 1 ? 1 : t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+
+/* a single-stroke marquee alphabet: each letter is strokes, each stroke is pieces of polyline,
+   on a box w wide and 1 tall (y down) */
+const arc = (cx, cy, rx, ry, a0, a1, n = 36) => { const p = []; for (let i = 0; i <= n; i++){ const a = (a0 + (a1 - a0)*i/n)*Math.PI/180; p.push([cx + rx*Math.cos(a), cy + ry*Math.sin(a)]); } return p; };
+const lines = (...p) => p.slice(1).map((q, i) => [p[i], q]);
+const bowl = (w, r) => { const bx = w - r; return [...lines([0,1],[0,0],[bx,0]), arc(bx, r, r, r, -90, 90, 24), ...lines([bx,2*r],[0,2*r])]; };
+const GLYPH = {
+  S: { w: .6,  s: w => [[arc(w/2, .25, w/2 - .02, .25, -25, -270), arc(w/2, .75, w/2, .25, -90, 150)]] },
+  H: { w: .64, s: w => [lines([0,0],[0,1]), lines([w,0],[w,1]), lines([0,.5],[w,.5])] },
+  O: { w: .76, s: w => [[arc(w/2, .5, w/2, .5, -90, 270, 64)]], closed: true },
+  P: { w: .56, s: w => [bowl(w, .26)] },
+  R: { w: .6,  s: w => [bowl(w - .04, .25), lines([w*.42,.5],[w,1])] },
+  E: { w: .5,  s: w => [lines([w,0],[0,0],[0,1],[w,1]), lines([0,.5],[w*.8,.5])] },
+  T: { w: .64, s: w => [lines([0,0],[w,0]), lines([w/2,0],[w/2,1])] },
+  W: { w: .96, s: w => [lines([0,0],[w*.24,1],[w*.5,.3],[w*.76,1],[w,0])] },
+  N: { w: .68, s: w => [lines([0,1],[0,0],[w,1],[w,0])] }
+};
+const GAP = .24;
+
+let W, H, DPR, phone, SP, R0, groundY, N = 0;
+let wires = [], layouts = {}, bulbs = [], glow, glowSm;
+let t0 = null, running = false, raf = 0, ready = false, want = false, first = true;
+let sched = [], si = 0, poolW = 0, poolTarget = 0, wordIdx = -1;
+
+/* a wire: endpoints, sag, and a slow bob in the middle */
+const wire = (x0, y0, x1, y1, sag, ph) => ({ x0, y0, x1, y1, sag, ph });
+function wpos(w, s, t){
+  const k = 4*s*(1 - s), bob = reduce ? 0 : Math.sin(t*.8 + w.ph)*(phone ? 1.5 : 2.5);
+  return [w.x0 + (w.x1 - w.x0)*s, w.y0 + (w.y1 - w.y0)*s + (w.sag + bob)*k];
+}
+
+/* lay a word out: bulbs along the strokes, wired neighbour to neighbour */
+function wordLayout(word, wi){
+  const unit = [...word].reduce((a, c) => a + GLYPH[c].w, 0) + GAP*(word.length - 1);
+  const hT = H*(phone ? .19 : .3)*[.74, .82, 1][wi];
+  const wf = (phone ? [.8, .88, .9] : [.56, .8, .84])[wi];
+  const h = Math.min(hT, W*wf/unit), width = unit*h;
+  const A = wires[1], sp = SP/h;
+  const mid = wpos(A, .5, 0)[1];
+  const top = mid + H*(phone ? .075 : .085);
+  let x = W/2 - width/2;
+  const pts = [], letters = [];
+  [...word].forEach((c, li) => {
+    const G = GLYPH[c], w = G.w, start = pts.length, mine = [];
+    G.s(w).forEach((stroke, si2) => {
+      const out = [];
+      stroke.forEach((piece, pi) => {
+        const cum = [0];
+        for (let i = 1; i < piece.length; i++) cum.push(cum[i-1] + Math.hypot(piece[i][0] - piece[i-1][0], piece[i][1] - piece[i-1][1]));
+        const len = cum[cum.length - 1], n = Math.max(1, Math.round(len/sp));
+        for (let k = 0; k < n; k++){
+          const d = len*k/n; let j = 1; while (j < cum.length - 1 && cum[j] < d) j++;
+          const f = (d - cum[j-1])/((cum[j] - cum[j-1]) || 1);
+          out.push([piece[j-1][0] + (piece[j][0] - piece[j-1][0])*f, piece[j-1][1] + (piece[j][1] - piece[j-1][1])*f]);
+        }
+        if (pi === stroke.length - 1 && !G.closed) out.push(piece[piece.length - 1]);
+      });
+      for (const p of out){
+        if (mine.some(q => Math.hypot(q[0] - p[0], q[1] - p[1]) < sp*.55)){ if (pts.length) pts[pts.length - 1].link = false; continue; }
+        mine.push(p);
+        pts.push({ x: x + p[0]*h, y: top + p[1]*h, li, link: true });
+      }
+      if (pts.length > start) pts[pts.length - 1].link = !!G.closed && out.length > 2 ? 'close' : false;
+    });
+    const ls = pts.slice(start), minY = Math.min(...ls.map(p => p.y));
+    const tops = ls.map((p, i) => [p, start + i]).filter(([p]) => p.y < minY + h*.06).sort((a, b) => a[0].x - b[0].x);
+    let anchors = [tops[0], tops[tops.length - 1]];
+    if (anchors[1][0].x - anchors[0][0].x < w*h*.35){
+      const cx = x + w*h/2; anchors = [tops.reduce((a, b) => Math.abs(b[0].x - cx) < Math.abs(a[0].x - cx) ? b : a)];
+    }
+    letters.push({ cx: x + w*h/2, p0: wpos(A, (x + w*h/2 - A.x0)/(A.x1 - A.x0), 0)[1], top, h, ph: li*1.9 + wi, anchors: anchors.map(a => a[1]), first: start, last: pts.length - 1 });
+    x += (w + GAP)*h;
+  });
+  return { pts, letters, left: W/2 - width/2, right: W/2 + width/2, width, h };
+}
+
+function build(){
+  W = innerWidth; H = innerHeight; DPR = Math.min(devicePixelRatio || 1, 2); phone = W < 700;
+  cv.width = bg.width = Math.round(W*DPR); cv.height = bg.height = Math.round(H*DPR);
+  SP = phone ? 10.5 : 20; R0 = phone ? 2.3 : 3.5;
+  groundY = H*(phone ? .66 : .79);
+  const R = rng(42076);
+
+  /* wires: an upper strand across the square, and the main wire the letters hang from */
+  const aY = H*(phone ? .25 : .2);
+  wires = [
+    wire(-W*.03, H*(phone ? .15 : .09), W*1.03, H*(phone ? .16 : .1), H*(phone ? .05 : .075), 0),
+    wire(-W*.03, aY, W*1.03, aY + 4, H*(phone ? .035 : .06), 1.7)
+  ];
+
+  /* the square: sky, the backs of buildings, market stalls, wet paving */
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  let gr = g.createLinearGradient(0, 0, 0, groundY);
+  gr.addColorStop(0, '#0e081f'); gr.addColorStop(1, '#1d1338');
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  for (let i = 0, n = phone ? 40 : 90; i < n; i++){
+    g.fillStyle = `rgba(245,243,237,${.1 + R()*.4})`; g.fillRect(R()*W, R()*R()*H*.35, 1, 1);
+  }
+  const bTop = phone ? [.44, .53] : [.4, .53];
+  for (let x = -20; x < W + 20; ){
+    const bw = (phone ? 50 : 90) + R()*(phone ? 60 : 130), top = H*(bTop[0] + R()*(bTop[1] - bTop[0]));
+    g.fillStyle = ['#140c2a', '#170e30', '#120a26'][Math.floor(R()*3)];
+    g.fillRect(x, top, bw + 1, groundY - top + 1);
+    if (R() < .5){ g.beginPath(); g.moveTo(x - 3, top + 1); g.lineTo(x + bw/2, top - bw*.28); g.lineTo(x + bw + 3, top + 1); g.fill(); }
+    else { g.fillRect(x - 3, top - 4, bw + 6, 5); }
+    const ws = phone ? 12 : 18, wwid = phone ? 5 : 8, wh = phone ? 8 : 12;
+    for (let wy = top + ws; wy < groundY - H*.09; wy += ws*1.5)
+      for (let wx = x + ws*.7; wx < x + bw - ws*.7 - wwid; wx += ws*1.3){
+        const r = R();
+        g.fillStyle = r < .07 ? `rgba(233,161,59,${.18 + R()*.2})` : '#1d1338';
+        g.fillRect(wx, wy, wwid, wh);
+      }
+    x += bw;
+  }
+  /* market stalls under striped awnings */
+  const stH = H*(phone ? .05 : .065);
+  for (let x = -10; x < W; ){
+    const sw = (phone ? 54 : 110) + R()*(phone ? 30 : 60), y = groundY - stH;
+    g.fillStyle = '#0e081f'; g.fillRect(x + 4, y + stH*.35, sw - 8, stH*.65 + 1);
+    const stripes = 6, st = sw/stripes;
+    for (let k = 0; k < stripes; k++){
+      g.fillStyle = k % 2 ? '#2b1d52' : '#221647';
+      g.beginPath(); g.moveTo(x + k*st + st*.25, y); g.lineTo(x + (k + 1)*st + st*.25 - 1, y);
+      g.lineTo(x + (k + 1)*st, y + stH*.4); g.lineTo(x + k*st, y + stH*.4); g.fill();
+      g.beginPath(); g.arc(x + k*st + st/2, y + stH*.4, st/2, 0, Math.PI); g.fill();
+    }
+    g.fillStyle = 'rgba(240,176,85,.22)'; g.fillRect(x + st*.25, y, sw - st*.25, 1);
+    x += sw + (phone ? 8 : 18) + R()*(phone ? 14 : 40);
+  }
+  /* paving: dark, a little wet, joints running to a vanishing point */
+  gr = g.createLinearGradient(0, groundY, 0, H);
+  gr.addColorStop(0, '#150d2c'); gr.addColorStop(1, '#0e081f');
+  g.fillStyle = gr; g.fillRect(0, groundY, W, H - groundY);
+  g.strokeStyle = 'rgba(43,29,82,.55)'; g.lineWidth = 1;
+  const vx = W/2, vy = groundY - H*.35;
+  for (let k = -14; k <= 14; k++){
+    const bx = W/2 + k*W*.09, f = (groundY - vy)/(H - vy);
+    g.beginPath(); g.moveTo(vx + (bx - vx)*f, groundY); g.lineTo(bx, H); g.stroke();
+  }
+  for (let k = 1; k < 9; k++){ const y = groundY + (H - groundY)*Math.pow(k/9, 1.7); g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+
+  /* bulb glow sprites */
+  const sprite = (size, stops) => { const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d'), gg = x.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2); stops.forEach(s => gg.addColorStop(s[0], s[1])); x.fillStyle = gg; x.fillRect(0, 0, size, size); return c; };
+  glow = sprite(64, [[0, 'rgba(245,243,237,.95)'], [.1, 'rgba(240,176,85,.85)'], [.32, 'rgba(233,161,59,.3)'], [1, 'rgba(233,161,59,0)']]);
+  glowSm = sprite(32, [[0, 'rgba(240,176,85,.7)'], [1, 'rgba(233,161,59,0)']]);
+
+  /* layouts */
+  const words = WORDS.map(wordLayout);
+  /* one strand, in order: main wire left of the word, the word, main wire right, upper wire */
+  const A = wires[1], pxS = A.x1 - A.x0, Bmin = phone ? 24 : 40;
+  N = Math.max(...words.map(w => w.pts.length)) + Bmin + (phone ? 4 : 6);
+  const slotsOnWire = (wi, n, s0, s1) => Array.from({ length: n }, (_, k) => ({ w: wi, s: s0 + (s1 - s0)*(n === 1 ? .5 : k/(n - 1)) }));
+  const nAf = Math.round(N*.5);
+  layouts = { festoon: { slots: [...slotsOnWire(1, nAf, .015, .985), ...slotsOnWire(0, N - nAf, .98, .02)], word: null } };
+  words.forEach((wd, wi) => {
+    const margin = SP*1.3;
+    const sL = (wd.left - margin - A.x0)/pxS, sR = (wd.right + margin - A.x0)/pxS;
+    const capL = sL > .03 ? Math.floor((sL - .015)*pxS/(SP*1.15)) + 1 : 0, capR = sR < .97 ? Math.floor((.985 - sR)*pxS/(SP*1.15)) + 1 : 0;
+    const rest = N - wd.pts.length, nA = Math.min(capL + capR, Math.max(0, rest - Bmin));
+    const nl = capL + capR ? Math.round(nA*capL/(capL + capR)) : 0, nr = nA - nl;
+    const slots = [...slotsOnWire(1, nl, .015, sL), ...wd.pts.map(p => ({ l: p.li, x: p.x, y: p.y, link: p.link })),
+      ...slotsOnWire(1, nr, sR, .985), ...slotsOnWire(0, rest - nA, .98, .02)];
+    const off = nl;
+    wd.letters.forEach(L => { L.anchors = L.anchors.map(i => i + off); L.first += off; L.last += off; });
+    layouts[WORDS[wi]] = { slots, word: wd, off };
+  });
+
+  /* bulbs start hung along the wires */
+  bulbs = Array.from({ length: N }, () => ({ x: 0, y: 0, vx: 0, vy: 0, seed: R()*50, warm: R() }));
+  applyNow('festoon');
+  if (reduce) applyNow('TOWN');
+  if (!running) draw(performance.now(), true);
+}
+
+/* where a slot is right now: on a wire (with its bob) or in a letter (swinging from the wire) */
+function slotPos(sl, L, t){
+  if (sl.w !== undefined){ const p = wpos(wires[sl.w], sl.s, t); return [p[0], p[1] + R0*1.7]; }
+  const lt = L.word.letters[sl.l], A = wires[1];
+  const p1 = wpos(A, (lt.cx - A.x0)/(A.x1 - A.x0), t)[1];
+  const th = reduce ? 0 : Math.sin(t*1.15 + lt.ph)*(phone ? .02 : .016) + Math.sin(t*.43 + lt.ph*.7)*.006;
+  const dx = sl.x - lt.cx, dy = sl.y - lt.p0, c = Math.cos(th), s = Math.sin(th);
+  return [lt.cx + dx*c - dy*s, p1 + dx*s + dy*c];
+}
+
+function assign(key, t, stagger){
+  const L = layouts[key], it = b => b.pend || b, out = new Array(N), used = new Set();
+  const sx = sl => sl.w !== undefined ? wires[sl.w].x0 + (wires[sl.w].x1 - wires[sl.w].x0)*sl.s : sl.x;
+  const take = (j, b) => { out[j] = b; used.add(b); };
+  const even = (arr, m) => Array.from({ length: m }, (_, k) => arr[m === 1 ? 0 : Math.round(k*(arr.length - 1)/(m - 1))]);
+  /* the word: the old strand is spread along the new one in order, so it moves like a rope */
+  const wOld = bulbs.filter(b => it(b).to.l !== undefined).sort((a, c) => it(a).i - it(c).i);
+  const wNew = []; L.slots.forEach((sl, j) => { if (sl.l !== undefined) wNew.push(j); });
+  const nw = wNew.length, no = wOld.length;
+  if (nw && no >= nw) even(wOld, nw).forEach((b, k) => take(wNew[k], b));
+  else if (nw){
+    if (no) wOld.forEach((b, k) => take(wNew[no === 1 ? 0 : Math.round(k*(nw - 1)/(no - 1))], b));
+    const gaps = wNew.filter(j => !out[j]);
+    const pool = bulbs.filter(b => !used.has(b)).sort((a, c) => (it(c).to.w === 1) - (it(a).to.w === 1) || Math.abs(a.x - W/2) - Math.abs(c.x - W/2)).slice(0, gaps.length);
+    pool.sort((a, c) => a.x - c.x);
+    if (!no) gaps.forEach((j, k) => take(j, pool[k]));
+    else { gaps.sort((a, c) => sx(L.slots[a]) - sx(L.slots[c])); gaps.forEach((j, k) => take(j, pool[k])); }
+  }
+  /* the wires: each wire keeps its own bulbs where it can, in order along it */
+  for (const wi of [1, 0]){
+    const sl = L.slots.map((x, j) => j).filter(j => !out[j] && L.slots[j].w === wi).sort((a, c) => sx(L.slots[a]) - sx(L.slots[c]));
+    let cand = bulbs.filter(b => !used.has(b) && it(b).to.w === wi).sort((a, c) => a.x - c.x);
+    if (cand.length > sl.length) cand = even(cand, sl.length);
+    else if (cand.length < sl.length) cand = cand.concat(bulbs.filter(b => !used.has(b) && !cand.includes(b)).sort((a, c) => Math.abs(a.y - wpos(wires[wi], .5, 0)[1]) - Math.abs(c.y - wpos(wires[wi], .5, 0)[1])).slice(0, sl.length - cand.length)).sort((a, c) => a.x - c.x);
+    sl.forEach((j, k) => take(j, cand[k]));
+  }
+  const left = bulbs.filter(b => !used.has(b));
+  out.forEach((b, j) => { if (!b) take(j, left.pop()); });
+  bulbs = out;
+  bulbs.forEach((b, j) => { b.pend = { to: L.slots[j], L, i: j, at: t + j/N*stagger + Math.random()*.06, dur: .9 + Math.random()*.2 }; });
+  const wi = WORDS.indexOf(key);
+  wordIdx = wi;
+  stepEls.forEach((el, k) => el.classList.toggle('on', k === wi));
+  poolTarget = L.word ? L.word.width : 0;
+}
+function applyNow(key){
+  const L = layouts[key];
+  bulbs.forEach((b, i) => { b.to = L.slots[i]; b.L = L; b.i = i; b.from = null; b.pend = null; b.prevTo = b.prevL = null; b.at = -9; b.dur = 1; const p = slotPos(b.to, L, 0); b.x = p[0]; b.y = p[1]; b.vx = b.vy = 0; });
+  wordIdx = WORDS.indexOf(key);
+  stepEls.forEach((el, k) => el.classList.toggle('on', k === wordIdx));
+  poolW = poolTarget = L.word ? L.word.width : 0;
+}
+
+/* the cursor brushes the bulbs */
+let mx = -999, my = -999, mvx = 0, mvy = 0, lastM = 0;
+function onMove(x, y){ const now = performance.now(); if (lastM){ const dt = Math.max(8, now - lastM); mvx = (x - mx)/dt*16; mvy = (y - my)/dt*16; } mx = x; my = y; lastM = now; }
+addEventListener('pointermove', e => onMove(e.clientX, e.clientY));
+addEventListener('pointerdown', e => { lastM = 0; onMove(e.clientX, e.clientY); });
+addEventListener('pointerup', e => { if (e.pointerType !== 'mouse'){ mx = my = -999; } });
+document.addEventListener('mouseleave', () => { mx = my = -999; });
+
+let lastNow = 0;
+function draw(now, still){
+  const t = t0 === null || reduce ? 0 : (now - t0)/1000;
+  const dt = still ? 0 : Math.min(1/30, Math.max(0, (now - lastNow)/1000)); lastNow = now;
+
+  /* run the schedule */
+  if (!reduce && t0 !== null){
+    while (si < sched.length && t >= sched[si].at){ assign(sched[si].key, sched[si].at, sched[si].stagger); si++; }
+    if (si >= sched.length && t > sched[sched.length - 1].at + 1.5) loopAgain(now);
+  }
+
+  /* move each bulb: eased toward its slot, then a spring for the hanging bounce */
+  const om = 11, ze = .42, rad = phone ? 46 : 80;
+  for (const b of bulbs){
+    if (b.pend && t >= b.pend.at){
+      const p = b.from && b.to ? curTarget(b, t) : slotPos(b.to, b.L, t);
+      b.prevTo = b.to; b.prevL = b.L; b.prevI = b.i; b.i = b.pend.i;
+      b.from = p; b.to = b.pend.to; b.L = b.pend.L; b.at = b.pend.at; b.dur = b.pend.dur; b.pend = null;
+    }
+    const [tx, ty] = curTarget(b, t);
+    if (still || reduce){ b.x = tx; b.y = ty; continue; }
+    b.vx += (om*om*(tx - b.x) - 2*ze*om*b.vx)*dt;
+    b.vy += (om*om*(ty - b.y) - 2*ze*om*b.vy)*dt;
+    const dx = b.x - mx, dy = b.y - my, d2 = dx*dx + dy*dy;
+    if (d2 < rad*rad){
+      const d = Math.sqrt(d2) || 1, f = (1 - d/rad);
+      b.vx += (dx/d*90 + mvx*14)*f*f*dt*10; b.vy += (dy/d*60 + mvy*8)*f*f*dt*10;
+    }
+    b.x += b.vx*dt; b.y += b.vy*dt;
+  }
+  mvx *= .85; mvy *= .85;
+  poolW += (poolTarget - poolW)*(still ? 1 : Math.min(1, dt*2));
+
+  /* paint */
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.drawImage(bg, 0, 0, W, H);
+  ctx.globalCompositeOperation = 'lighter';
+  /* warm light spreading over the square, as wide as the word */
+  if (poolW > 1){
+    const cx = W/2, cy = groundY, rx = poolW*.7;
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(1, (H - groundY + H*.18)/rx);
+    let gr = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+    gr.addColorStop(0, 'rgba(233,161,59,.16)'); gr.addColorStop(1, 'rgba(233,161,59,0)');
+    ctx.fillStyle = gr; ctx.fillRect(-rx, -rx, rx*2, rx*2); ctx.restore();
+    const wy = H*(phone ? .38 : .42), wr = poolW*.62;
+    gr = ctx.createRadialGradient(cx, wy, 0, cx, wy, wr);
+    gr.addColorStop(0, 'rgba(240,176,85,.08)'); gr.addColorStop(1, 'rgba(240,176,85,0)');
+    ctx.fillStyle = gr; ctx.fillRect(cx - wr, wy - wr, wr*2, wr*2);
+  }
+  /* reflections in the wet paving */
+  ctx.globalAlpha = phone ? .16 : .12;
+  const rs = R0*7;
+  for (const b of bulbs){
+    const ry = groundY + (groundY - b.y)*.26 + 6;
+    if (ry > H + rs || ry < groundY) continue;
+    ctx.drawImage(glowSm, b.x - rs/2, ry - rs*.9, rs, rs*1.8);
+  }
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+
+  /* wires: the two long ones, the drops from the main wire, and the strings inside the letters */
+  ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(179,170,205,.36)';
+  for (const w of wires){
+    ctx.beginPath();
+    for (let k = 0; k <= 60; k++){ const p = wpos(w, k/60, t); k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+    ctx.stroke();
+  }
+  const A = wires[1];
+  const prog = b => Math.max(0, Math.min(1, (t - b.at)/b.dur));
+  /* the strand's wires fade in on the new layout and out on the old one as each bulb moves */
+  const live = new Set();
+  for (const b of bulbs){ if (b.L.word) live.add(b.L); if (b.prevL && b.prevL.word && prog(b) < 1) live.add(b.prevL); }
+  const vis = (b, L) => b.L === L ? (b.pend ? 1 : prog(b)) : b.prevL === L ? 1 - prog(b) : 0;
+  const slotIn = (b, L) => b.L === L ? b.to : b.prevL === L ? b.prevTo : null;
+  for (const L of live){
+    const at = [];
+    for (const b of bulbs){ if (b.L === L) at[b.i] = b; else if (b.prevL === L) at[b.prevI] = b; }
+    for (const lt of L.word.letters) for (const ai of lt.anchors){
+      const b = at[ai]; if (!b) continue;
+      const e = vis(b, L); if (e <= .03) continue;
+      const ap = wpos(A, (b.x - A.x0)/(A.x1 - A.x0), t);
+      ctx.globalAlpha = e*.9; ctx.beginPath(); ctx.moveTo(ap[0], ap[1]); ctx.lineTo(b.x, b.y - R0*1.2); ctx.stroke();
+    }
+    for (let i = L.off; i < L.off + L.word.pts.length; i++){
+      const b = at[i], sl = b && slotIn(b, L);
+      if (!sl || !sl.link) continue;
+      const j = sl.link === 'close' ? L.word.letters[sl.l].first : i + 1, c = at[j];
+      if (!c) continue;
+      const e = Math.min(vis(b, L), vis(c, L)); if (e <= .02) continue;
+      const ax = b.x, ay = b.y - R0*1.3, bx = c.x, by = c.y - R0*1.3, len = Math.hypot(bx - ax, by - ay);
+      ctx.globalAlpha = e*(len > SP*2.5 ? Math.max(0, 1 - (len - SP*2.5)/(SP*3)) : 1);
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.quadraticCurveTo((ax + bx)/2, (ay + by)/2 + len*.16, bx, by); ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  /* bulbs: socket, glass, hot core, then the glow */
+  for (const b of bulbs){
+    ctx.fillStyle = '#0e081f'; ctx.fillRect(b.x - R0*.45, b.y - R0*1.9, R0*.9, R0*1.1);
+  }
+  ctx.fillStyle = '#e9a13b';
+  ctx.beginPath(); for (const b of bulbs){ ctx.moveTo(b.x + R0, b.y); ctx.arc(b.x, b.y, R0, 0, 7); } ctx.fill();
+  ctx.fillStyle = '#f5f3ed';
+  ctx.beginPath(); for (const b of bulbs){ ctx.moveTo(b.x + R0*.5, b.y - R0*.1); ctx.arc(b.x, b.y - R0*.1, R0*.5, 0, 7); } ctx.fill();
+  ctx.globalCompositeOperation = 'lighter';
+  const gs = R0*(phone ? 11 : 10);
+  for (const b of bulbs){
+    const fl = reduce ? 1 : .86 + .1*Math.sin(t*2.1 + b.seed) + (b.seed < 2 ? .1*Math.sin(t*23 + b.seed) : 0);
+    ctx.globalAlpha = (.55 + b.warm*.2)*fl;
+    ctx.drawImage(glow, b.x - gs/2, b.y - gs/2, gs, gs);
+  }
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+}
+function curTarget(b, t){
+  const p = slotPos(b.to, b.L, t);
+  if (!b.from) return p;
+  const e = ease((t - b.at)/b.dur);
+  if (e >= 1){ b.from = null; return p; }
+  const o = b.prevTo;
+  if (o && o.w !== undefined && o.w === b.to.w){ const q = wpos(wires[o.w], o.s + (b.to.s - o.s)*e, t); return [q[0], q[1] + R0*1.7]; }
+  const lift = b.to.w === undefined && b.from[1] < p[1] ? 0 : -Math.sin(e*Math.PI)*Math.min(60, Math.abs(p[0] - b.from[0])*.2);
+  return [b.from[0] + (p[0] - b.from[0])*e, b.from[1] + (p[1] - b.from[1])*e + lift];
+}
+
+/* the run: re-hang (if replaying), then shop, street, town; hold, re-hang, again */
+function plan(offset){
+  sched = [
+    ...(offset ? [{ at: 0, key: 'festoon', stagger: .35 }] : []),
+    { at: offset + .4, key: 'SHOP', stagger: 1.1 },
+    { at: offset + 3.5, key: 'STREET', stagger: 1.1 },
+    { at: offset + 6.6, key: 'TOWN', stagger: 1.1 },
+    { at: offset + 13.6, key: 'festoon', stagger: .6 }
+  ];
+  si = 0;
+}
+function loopAgain(now){ t0 = now; plan(0); }
+function loop(now){ if (!running) return; draw(now); raf = requestAnimationFrame(loop); }
+function start(){
+  if (!ready){ want = true; return; }
+  if (reduce){ applyNow('TOWN'); draw(performance.now(), true); return; }
+  t0 = performance.now();
+  plan(first ? 0 : .9);
+  first = false;
+  if (!running){ running = true; lastNow = performance.now(); raf = requestAnimationFrame(loop); }
+}
+function stop(){ running = false; cancelAnimationFrame(raf); }
+
+let rtm = 0;
+addEventListener('resize', () => { clearTimeout(rtm); rtm = setTimeout(() => { if (!ready) return; bulbs = []; build(); if (!reduce && t0 !== null){ const key = wordIdx >= 0 ? WORDS[wordIdx] : 'festoon'; applyNow(key); } }, 120); });
+ready = true; build();
+SCENE.onFirstEnter(start);
+addEventListener('scene:enter', () => { if (t0 !== null || reduce) start(); });
+addEventListener('scene:leave', stop);
+if (want) start();
+})();
+</script>
+
+<!-- cursor (fine pointers only): hidden until the first mouse move -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  html.moved, html.moved *{cursor:none !important}
+  #wlDot,#wlRing{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;opacity:0;transition:opacity .3s}
+  html.moved #wlDot, html.moved #wlRing{opacity:1}
+  #wlDot{width:6px;height:6px;border-radius:50%;background:var(--amber-hi);transform:translate(-50%,-50%)}
+  #wlRing{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(233,161,59,.9);transform:translate(-50%,-50%)}
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot = document.createElement('div'); dot.id = 'wlDot';
+  const ring = document.createElement('div'); ring.id = 'wlRing';
+  document.body.append(dot, ring);
+  let mx = -100, my = -100, rx = mx, ry = my, on = false, raf = 0;
+  function f(){ rx += (mx - rx)*.16; ry += (my - ry)*.16; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; raf = Math.abs(mx - rx) + Math.abs(my - ry) > .3 ? requestAnimationFrame(f) : 0; }
+  addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    if (!on){ on = true; rx = mx; ry = my; document.documentElement.classList.add('moved'); }
+    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    if (!raf) raf = requestAnimationFrame(f);
+  });
+})();
+</script>
+</body>
+</html>

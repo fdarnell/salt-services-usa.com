@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<script src="_bridge.js"></script>
+<title>The secret ingredient · Salt Services</title>
+<!-- STAGE · 3D product showcase. The salt shaker turns on a lit stage; the hotspot labels
+     track points on the model live. Drag to turn it. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:radial-gradient(ellipse 70% 60% at 50% 28%, var(--ink-2) 0%, var(--ink-1) 45%, var(--ink-0) 100%);
+    color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  #gl { position:fixed; inset:0; }
+  /* lamp glow the key light comes from */
+  .lamp { position:fixed; left:50%; top:-22vh; width:70vh; height:70vh; transform:translateX(-50%); pointer-events:none;
+    background:radial-gradient(circle, rgba(240,176,85,.16) 0%, rgba(233,161,59,.05) 38%, transparent 66%); }
+  .hud { position:fixed; z-index:10; }
+  .t2 { top:92px; right:40px; text-align:right; }
+  .b2 { bottom:34px; right:40px; text-align:right; line-height:1.7; }
+  .panel { position:fixed; left:40px; bottom:34px; z-index:10; max-width:420px; }
+  .panel .mono { display:block; margin-bottom:14px; }
+  .panel h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(34px,4vw,60px); letter-spacing:-.02em; line-height:.95; color:var(--bone); }
+  .panel h1 em { color:var(--amber); font-style:italic; font-weight:500; }
+  .panel p { margin-top:16px; font-size:17px; line-height:1.55; color:var(--mist); max-width:360px; }
+  .reveal { opacity:0; transform:translateY(18px); transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+  .go .reveal { opacity:1; transform:none; }
+  .go .reveal.d1 { transition-delay:.12s; } .go .reveal.d2 { transition-delay:.24s; } .go .reveal.d3 { transition-delay:.36s; }
+
+  .hotspot { position:fixed; z-index:9; left:0; top:0; pointer-events:none; opacity:0; will-change:transform,opacity; }
+  .hotspot .in { transform:translate(-6px,-6px); display:flex; align-items:center; gap:10px; transition:opacity .6s; opacity:0; }
+  .go .hotspot .in { opacity:1; }
+  .hotspot.flip .in { flex-direction:row-reverse; transform:translate(calc(-100% + 6px),-6px); }
+  .hotspot .dot { flex:none; width:12px; height:12px; border-radius:50%; background:var(--amber); box-shadow:0 0 0 4px rgba(233,161,59,.25); animation:hpulse 2s infinite; }
+  @keyframes hpulse { 50% { box-shadow:0 0 0 10px rgba(233,161,59,.06); } }
+  .hotspot .line { width:28px; height:1px; background:rgba(233,161,59,.6); }
+  .hotspot .tag { background:rgba(14,8,31,.78); border:1px solid rgba(179,170,205,.22); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    padding:9px 13px; border-radius:8px; font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; color:var(--lilac); }
+  .hotspot .tag b { color:var(--amber); font-weight:400; margin-right:8px; }
+  #loadNote { position:fixed; left:50%; top:46%; transform:translate(-50%,-50%); z-index:8; text-align:center; }
+  @media (max-width:700px){
+    .t2 { display:none; }
+    .panel { left:20px; right:20px; bottom:28px; max-width:none; }
+    .panel h1 { font-size:38px; }
+    .b2 { display:none; }
+    .hotspot .line { width:16px; }
+  }
+</style>
+</head>
+<body>
+  <div class="lamp"></div>
+  <div id="gl"></div>
+  <span class="mono hud t2">Drag to turn it</span>
+  <div class="panel">
+    <span class="mono reveal">V · The signal — 57/76</span>
+    <h1 class="reveal d1">The secret ingredient <em>isn't</em> a secret.</h1>
+    <p class="reveal d2">A site that loads fast, a name people can find, and every lead followed up before it goes cold.</p>
+  </div>
+  <span class="mono hud b2">Kodak, TN<br>35.97° N, 83.62° W</span>
+  <div id="loadNote" class="mono">Setting the table…</div>
+
+<script type="importmap">
+{ "imports": { "three": "../kit/three/three.module.js",
+  "three/addons/": "../kit/three/addons/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const MODEL_URL = '../assets/models/salt-shaker.glb';
+const MODEL_HEIGHT = 3.1;            /* model is scaled to this height, whatever its units */
+/* hotspots in bounding-box fractions: height (0 base, 1 top), angle around the axis, radius */
+/* the three sit on one side within ~95° of each other, so the idle spin brings all three round together */
+const HOTSPOTS = [
+  { h:.86, a:.55, r:.74, n:'01', label:'Fast' },
+  { h:.55, a:1.35, r:.92, n:'02', label:'Found' },
+  { h:.18, a:2.2, r:.95, n:'03', label:'Followed up' }
+];
+const narrow = () => innerWidth / innerHeight < .8;
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.getElementById('gl').appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, innerWidth/innerHeight, .1, 50);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), .04).texture;
+scene.environmentIntensity = .55;
+const key = new THREE.SpotLight(0xf0b055, 900, 30, .5, .55); key.position.set(4, 8, 5); scene.add(key);
+const rim = new THREE.PointLight(0xe9a13b, 45); rim.position.set(-5, 2, -4); scene.add(rim);
+const fill = new THREE.PointLight(0x7a68c8, 14); fill.position.set(-4, -1, 5); scene.add(fill);
+
+/* stage disc + soft contact shadow */
+const FLOOR = -1.9;
+const disc = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.6, .08, 96),
+  new THREE.MeshPhysicalMaterial({ color:0x180f2f, metalness:.55, roughness:.38, clearcoat:.4 }));
+disc.position.y = FLOOR; scene.add(disc);
+const ring = new THREE.Mesh(new THREE.TorusGeometry(2.6, .012, 8, 128), new THREE.MeshBasicMaterial({ color:0xe9a13b, transparent:true, opacity:.55 }));
+ring.rotation.x = Math.PI/2; ring.position.y = FLOOR + .045; scene.add(ring);
+const shadowTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const x = c.getContext('2d'), g = x.createRadialGradient(128,128,10,128,128,128);
+  g.addColorStop(0,'rgba(14,8,31,.75)'); g.addColorStop(1,'rgba(14,8,31,0)');
+  x.fillStyle = g; x.fillRect(0,0,256,256);
+  return new THREE.CanvasTexture(c);
+})();
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(3.6,3.6), new THREE.MeshBasicMaterial({ map:shadowTex, transparent:true, depthWrite:false }));
+shadow.rotation.x = -Math.PI/2; shadow.position.y = FLOOR + .05; scene.add(shadow);
+
+/* salt grains: a slow sprinkle falling past the shaker, white with a few amber */
+const G = 260, gp = new Float32Array(G*3), gc = new Float32Array(G*3), gs = new Float32Array(G);
+const cW = new THREE.Color(0xf5f3ed), cA = new THREE.Color(0xf0b055);
+for (let i = 0; i < G; i++) {
+  gp[i*3] = (Math.random()-.5)*7; gp[i*3+1] = FLOOR + Math.random()*6; gp[i*3+2] = (Math.random()-.5)*4 - .5;
+  gs[i] = .004 + Math.random()*.008;
+  const c = Math.random() < .14 ? cA : cW; gc[i*3] = c.r; gc[i*3+1] = c.g; gc[i*3+2] = c.b;
+}
+const grainGeo = new THREE.BufferGeometry();
+grainGeo.setAttribute('position', new THREE.BufferAttribute(gp, 3));
+grainGeo.setAttribute('color', new THREE.BufferAttribute(gc, 3));
+const grains = new THREE.Points(grainGeo, new THREE.PointsMaterial({ size:.035, vertexColors:true, transparent:true, opacity:.7, depthWrite:false }));
+scene.add(grains);
+
+/* hotspot DOM */
+const spotEls = HOTSPOTS.map(h => {
+  const d = document.createElement('div');
+  d.className = 'hotspot';
+  d.innerHTML = `<div class="in"><div class="dot"></div><div class="line"></div><div class="tag"><b>${h.n}</b>${h.label}</div></div>`;
+  document.body.appendChild(d);
+  return d;
+});
+
+/* load the model, scale it to MODEL_HEIGHT and stand it on the disc */
+const pivot = new THREE.Group(); scene.add(pivot);
+let model = null, R = 1, H = MODEL_HEIGHT;
+new GLTFLoader().load(MODEL_URL, g => {
+  model = g.scene;
+  let box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  model.scale.setScalar(MODEL_HEIGHT / size.y);
+  box = new THREE.Box3().setFromObject(model);
+  const c = box.getCenter(new THREE.Vector3());
+  model.position.set(-c.x, -box.min.y, -c.z);
+  R = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) / 2;
+  model.traverse(o => { if (o.isMesh && o.material) o.material.envMapIntensity = 1; });
+  /* glass: the model's clear tint, plus a reflection-only shell added on top, so the walls catch
+     light at the edges while the indigo and the salt's top show through the empty upper part */
+  model.traverse(o => {
+    if (!o.isMesh || !/glass/i.test(o.name + ' ' + o.material.name)) return;
+    o.renderOrder = 2;
+    const shine = new THREE.Mesh(o.geometry, new THREE.MeshPhysicalMaterial({ color:0x000000, roughness:.22, metalness:0,
+      ior:1.5, envMapIntensity:1.3, transparent:true, blending:THREE.AdditiveBlending, depthWrite:false }));
+    shine.renderOrder = 3; o.add(shine);
+  });
+  pivot.add(model);
+  document.getElementById('loadNote').style.display = 'none';
+}, undefined, () => document.getElementById('loadNote').textContent = 'The shaker is still on its way');
+
+/* drag to orbit + auto turntable (mouse and pen; touch keeps scrolling the story) */
+let dragging = false, lastX = 0, rotV = 0, rotY = 0;
+addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') { dragging = true; lastX = e.clientX; } });
+addEventListener('pointermove', e => { if (dragging) { rotV += (e.clientX - lastX) * .0016; lastX = e.clientX; } });
+addEventListener('pointerup', () => dragging = false);
+const mouse = { x:0, y:0 };
+addEventListener('pointermove', e => { if (e.pointerType !== 'touch') { mouse.x = e.clientX/innerWidth - .5; mouse.y = e.clientY/innerHeight - .5; } });
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+/* intro: text rises, labels appear, the shaker gets a spin */
+const intro = () => { document.body.classList.add('go'); rotV += .09; };
+SCENE.onFirstEnter(intro);
+addEventListener('scene:enter', () => { running = true; rotV += .06; });
+addEventListener('scene:progress', () => running = true);
+addEventListener('scene:leave', () => running = false);
+
+const v3 = new THREE.Vector3(), axis = new THREE.Vector3(), toCam = new THREE.Vector3();
+let hidden = false, running = true;
+document.addEventListener('visibilitychange', () => hidden = document.hidden);
+(function loop(){
+  requestAnimationFrame(loop);
+  if (hidden || !running) return;
+  const t = performance.now();
+  rotV += .0007; rotV *= .93;
+  rotY += rotV + .003;
+  pivot.rotation.y = rotY;
+  pivot.position.y = FLOOR + .06 + Math.sin(t/900) * .05;
+  const n = narrow();
+  camera.position.set(mouse.x * 1.4, .9 - mouse.y * .9, n ? 11.5 : 9.4);
+  camera.lookAt(n ? 0 : -1.5, n ? -1.75 : -.45, 0);
+  for (let i = 0; i < G; i++) {
+    gp[i*3+1] -= gs[i];
+    gp[i*3] += Math.sin(t/1400 + i) * .0009;
+    if (gp[i*3+1] < FLOOR) gp[i*3+1] = FLOOR + 6;
+  }
+  grainGeo.attributes.position.needsUpdate = true;
+
+  if (model) HOTSPOTS.forEach((h, i) => {
+    const y = h.h * H;
+    v3.set(Math.cos(h.a) * R * h.r, y, Math.sin(h.a) * R * h.r).applyMatrix4(pivot.matrixWorld);
+    axis.set(0, y, 0).applyMatrix4(pivot.matrixWorld);
+    const facing = v3.clone().sub(axis).normalize().dot(toCam.copy(camera.position).sub(v3).normalize());
+    v3.project(camera);
+    const x = (v3.x * .5 + .5) * innerWidth, yy = (-v3.y * .5 + .5) * innerHeight;
+    spotEls[i].style.transform = `translate(${x}px,${yy}px)`;
+    const w = spotEls[i]._w || (spotEls[i]._w = spotEls[i].firstChild.offsetWidth) || 160;
+    spotEls[i].classList.toggle('flip', x + w + 12 > innerWidth);
+    spotEls[i].style.opacity = Math.min(1, Math.max(0, facing * 2.2 + .35));
+  });
+  renderer.render(scene, camera);
+})();
+</script>
+<!-- signature cursor, amber for the stage (fine pointers only) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .3s; }
+  .cur-on #wlDot,.cur-on #wlRing{ opacity:1; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.9); transform:translate(-50%,-50%); }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{document.body.classList.add('cur-on');mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

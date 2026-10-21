@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · The current</title>
+<!-- CURRENT · Flow Field. Story position 41/76, Chapter IV · The town.
+     Thousands of streaks ride an invisible noise current; the cursor is a rock in the creek
+     and the flow bends around it. A few amber sparks (the money) and the things it buys ride along. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{background:var(--ink-0);color:var(--lilac);font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .mono{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mist)}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .corner{position:fixed;z-index:10;text-shadow:0 0 6px var(--ink-0),0 0 14px var(--ink-0),0 0 2px var(--ink-0)}
+  .c1{top:84px;left:32px} .c2{top:84px;right:32px;text-align:right} .c3{bottom:26px;left:32px} .c4{bottom:26px;right:32px;text-align:right}
+  .title{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;text-align:center;pointer-events:none;
+    width:min(1000px,calc(100vw - 32px))}
+  .title::before{content:"";position:absolute;inset:-12% -8%;z-index:-1;
+    background:radial-gradient(closest-side, rgba(14,8,31,.82) 30%, rgba(14,8,31,0))}
+  .title h1{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.02em;line-height:.98;
+    font-size:clamp(40px,6.2vw,92px);color:var(--bone);text-wrap:balance}
+  .title h1 em{font-style:italic;color:var(--amber-hi)}
+  .title p{margin:24px auto 0;max-width:46ch;font-size:clamp(17px,1.45vw,20px);line-height:1.55;color:var(--lilac);text-wrap:balance}
+  .rider{position:fixed;left:0;top:0;z-index:4;pointer-events:none;white-space:nowrap;will-change:transform,opacity;
+    font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber-hi);
+    opacity:0;text-shadow:0 0 12px rgba(233,161,59,.5)}
+  .rider::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--amber-hi);margin-right:8px;vertical-align:1px;box-shadow:0 0 8px var(--amber)}
+  .touch{display:none}
+  @media (hover:none){ .fine{display:none} .touch{display:inline} }
+  @media (max-width:640px){
+    .c1{left:16px;top:80px} .c2{right:16px;top:80px} .c3{left:16px;bottom:18px;max-width:60%} .c4{display:none}
+    .rider{font-size:11px}
+  }
+</style>
+</head>
+<body>
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <div class="title">
+    <h1>Money spent here keeps <em>moving</em> here.</h1>
+    <p>Paychecks turn into groceries, haircuts, ball fees and Friday dinners, down the same street.</p>
+  </div>
+  <span class="mono corner c1">IV · The town — 41/76</span>
+  <span class="mono corner c2">35.97° N, 83.62° W</span>
+  <span class="mono corner c3"><span class="fine">Your cursor is a rock in the creek</span><span class="touch">Touch the water · it bends around you</span></span>
+  <span class="mono corner c4">One dollar, many stops</span>
+  <div id="riders" aria-hidden="true"></div>
+
+<script>
+(function(){
+  const small = innerWidth < 640;
+  const COUNT = small ? 1400 : 2600;
+  const SCALE = small ? .0028 : .0016;
+  /* lilac #eae7f4, mist #b3aacd, plum #635a7d; amber #e9a13b is the money */
+  const PALETTE = ['234,231,244', '179,170,205', '99,90,125', '233,161,59'];
+
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  let W, H, DPR;
+  const fit = () => {
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.fillStyle = '#0e081f'; ctx.fillRect(0, 0, W, H);
+  };
+  fit(); addEventListener('resize', fit);
+
+  /* compact 2D value noise */
+  const perm = Uint8Array.from({ length: 512 }, () => Math.random() * 256);
+  function noise(x, y){
+    const xi = Math.floor(x) & 255, yi = Math.floor(y) & 255;
+    const xf = x - Math.floor(x), yf = y - Math.floor(y);
+    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    const a = perm[(xi + perm[yi]) & 511] / 255;
+    const b = perm[(xi + 1 + perm[yi]) & 511] / 255;
+    const c = perm[(xi + perm[(yi + 1) & 255]) & 511] / 255;
+    const d = perm[(xi + 1 + perm[(yi + 1) & 255]) & 511] / 255;
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+  }
+
+  const pick = () => { const r = Math.random(); return r < .035 ? 3 : r < .3 ? 0 : r < .7 ? 1 : 2; };
+  const parts = Array.from({ length: COUNT }, () => ({
+    x: Math.random() * W, y: Math.random() * H, px: 0, py: 0, c: pick(), life: Math.random() * 160
+  }));
+
+  let mx = -9999, my = -9999, lastMove = -1e9, t = 0;
+  const setP = e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); };
+  addEventListener('pointermove', setP);
+  addEventListener('pointerdown', setP);
+
+  function flow(x, y){
+    let ang = noise(x * SCALE, y * SCALE + t) * Math.PI * 4;
+    const dx = x - mx, dy = y - my, d2 = dx * dx + dy * dy;
+    if (d2 < 22000){
+      const away = Math.atan2(dy, dx), m = 1 - d2 / 22000;
+      ang = ang * (1 - m) + away * m;
+    }
+    return ang;
+  }
+
+  /* the things the money turns into, carried on the current */
+  const WORDS = ['paycheck', 'groceries', 'haircut', 'ball fees', 'Friday dinner', 'hardware store', 'tip jar', 'paycheck'];
+  const host = document.getElementById('riders');
+  const riders = Array.from({ length: small ? 3 : 5 }, (_, i) => {
+    const el = document.createElement('span'); el.className = 'rider'; host.appendChild(el);
+    const r = { el, x: 0, y: 0, life: 0, max: 1, w: i };
+    spawn(r, i * 90);
+    return r;
+  });
+  function spawn(r, head){
+    r.x = 12 + Math.random() * Math.max(10, W - 190); r.y = H * (.14 + Math.random() * .74);
+    r.max = 260 + Math.random() * 160; r.life = r.max + (head || 0);
+    r.w = (r.w + riders_len()) % WORDS.length;
+    r.el.textContent = WORDS[r.w];
+  }
+  function riders_len(){ return small ? 3 : 5; }
+
+  const titleEl = document.querySelector('.title');
+  let tb = null;
+  const measure = () => { const b = titleEl.getBoundingClientRect(); tb = { l: b.left - 30, r: b.right + 30, t: b.top - 24, b: b.bottom + 24 }; };
+  measure(); addEventListener('resize', measure);
+  if (document.fonts) document.fonts.ready.then(measure);
+
+  (function loop(){
+    requestAnimationFrame(loop);
+    t += .0016;
+    if (performance.now() - lastMove > 3200){
+      const k = performance.now() / 2100;
+      mx = W * (.5 + Math.cos(k) * .3);
+      my = H * (.5 + Math.sin(k * 1.4) * .26);
+    }
+    ctx.fillStyle = 'rgba(14,8,31,.055)';   /* long silky trails */
+    ctx.fillRect(0, 0, W, H);
+    ctx.lineWidth = 1;
+
+    for (let i = 0; i < 4; i++){
+      ctx.strokeStyle = `rgba(${PALETTE[i]},${i === 3 ? .85 : i === 2 ? .7 : .42})`;
+      ctx.lineWidth = i === 3 ? 1.6 : 1;
+      ctx.beginPath();
+      for (const p of parts){
+        if (p.c !== i) continue;
+        p.px = p.x; p.py = p.y;
+        const ang = flow(p.x, p.y);
+        const sp = i === 3 ? 2.1 : 1.7;
+        p.x += Math.cos(ang) * sp; p.y += Math.sin(ang) * sp;
+        if (--p.life < 0 || p.x < -5 || p.x > W + 5 || p.y < -5 || p.y > H + 5){
+          p.x = Math.random() * W; p.y = Math.random() * H; p.life = 120 + Math.random() * 140;
+          continue;
+        }
+        ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+    }
+
+    /* riders that drift into each other: the younger one bows out */
+    for (let i = 0; i < riders.length; i++) for (let j = i + 1; j < riders.length; j++){
+      const A = riders[i], B = riders[j];
+      if (Math.abs(A.x - B.x) < 150 && Math.abs(A.y - B.y) < 36){
+        const y = (A.max - A.life) < (B.max - B.life) ? A : B;
+        if (y.life > 40) y.life = 40;
+      }
+    }
+    for (const r of riders){
+      const ang = flow(r.x, r.y);
+      r.x += Math.cos(ang) * 1.1; r.y += Math.sin(ang) * 1.1;
+      r.life--;
+      const age = r.max - r.life;
+      let a = r.life < 0 ? 0 : Math.min(1, age / 50, r.life / 50);
+      const inTitle = r.x + 120 > tb.l && r.x < tb.r && r.y > tb.t && r.y < tb.b;
+      r.fade = (r.fade || 0) + ((inTitle ? 0 : 1) - (r.fade || 0)) * .08;
+      a *= r.fade;
+      const ew = r.el.offsetWidth || 120;
+      if ((r.x > W - ew - 60 || r.x < 40 || r.y < 110 || r.y > H - 80) && r.life > 40) r.life = 40;
+      if (r.life < -30 || r.x < 6 || r.x > W - ew - 8 || r.y < 70 || r.y > H - 40){ spawn(r, 30); continue; }
+      r.el.style.opacity = a > 0 ? (a * .9).toFixed(3) : 0;
+      r.el.style.transform = `translate(${r.x.toFixed(1)}px,${r.y.toFixed(1)}px)`;
+    }
+  })();
+})();
+</script>
+
+<!-- cursor: the rock in the creek (fine pointers only) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  *{cursor:none !important}
+  #wlDot,#wlRing{position:fixed;top:0;left:0;pointer-events:none;z-index:9999}
+  #wlDot{width:6px;height:6px;border-radius:50%;background:var(--lilac);transform:translate(-50%,-50%)}
+  #wlRing{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(179,170,205,.85);transform:translate(-50%,-50%)}
+  .wlRipple{position:fixed;pointer-events:none;z-index:9998;width:8px;height:8px;border-radius:50%;border:2px solid var(--mist);transform:translate(-50%,-50%);animation:wlrip .55s ease-out forwards}
+  @keyframes wlrip{to{width:70px;height:70px;opacity:0}}
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot = document.createElement('div'); dot.id = 'wlDot';
+  const ring = document.createElement('div'); ring.id = 'wlRing';
+  document.body.append(dot, ring);
+  let mx = -100, my = -100, rx = mx, ry = my;
+  addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx + 'px'; dot.style.top = my + 'px'; });
+  (function f(){ rx += (mx - rx) * .16; ry += (my - ry) * .16; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(f); })();
+  addEventListener('mousedown', e => { const r = document.createElement('div'); r.className = 'wlRipple'; r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px'; document.body.appendChild(r); setTimeout(() => r.remove(), 600); });
+})();
+</script>
+</body>
+</html>

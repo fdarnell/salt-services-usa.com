@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Never just one dot · The Salt Effect</title>
+<!-- ATLAS constellation network, re-cut for The Salt Effect (scene 38/76).
+     Drifting nodes; lines appear between neighbors and to the cursor; click to pin a star.
+     Eight named stars (the shop and the people it touches) stay joined to the shop. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:radial-gradient(90% 70% at 55% 38%, var(--ink-1) 0%, var(--ink-0) 100%); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  canvas { position:fixed; inset:0; width:100%; height:100%; }
+  .panel { position:fixed; left:5vw; bottom:9vh; z-index:5; pointer-events:none; max-width:min(720px,90vw); }
+  .panel .mono:first-child { display:block; margin-bottom:18px; }
+  .panel h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(44px,5.6vw,88px); letter-spacing:-.02em; line-height:.95;
+    color:var(--bone); font-variation-settings:'opsz' 144, 'SOFT' 40; text-shadow:0 0 30px rgba(14,8,31,.9); }
+  .panel h1 span { color:var(--amber); }
+  .panel .line { margin-top:18px; font-size:clamp(17px,1.4vw,20px); color:var(--lilac); max-width:36ch; text-shadow:0 0 18px rgba(14,8,31,.95); }
+  .panel .hint { display:block; margin-top:16px; }
+  .hud { position:fixed; z-index:10; bottom:26px; right:32px; text-align:right; }
+  .hud b { color:var(--amber); font-weight:400; }
+  .panel .hint.touch { display:none; }
+  @media (hover:none) { .panel .hint.touch { display:block; } .panel .hint.fine { display:none; } }
+  @media (max-width:700px){
+    .panel { left:16px; right:16px; bottom:64px; }
+    .hud { right:16px; bottom:22px; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="cv"></canvas>
+  <div class="panel">
+    <span class="mono">IV · The town — 38/76</span>
+    <h1>A business is never<br><span>just one dot.</span></h1>
+    <p class="line">Every dot out there leans on the shop, and the shop leans right back.</p>
+    <span class="mono hint fine">Click a star to pin it · pinned stars hold the web</span>
+    <span class="mono hint touch">Tap a star to pin it</span>
+  </div>
+  <span class="mono hud" id="pinCount"><b>0</b> pinned</span>
+
+<script>
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let W, H, DPR, COUNT, LINK, nodes = [], named = [];
+const NAMES = ['Supplier','School','Church','Ball team','Bank','Neighbors','Customers'];
+const AMBER = '233,161,59', SALT = '245,243,237', MIST = '179,170,205';
+
+function seed(){
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const phone = W < 700;
+  COUNT = phone ? 56 : 110;
+  LINK = phone ? 105 : 140;
+  nodes = Array.from({ length: COUNT }, () => ({
+    x: Math.random()*W, y: Math.random()*H,
+    vx: (Math.random()-.5)*.5, vy: (Math.random()-.5)*.5,
+    r: Math.random()*1.6 + .8, pinned: false
+  }));
+  /* the shop sits up and to the right of the words; its people ring around it */
+  const cx = W * (phone ? .5 : .6), cy = H * (phone ? .3 : .35);
+  const rx = phone ? W * .36 : Math.min(W * .27, 420), ry = phone ? H * .17 : H * .23;
+  named = [{ name:'Shop', hx:cx, hy:cy, shop:true }].concat(NAMES.map((name, i) => {
+    const a = i / NAMES.length * Math.PI * 2 - Math.PI / 2 + (Math.random() - .5) * .3;
+    return { name, hx: cx + Math.cos(a) * rx, hy: cy + Math.sin(a) * ry };
+  }));
+  named.forEach((n, i) => Object.assign(n, { x:n.hx, y:n.hy, vx:0, vy:0, r: n.shop ? 6 : 3.4, pinned:false, ph:Math.random() * 6, pulse:Math.random() }));
+}
+seed();
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(seed, 200); });
+
+let mx = -9999, my = -9999, lastMove = -1e9;
+addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+addEventListener('pointerdown', e => {
+  /* pin the nearest star (named stars count too) */
+  let best = null, bd = 1e9;
+  for (const n of nodes.concat(named)){
+    const d = (n.x-e.clientX)**2 + (n.y-e.clientY)**2;
+    if (d < bd){ bd = d; best = n; }
+  }
+  if (best){ best.pinned = !best.pinned; }
+  if (e.pointerType !== 'mouse'){ mx = e.clientX; my = e.clientY; lastMove = performance.now(); }
+  document.getElementById('pinCount').innerHTML = `<b>${nodes.concat(named).filter(n => n.pinned).length}</b> pinned`;
+});
+
+/* on arrival the shop's threads draw out to its people */
+let grow = 0, growT0 = -1;
+const startGrow = () => { growT0 = performance.now(); };
+SCENE.onFirstEnter(startGrow);
+let entered = false;
+addEventListener('scene:enter', () => { if (entered) startGrow(); entered = true; });
+
+function line(a, b, rgb, al, w){
+  ctx.strokeStyle = `rgba(${rgb},${al})`; ctx.lineWidth = w;
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+}
+
+(function loop(now){
+  requestAnimationFrame(loop);
+  now = now || performance.now();
+  if (now - lastMove > 3200){
+    const t = now / 1900;
+    mx = W * (.5 + Math.cos(t) * .33);
+    my = H * (W < 700 ? .32 + Math.sin(t * 1.3) * .2 : .42 + Math.sin(t * 1.3) * .25);
+  }
+  grow = growT0 < 0 ? 0 : Math.min(1, (now - growT0) / 1800);
+  const g = 1 - Math.pow(1 - grow, 3);
+  ctx.clearRect(0, 0, W, H);
+
+  for (const n of nodes){
+    if (!n.pinned){
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > W) n.vx *= -1;
+      if (n.y < 0 || n.y > H) n.vy *= -1;
+    }
+  }
+  /* named stars wander a little around home, on a soft spring */
+  for (const n of named){
+    if (n.pinned) continue;
+    n.ph += .006;
+    n.vx += (n.hx + Math.cos(n.ph) * 26 - n.x) * .002; n.vy += (n.hy + Math.sin(n.ph * 1.3) * 18 - n.y) * .002;
+    n.vx *= .94; n.vy *= .94; n.x += n.vx; n.y += n.vy;
+  }
+  const all = nodes.concat(named);
+  /* links between neighbors */
+  for (let i = 0; i < all.length; i++){
+    const a = all[i];
+    for (let j = i + 1; j < all.length; j++){
+      const b = all[j];
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const d = dx*dx + dy*dy;
+      if (d < LINK * LINK){
+        const al = (1 - Math.sqrt(d) / LINK) * .32;
+        const pin = a.pinned || b.pinned;
+        line(a, b, pin ? AMBER : MIST, pin ? al * 2 : al, pin ? 1.1 : .6);
+      }
+    }
+    /* links to cursor: stronger, amber */
+    const dxm = a.x - mx, dym = a.y - my;
+    const dm = dxm*dxm + dym*dym;
+    if (dm < 180*180) line(a, { x:mx, y:my }, AMBER, (1 - Math.sqrt(dm)/180) * .5, 1);
+  }
+  /* the shop's own threads, always there once drawn, with a little light running along each */
+  const shop = named[0];
+  for (let i = 1; i < named.length; i++){
+    const n = named[i];
+    const ex = shop.x + (n.x - shop.x) * g, ey = shop.y + (n.y - shop.y) * g;
+    line(shop, { x:ex, y:ey }, AMBER, .42, 1.2);
+    if (grow >= 1){
+      n.pulse = (n.pulse + .004 + i * .0004) % 1;
+      const px = shop.x + (n.x - shop.x) * n.pulse, py = shop.y + (n.y - shop.y) * n.pulse;
+      ctx.fillStyle = `rgba(${AMBER},${.9 * Math.sin(n.pulse * Math.PI)})`;
+      ctx.beginPath(); ctx.arc(px, py, 2, 0, 7); ctx.fill();
+    }
+  }
+  /* stars on top */
+  for (const n of nodes){
+    ctx.fillStyle = n.pinned ? `rgb(${AMBER})` : `rgba(${SALT},.8)`;
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.pinned ? n.r + 1.4 : n.r, 0, 7); ctx.fill();
+    if (n.pinned){
+      ctx.strokeStyle = `rgba(${AMBER},.4)`; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 6, 0, 7); ctx.stroke();
+    }
+  }
+  /* named stars and their labels */
+  ctx.font = `12px 'Space Mono', ui-monospace, monospace`;
+  ctx.textBaseline = 'middle';
+  named.forEach((n, i) => {
+    const on = n.shop || g > i / named.length;
+    if (n.shop){
+      const glow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 46);
+      glow.addColorStop(0, `rgba(240,176,85,.55)`); glow.addColorStop(1, `rgba(${AMBER},0)`);
+      ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(n.x, n.y, 46, 0, 7); ctx.fill();
+    }
+    ctx.fillStyle = n.shop ? '#f0b055' : `rgba(${SALT},${on ? 1 : .5})`;
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (n.pinned ? 1.4 : 0), 0, 7); ctx.fill();
+    ctx.strokeStyle = `rgba(${n.shop || n.pinned ? AMBER : SALT},${n.pinned ? .6 : .28})`; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 7, 0, 7); ctx.stroke();
+    const label = n.name.toUpperCase().split('').join(String.fromCharCode(8202));
+    const left = n.x > W * .78;
+    ctx.textAlign = left ? 'right' : 'left';
+    ctx.fillStyle = n.shop ? '#f0b055' : `rgba(234,231,244,${on ? .95 : .4})`;
+    ctx.fillText(label, n.x + (left ? -(n.r + 14) : n.r + 14), n.y);
+  });
+})();
+</script>
+<!-- signature cursor · matched (amber) -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:#e9a13b; transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid #e9a13b; transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring); dot.style.left=dot.style.top=ring.style.left=ring.style.top='-100px';
+  let mx=-100,my=-100,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+})();
+</script>
+</body>
+</html>

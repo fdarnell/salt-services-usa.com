@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Go first · The Salt Effect</title>
+<!-- No. 39 NEGATIVE Inverter Blob Cursor, re-skinned: a soft blob rides the cursor and inverts
+     everything it crosses (dark to bone, bone to dark). Built as an inverted twin of the page
+     clipped to the blob, so the colors stay on brand and the CLOSED sign reads OPEN underneath. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @media (hover:hover) and (pointer:fine){ * { cursor:none; } }
+  html,body { height:100%; overflow:hidden; }
+  body { font-family:'Instrument Sans',system-ui,sans-serif; background:var(--ink-1); touch-action:none; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+
+  .layer { position:fixed; inset:0; }
+  .half { position:absolute; top:0; bottom:0; width:50%; display:flex; flex-direction:column; justify-content:center; padding:72px 5vw 64px; }
+  .left { left:0; background:var(--ink-1); color:var(--bone); }
+  .right { right:0; background:var(--bone); color:var(--ink-text); align-items:center; text-align:center; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(44px,5.8vw,92px); line-height:.95; letter-spacing:-.02em; max-width:9ch; }
+  h1 em { font-style:normal; color:var(--amber); }
+  .left .mono { color:var(--mist); margin-top:26px; }
+  .right .mono { color:var(--plum); }
+
+  .sign { position:relative; margin:22px 0; padding:.18em .5em .24em; border:3px solid currentColor; border-radius:14px;
+    font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(52px,7.4vw,116px); letter-spacing:.02em; line-height:1; }
+  .sign::before, .sign::after { content:''; position:absolute; bottom:100%; width:2px; height:60px; background:currentColor; opacity:.5; }
+  .sign::before { left:22%; transform:skewX(24deg); transform-origin:bottom; }
+  .sign::after { right:22%; transform:skewX(-24deg); transform-origin:bottom; }
+
+  .sign, .stack { display:grid; }
+  .sign .w, .stack .w { grid-area:1/1; }
+  .base .b, .twin .a { visibility:hidden; }
+  .hud { position:absolute; bottom:26px; z-index:2; }
+  .h3{ left:32px; color:var(--mist); } .h4{ right:32px; color:var(--plum); }
+
+  /* the inverted twin, shown only inside the blob */
+  .twin .left { background:var(--bone); color:var(--ink-text); }
+  .twin .left h1 em { color:var(--ink-text); text-decoration:underline; text-decoration-color:var(--amber); text-decoration-thickness:.08em; text-underline-offset:.1em; }
+  .twin .left .mono, .twin .h3 { color:var(--plum); }
+  .twin .right { background:var(--ink-1); color:var(--lilac); }
+  .twin .right .mono, .twin .h4 { color:var(--mist); }
+  .twin .sign { color:var(--amber-hi); text-shadow:0 0 18px rgba(233,161,59,.7), 0 0 60px rgba(233,161,59,.35);
+    box-shadow:0 0 24px rgba(233,161,59,.45), inset 0 0 24px rgba(233,161,59,.25); }
+  .twin .sign::before, .twin .sign::after { background:var(--mist); box-shadow:none; }
+  .twin { clip-path:polygon(0 0,0 0,0 0); will-change:clip-path; }
+  #ring { position:fixed; left:0; top:0; border-radius:50%; pointer-events:none; z-index:5;
+    border:1px solid rgba(240,176,85,.55); box-shadow:0 0 22px rgba(233,161,59,.3), inset 0 0 22px rgba(233,161,59,.12); }
+
+  @media (max-width:760px){
+    .half { width:100%; left:0; right:0; padding:72px 16px 28px; }
+    .left { top:0; bottom:50%; justify-content:flex-end; padding-bottom:28px; }
+    .right { top:50%; bottom:0; justify-content:center; padding-top:40px; }
+    .left .mono { margin-top:16px; }
+    .h4 { display:none; }
+    .h3 { left:16px; bottom:20px; color:var(--plum); }
+    .twin .h3 { color:var(--mist); }
+    .sign::before, .sign::after { height:36px; }
+  }
+</style>
+</head>
+<body>
+  <div class="layer base" id="base">
+    <section class="half left">
+      <h1>Somebody has to go <em>first.</em></h1>
+      <span class="mono">Kodak, Tennessee · 35.97° N, 83.62° W</span>
+    </section>
+    <section class="half right">
+      <span class="mono">The front door</span>
+      <div class="sign"><span class="w a">Closed</span><span class="w b">Open</span></div>
+      <span class="mono stack"><span class="w a" data-note>Move the light across the sign</span><span class="w b">Come on in</span></span>
+    </section>
+    <span class="mono hud h3">VI · The world — 71/76</span>
+    <span class="mono hud h4" data-hint>Hold the click to grow it</span>
+  </div>
+  <div id="ring" aria-hidden="true"></div>
+
+<script>
+/* clone the page into an inverted twin; only the sign's words change */
+const base = document.getElementById('base');
+const twin = base.cloneNode(true);
+twin.id = 'twin'; twin.className = 'layer twin'; twin.setAttribute('aria-hidden', 'true');
+document.body.insertBefore(twin, document.getElementById('ring'));
+const touch = matchMedia('(hover: none)').matches;
+if (touch){
+  base.querySelector('[data-note]').textContent = 'Drag the light across the sign';
+  [base, twin].forEach(l => l.querySelector('[data-hint]').textContent = 'Press and hold to grow it');
+}
+
+const ring = document.getElementById('ring');
+const BASE = () => Math.max(170, Math.min(340, Math.min(innerWidth, innerHeight) * .38));
+let mx = null, my = null, x = null, y = null, size = 0, targetSize = 0, lastMove = -1e9, held = false;
+
+addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+addEventListener('pointerdown', e => { held = true; mx = e.clientX; my = e.clientY; lastMove = performance.now(); targetSize = Math.min(innerWidth, innerHeight) * .8; });
+addEventListener('pointerup', () => { held = false; targetSize = BASE(); });
+addEventListener('pointercancel', () => { held = false; targetSize = BASE(); });
+addEventListener('resize', () => { if (!held) targetSize = BASE(); });
+
+/* the light opens up when the visitor arrives */
+let opened = false;
+SCENE.onFirstEnter(() => { opened = true; targetSize = BASE(); });
+
+const N = 40;
+const ctr = el => { const r = el.getBoundingClientRect(); return { x:r.left + r.width/2, y:r.top + r.height/2 }; };
+const signEl = base.querySelector('.sign'), headEl = base.querySelector('h1'), noteEl = base.querySelector('.stack');
+const signR = () => ctr(signEl), headR = () => ctr(headEl);
+(function loop(){
+  requestAnimationFrame(loop);
+  /* idle: the light rests on the CLOSED sign (so it reads OPEN), drifting a little; every
+     few seconds it slips across toward the headline and comes straight back, never parking there */
+  const idle = performance.now() - lastMove > 2800 || mx === null;
+  /* resting, the light grows just enough to cover the whole sign, so it reads OPEN cleanly */
+  if (opened && !held) targetSize = idle ? Math.max(BASE(), Math.min(Math.max(signEl.offsetWidth * 1.12, noteEl.offsetWidth * 1.24), Math.min(innerWidth, innerHeight) * .8)) : BASE();
+  if (idle){
+    const now = performance.now(), t = now / 1000;
+    const h = headR(), g = signR(), sw = signEl.offsetWidth, sh = signEl.offsetHeight;
+    mx = g.x + Math.cos(t * .9) * sw * .04;
+    my = g.y + Math.sin(t * 1.3) * sh * .12;
+    const u = (now % 9000) / 9000;               /* 9 s cycle: 7 s resting, 2 s out and back */
+    if (u > .78 && !SCENE.reduce){
+      const k = Math.sin((u - .78) / .22 * Math.PI) * .55;
+      mx += (h.x - mx) * k; my += (h.y - my) * k;
+    }
+  }
+  if (x === null){ x = mx; y = my; }
+  x += (mx - x) * .09; y += (my - y) * .09;
+  size += (targetSize - size) * .08;
+  const vx = mx - x, vy = my - y;
+  const stretch = Math.min(Math.hypot(vx, vy) / 220, .35);
+  const ang = Math.atan2(vy, vx);
+  const rx = size/2 * (1 + stretch), ry = size/2 * (1 - stretch * .6);
+  const ca = Math.cos(ang), sa = Math.sin(ang);
+  let pts = '';
+  for (let i = 0; i < N; i++){
+    const a = i / N * Math.PI * 2, ex = Math.cos(a) * rx, ey = Math.sin(a) * ry;
+    pts += (i ? ',' : '') + (x + ex*ca - ey*sa).toFixed(1) + 'px ' + (y + ex*sa + ey*ca).toFixed(1) + 'px';
+  }
+  twin.style.clipPath = size > 1 ? `polygon(${pts})` : 'polygon(0 0,0 0,0 0)';
+  ring.style.width = rx*2 + 'px'; ring.style.height = ry*2 + 'px';
+  ring.style.opacity = size > 4 ? 1 : 0;
+  ring.style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%) rotate(${ang}rad)`;
+})();
+</script>
+</body>
+</html>

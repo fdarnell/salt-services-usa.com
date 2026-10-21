@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>What each one does</title>
+<!-- 54/76 · SLIDER morph pill tabs, re-told as Main Street after dark. Five storefronts are the
+     five tabs; the indicator is one amber shop light that stretches down the street on its way
+     to the next shop (glimpsed through every window it passes), then settles. The selected
+     shop's panel sits on the wet road under its reflection. Auto-walks while idle. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{--ink-0:#0e081f;--ink-1:#180f2f;--ink-2:#2b1d52;--amber:#e9a13b;--amber-hi:#f0b055;--bone:#f5f3ed;--bone-2:#ece9e0;--lilac:#eae7f4;--mist:#b3aacd;--plum:#635a7d;--ink-text:#201439;
+    --rw:min(1120px, calc(100vw - 64px));
+    --front:clamp(84px, 15vh, 138px); --awn:clamp(16px, 3vh, 26px); --sign:clamp(34px, 5vh, 44px); --walk:clamp(18px, 3.2vh, 30px);
+    --sf:clamp(14px, 1.45vw, 20px); --pil:9px; --ease:cubic-bezier(.76,0,.24,1);
+    --frame:color-mix(in srgb, var(--ink-0) 80%, var(--ink-2)); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:linear-gradient(180deg, var(--ink-0) 0%, var(--ink-1) 34%, color-mix(in srgb, var(--ink-2) 55%, var(--ink-1)) 58%, var(--ink-1) 70%, var(--ink-0) 100%);
+    color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; display:flex; flex-direction:column; padding-top:104px; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  .stars { position:fixed; inset:0 0 40% 0; pointer-events:none; opacity:.75;
+    background:radial-gradient(1.2px 1.2px at 8% 22%, var(--bone) 99%, transparent),radial-gradient(1px 1px at 19% 9%, var(--lilac) 99%, transparent),
+      radial-gradient(1.4px 1.4px at 31% 30%, var(--bone) 99%, transparent),radial-gradient(1px 1px at 44% 14%, var(--lilac) 99%, transparent),
+      radial-gradient(1px 1px at 57% 34%, var(--bone) 99%, transparent),radial-gradient(1.3px 1.3px at 66% 8%, var(--bone) 99%, transparent),
+      radial-gradient(1px 1px at 78% 26%, var(--lilac) 99%, transparent),radial-gradient(1.5px 1.5px at 88% 12%, var(--bone) 99%, transparent),
+      radial-gradient(1px 1px at 95% 38%, var(--lilac) 99%, transparent),radial-gradient(1px 1px at 4% 46%, var(--lilac) 99%, transparent),
+      radial-gradient(1px 1px at 38% 52%, var(--lilac) 99%, transparent),radial-gradient(1.2px 1.2px at 72% 48%, var(--bone) 99%, transparent); }
+  .stars::after { content:''; position:absolute; inset:0; background:radial-gradient(1.6px 1.6px at 24% 18%, var(--bone) 99%, transparent),radial-gradient(1.6px 1.6px at 83% 30%, var(--bone) 99%, transparent),radial-gradient(1.4px 1.4px at 52% 6%, var(--bone) 99%, transparent);
+    animation:tw 4.5s ease-in-out infinite alternate; }
+  @keyframes tw { from{opacity:.2} to{opacity:1} }
+
+  h1 { position:relative; font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(34px,4.2vw,60px); line-height:.98; letter-spacing:-.02em; color:var(--bone); text-align:center; padding:0 16px; }
+  h1 em { font-style:italic; font-weight:500; color:var(--amber-hi); }
+
+  .street { flex:1; display:flex; flex-direction:column; min-height:0; }
+  .facade { position:relative; margin-top:clamp(10px, 2.4vh, 26px); }
+  .ridge { position:absolute; left:0; right:0; bottom:0; width:100%; height:calc(var(--front) * 2.8); pointer-events:none; }
+  .flank { position:absolute; bottom:0; width:calc((100vw - var(--rw)) / 2); height:calc(var(--front) + var(--awn) + var(--sign) + var(--front) * .7);
+    background:color-mix(in srgb, var(--ink-1) 55%, var(--ink-2)); display:grid; grid-template-columns:1fr 1fr; grid-template-rows:9px 1fr 1fr var(--front);
+    gap:12px 16px; padding:0 18px; }
+  .flank.l { left:0; mask:linear-gradient(90deg, transparent, #000 70%); }
+  .flank.r { right:0; mask:linear-gradient(270deg, transparent, #000 70%); }
+  .flank::before { content:''; position:absolute; left:0; right:0; top:0; height:9px; background:color-mix(in srgb, var(--ink-2) 80%, var(--mist)); }
+  .flank i { grid-row:span 1; background:linear-gradient(115deg, transparent 40%, rgba(234,231,244,.06) 50%, transparent 60%), var(--ink-0); border:2px solid var(--frame); margin-top:10px; }
+  .flank i:nth-child(1), .flank i:nth-child(2) { grid-row:2; } .flank i:nth-child(3), .flank i:nth-child(4) { grid-row:3; }
+  .flank b { grid-column:1 / -1; grid-row:4; margin:10px -8% 16%; background:linear-gradient(115deg, transparent 40%, rgba(234,231,244,.05) 50%, transparent 60%), var(--ink-0); border:3px solid var(--frame); }
+
+  .row { position:relative; width:var(--rw); margin:0 auto; }
+  .interior { position:absolute; left:0; right:0; bottom:0; height:var(--front); background:linear-gradient(180deg, color-mix(in srgb, var(--ink-0) 80%, var(--ink-2)), var(--ink-0)); }
+
+  /* ── the indicator: one shop light ── */
+  #light { position:absolute; left:0; width:0; top:0; height:0; pointer-events:none; transition:left .5s var(--ease), width .5s var(--ease); }
+  #light.snap { transition:none; }
+  #light > i { position:absolute; display:block; }
+  .l-in { inset:0; z-index:1; background:radial-gradient(110% 95% at 50% 12%, color-mix(in srgb, var(--bone) 45%, var(--amber-hi)) 0, var(--amber-hi) 30%, var(--amber) 66%, color-mix(in srgb, var(--amber) 55%, var(--ink-1)) 100%); }
+  #light.flick .l-in { animation:flick .5s steps(1, end); }
+  @keyframes flick { 0%{opacity:.55} 18%{opacity:1} 30%{opacity:.7} 44%{opacity:1} }
+  .l-bloom { inset:-55% -22% -35%; z-index:3; mix-blend-mode:screen; background:radial-gradient(closest-side, rgba(240,176,85,.34), rgba(233,161,59,.12) 55%, transparent); }
+  .l-pool { top:100%; height:calc(var(--walk) + 8px); left:-10%; right:-10%; z-index:3; mix-blend-mode:screen;
+    background:radial-gradient(60% 120% at 50% 0, rgba(240,176,85,.5), rgba(233,161,59,.14) 55%, transparent 80%); }
+  .l-ref { top:calc(100% + var(--walk) + 5px); height:clamp(110px, 24vh, 240px); left:8%; right:8%; z-index:1; filter:blur(1.2px);
+    background:repeating-linear-gradient(180deg, transparent 0 6px, rgba(240,176,85,.55) 6px 8px, transparent 8px 11px, rgba(233,161,59,.3) 11px 12px);
+    mask:linear-gradient(180deg, #000, transparent 92%) intersect, linear-gradient(90deg, transparent, #000 25% 75%, transparent);
+    animation:shimmer 3.2s ease-in-out infinite alternate; }
+  @keyframes shimmer { from{background-position:0 0; transform:scaleX(1)} to{background-position:0 7px; transform:scaleX(.94)} }
+
+  /* ── the five storefronts are the tabs ── */
+  .shops { position:relative; z-index:2; display:flex; align-items:flex-end; }
+  .shop { position:relative; flex:var(--g) 1 0; min-width:0; display:flex; flex-direction:column; background:none; border:0; padding:0; font:inherit; color:inherit; text-align:center; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .signrow, .awnrow, .uw, .sign, .awn, .val, .lamp { display:block; }
+  .shop:focus { outline:none; }
+  .upper { position:relative; height:calc(var(--front) * var(--up)); display:flex; justify-content:center; gap:16%; padding-top:max(16px, calc(var(--front) * .14));
+    background:repeating-linear-gradient(180deg, transparent 0 8px, rgba(14,8,31,.16) 8px 9px), var(--wall); }
+  .upper::before { content:''; position:absolute; left:-2px; right:-2px; top:0; height:10px; background:linear-gradient(180deg, color-mix(in srgb, var(--wall) 70%, var(--mist)) 0 6px, transparent 6px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--wall) 60%, var(--ink-0)) 0 5px, transparent 5px 10px) 0 6px / 100% 4px no-repeat; }
+  .uw { width:20%; height:min(52%, 62px); margin-top:6px; background:linear-gradient(115deg, transparent 38%, rgba(234,231,244,.08) 48%, transparent 58%), var(--ink-0); border:2px solid var(--frame); box-shadow:0 3px 0 -1px color-mix(in srgb, var(--wall) 70%, var(--mist)); }
+  .arch .uw { border-radius:999px 999px 0 0; }
+  .signrow { position:relative; padding:5px 7% 5px; background:var(--wall); }
+  .sign { height:var(--sign); display:grid; place-items:center; background:var(--ink-0); border:1px solid color-mix(in srgb, var(--wall) 75%, var(--mist)); border-radius:3px;
+    font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:var(--sf); letter-spacing:-.01em; color:var(--mist); white-space:nowrap; overflow:hidden;
+    transition:color .35s .15s, border-color .35s .15s, text-shadow .35s .15s, background .35s .15s; }
+  .signrow::before, .signrow::after { content:''; position:absolute; top:-1px; width:9px; height:5px; border-radius:0 0 9px 9px; background:var(--frame); }
+  .signrow::before { left:24%; } .signrow::after { right:24%; }
+  .awnrow { position:relative; z-index:1; height:var(--awn); background:var(--wall); }
+  .awn { position:absolute; inset:0 2%; clip-path:polygon(5% 0, 95% 0, 100% 100%, 0 100%);
+    background:linear-gradient(180deg, rgba(14,8,31,.35), transparent 60%), repeating-linear-gradient(90deg, var(--stripe) 0 12px, color-mix(in srgb, var(--mist) 42%, var(--ink-2)) 12px 24px); }
+  .awn::after { content:''; position:absolute; inset:0; opacity:0; transition:opacity .4s .15s; background:linear-gradient(0deg, rgba(240,176,85,.45), transparent 75%); }
+  .val { position:absolute; left:2%; right:2%; bottom:-6px; height:7px; background:radial-gradient(circle at 50% 0, color-mix(in srgb, var(--mist) 42%, var(--ink-2)) 0 5.5px, transparent 6px) 0 0 / 12px 7px repeat-x; }
+  .front { position:relative; height:var(--front); display:grid; grid-template-columns:var(--pil) 1fr var(--pil) 24% var(--pil); grid-template-rows:1fr 15%; }
+  .front > span { display:block; }
+  .pl, .mid { grid-row:1 / 3; background:var(--wall); }
+  .kick { grid-column:2; grid-row:2; background:repeating-linear-gradient(90deg, transparent 0 30%, rgba(14,8,31,.3) 30% calc(30% + 2px)), color-mix(in srgb, var(--wall) 82%, var(--mist)); }
+  .win { position:relative; grid-column:2; grid-row:1; border:3px solid var(--frame); border-bottom-width:4px; transition:background .3s;
+    --jar:rgba(24,15,47,.42);
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 100'%3E%3Cg fill='%23180f2f' fill-opacity='.46'%3E%3Crect y='49' width='72' height='2.6'/%3E%3Crect y='81' width='72' height='2.6'/%3E%3Crect x='4' y='35' width='8' height='14' rx='2.5'/%3E%3Crect x='15' y='40' width='6' height='9' rx='2'/%3E%3Cpath d='M27 49v-12c0-2 1.5-3 1.5-5v-3h3v3c0 2 1.5 3 1.5 5v12z'/%3E%3Crect x='40' y='37' width='10' height='12' rx='4'/%3E%3Crect x='54' y='42' width='5' height='7' rx='1.5'/%3E%3Crect x='62' y='33' width='6' height='16' rx='2'/%3E%3Crect x='6' y='70' width='10' height='11' rx='4'/%3E%3Crect x='20' y='65' width='5' height='16' rx='2'/%3E%3Crect x='29' y='72' width='12' height='9' rx='3'/%3E%3Cpath d='M47 81v-10c0-2 1.5-3 1.5-5v-3h3v3c0 2 1.5 3 1.5 5v10z'/%3E%3Crect x='58' y='68' width='9' height='13' rx='3'/%3E%3C/g%3E%3C/svg%3E") 0 0 / auto 100% repeat-x; }
+  .win::before { content:''; position:absolute; left:50%; top:0; width:12%; max-width:14px; height:12%; transform:translateX(-50%); border-radius:0 0 50% 50%; background:var(--jar); }
+  .win::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg, transparent calc(50% - 1.5px), var(--frame) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(115deg, transparent 30%, rgba(234,231,244,.09) 40%, transparent 48%, transparent 56%, rgba(234,231,244,.05) 62%, transparent 68%); }
+  .door { grid-column:4; grid-row:1 / 3; position:relative; border:3px solid var(--frame); border-bottom:0;
+    background:linear-gradient(115deg, transparent 30%, rgba(234,231,244,.08) 42%, transparent 52%) 0 0 / 100% 56% no-repeat, linear-gradient(180deg, transparent 0 56%, var(--frame) 56% calc(56% + 3px), color-mix(in srgb, var(--wall) 55%, var(--ink-0)) calc(56% + 3px)); }
+  .door::after { content:''; position:absolute; right:14%; top:64%; width:4px; height:4px; border-radius:50%; background:var(--mist); opacity:.6; }
+  .lamp { position:absolute; left:-2px; bottom:calc(-1 * var(--walk) + 3px); width:4px; height:calc(var(--front) + var(--awn) + var(--sign) * .4); z-index:3; pointer-events:none;
+    background:linear-gradient(90deg, var(--ink-0), color-mix(in srgb, var(--ink-0) 70%, var(--mist)) 50%, var(--ink-0)); }
+  .lamp::before { content:''; position:absolute; left:50%; top:-15px; width:11px; height:16px; transform:translateX(-50%); border:2px solid var(--ink-0); border-top-width:4px; border-radius:2px 2px 0 0;
+    background:var(--amber-hi); box-shadow:0 0 14px 4px rgba(240,176,85,.5), 0 0 60px 24px rgba(233,161,59,.14); }
+  .lamp::after { content:''; position:absolute; left:50%; bottom:0; width:10px; height:8px; transform:translateX(-50%); background:var(--ink-0); border-radius:2px 2px 0 0; }
+  .shop:hover .win { background-color:rgba(233,161,59,.07); }
+  .shop:hover .sign { color:var(--lilac); }
+  .shop.on .sign { color:var(--amber-hi); border-color:rgba(233,161,59,.55); text-shadow:0 0 14px rgba(240,176,85,.55);
+    background:radial-gradient(80% 120% at 50% -20%, rgba(233,161,59,.24), transparent 70%), var(--ink-0); }
+  .shop.on .awn::after { opacity:1; }
+  .shop:focus-visible .sign { outline:2px solid var(--bone); outline-offset:3px; }
+
+  .walk { position:relative; z-index:1; height:var(--walk); border-bottom:4px solid color-mix(in srgb, var(--mist) 22%, var(--ink-2));
+    background:repeating-linear-gradient(100deg, transparent 0 86px, rgba(14,8,31,.45) 86px 88px), linear-gradient(180deg, color-mix(in srgb, var(--ink-2) 75%, var(--mist)), var(--ink-2)); }
+  .road { position:relative; flex:1; min-height:0; display:flex; justify-content:center; align-items:flex-start; padding:clamp(14px, 3vh, 30px) 16px 54px;
+    background:repeating-linear-gradient(180deg, transparent 0 13px, rgba(179,170,205,.025) 13px 14px); }
+
+  .panes { position:relative; z-index:3; width:min(880px, 100%); height:clamp(196px, 27vh, 246px); }
+  .pane { position:absolute; inset:0; opacity:0; transform:translateX(40px); transition:opacity .55s cubic-bezier(.19,1,.22,1), transform .55s cubic-bezier(.19,1,.22,1);
+    pointer-events:none; background:rgba(14,8,31,.72); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border:1px solid var(--ink-2); border-top-color:rgba(233,161,59,.45);
+    border-radius:16px; overflow:hidden; display:grid; grid-template-columns:1fr 36%; box-shadow:0 30px 60px -30px rgba(0,0,0,.6); }
+  .pane.on { opacity:1; transform:none; pointer-events:auto; }
+  .pane.exitL { transform:translateX(-40px); }
+  .pane .txt { padding:clamp(22px, 3.6vh, 34px) 38px clamp(18px, 3vh, 28px); display:flex; flex-direction:column; min-width:0; }
+  .pane h2 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(25px, 2.2vw, 30px); line-height:1.05; letter-spacing:-.02em; color:var(--bone); }
+  .pane h2 span { font-style:italic; font-weight:500; color:var(--amber-hi); }
+  .pane p { margin-top:12px; color:var(--lilac); font-size:18px; line-height:1.5; max-width:30em; }
+  .pane .meta { margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:16px; padding-top:14px; }
+  .pane a { color:var(--amber-hi); text-decoration:none; display:inline-flex; align-items:center; min-height:44px; }
+  .pane a:hover { text-decoration:underline; text-underline-offset:4px; }
+  .pane a:focus-visible { outline:2px solid var(--bone); outline-offset:2px; border-radius:2px; }
+  .pane .pic { position:relative; background:var(--ink-2); }
+  .pane .pic img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scale(1.06); transition:transform 1.6s cubic-bezier(.19,1,.22,1); }
+  .pane.on .pic img { transform:none; }
+  .pane .pic::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg, rgba(14,8,31,.85), rgba(14,8,31,0) 35%); }
+
+  .hud { position:fixed; z-index:10; }
+  .t1{ top:84px; left:32px; } .b1{ bottom:22px; left:32px; } .b2{ bottom:22px; right:32px; }
+  @media (max-width:760px){
+    :root { --rw:calc(100vw - 32px); --front:92px; --awn:15px; --sign:34px; --walk:18px; --sf:clamp(12.5px, 3.6vw, 15px); --pil:5px; }
+    body { padding-top:116px; }
+    .t1{ left:16px; top:82px; } .b1,.b2{ display:none; }
+    .signrow { padding:5px 4% 4px; } .signrow::before, .signrow::after { display:none; }
+    .upper { gap:12%; padding-top:14px; } .uw { width:24%; }
+    .front { grid-template-columns:var(--pil) 1fr 3px 28% var(--pil); }
+    .lamp::before { width:8px; height:12px; top:-11px; }
+    .road { padding:16px 16px 20px; align-items:stretch; }
+    .panes { height:auto; max-height:430px; }
+    .pane { grid-template-columns:1fr; grid-template-rows:clamp(96px, 18vh, 156px) 1fr; }
+    .pane .pic { grid-row:1; }
+    .pane .pic::after { background:linear-gradient(0deg, rgba(14,8,31,.9), rgba(14,8,31,0) 60%); }
+    .pane .txt { grid-row:2; padding:16px 20px 6px; }
+    .pane h2 { font-size:24px; }
+    .pane p { font-size:17px; margin-top:8px; }
+    .pane .meta { padding-top:4px; }
+  }
+  @media (max-height:720px) and (min-width:761px){ body { padding-top:96px; } .pane p { font-size:17px; } }
+</style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <span class="mono hud t1">V · The signal — 54/76</span>
+  <span class="mono hud b1">One light walks the street. Watch it.</span>
+  <span class="mono hud b2">Kodak, TN · 35.97° N, 83.62° W</span>
+
+  <h1>What each one <em>does.</em></h1>
+
+  <div class="street" id="street">
+    <div class="facade">
+      <svg class="ridge" viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 170 C120 120 210 150 300 110 C380 76 450 120 540 96 C640 70 700 40 790 70 C880 100 940 60 1040 52 C1140 44 1210 100 1300 92 C1370 86 1410 110 1440 104 V300 H0Z" fill="#2b1d52" opacity=".55"/>
+        <path d="M0 220 C140 190 260 210 380 180 C520 146 610 196 760 170 C900 146 1000 186 1140 160 C1260 140 1360 176 1440 166 V300 H0Z" fill="#2b1d52" opacity=".8"/>
+      </svg>
+      <div class="flank l" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
+      <div class="flank r" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
+      <div class="row" id="row">
+        <div class="interior" aria-hidden="true"></div>
+        <div id="light" class="snap" aria-hidden="true"><i class="l-in"></i><i class="l-bloom"></i><i class="l-pool"></i><i class="l-ref"></i></div>
+        <div class="shops" role="tablist" aria-label="Salt's five services">
+          <button class="shop on" role="tab" id="t0" aria-controls="p0" aria-selected="true" tabindex="0" style="--g:1.12;--up:.62;--wall:color-mix(in srgb, var(--ink-2) 84%, var(--mist));--stripe:var(--ink-2)">
+            <span class="signrow"><span class="sign">Website</span></span>
+          </button>
+          <button class="shop arch" role="tab" id="t1" aria-controls="p1" aria-selected="false" tabindex="-1" style="--g:1;--up:.95;--wall:var(--ink-2);--stripe:color-mix(in srgb, var(--ink-2) 70%, var(--ink-0))">
+            <span class="signrow"><span class="sign">Search</span></span>
+          </button>
+          <button class="shop" role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1" style="--g:.9;--up:.4;--wall:color-mix(in srgb, var(--ink-2) 72%, var(--ink-1));--stripe:var(--ink-2)">
+            <span class="signrow"><span class="sign">Ads</span></span>
+          </button>
+          <button class="shop" role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1" style="--g:1;--up:.78;--wall:color-mix(in srgb, var(--ink-2) 90%, var(--mist));--stripe:color-mix(in srgb, var(--ink-2) 70%, var(--ink-0))">
+            <span class="signrow"><span class="sign">CRM</span></span>
+          </button>
+          <button class="shop arch" role="tab" id="t4" aria-controls="p4" aria-selected="false" tabindex="-1" style="--g:.96;--up:.56;--wall:color-mix(in srgb, var(--ink-2) 78%, var(--ink-1));--stripe:var(--ink-2)">
+            <span class="signrow"><span class="sign">AI</span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="walk" aria-hidden="true"></div>
+    <div class="road">
+      <div class="panes">
+        <div class="pane on" role="tabpanel" id="p0" aria-labelledby="t0"><div class="txt"><h2>Website · <span>the storefront</span></h2><p>Hand-built sites that load fast, rank on Google, and turn visitors into calls and form fills.</p><div class="meta mono"><span>Service 01 / 05</span><a href="https://saltservicesusa.com/services/" target="_top">Web design →</a></div></div><div class="pic"><img src="../assets/img/shop-dusk.jpg" alt=""></div></div>
+        <div class="pane" role="tabpanel" id="p1" aria-labelledby="t1"><div class="txt"><h2>Search · <span>getting found</span></h2><p>Three genuinely useful pages a month that win Google searches and get your business cited by AI assistants.</p><div class="meta mono"><span>Service 02 / 05</span><a href="https://saltservicesusa.com/services/" target="_top">SEO &amp; AEO →</a></div></div><div class="pic"><img src="../assets/img/map-glow.jpg" alt=""></div></div>
+        <div class="pane" role="tabpanel" id="p2" aria-labelledby="t2"><div class="txt"><h2>Ads · <span>paid reach</span></h2><p>Google and Meta campaigns with every dollar tracked to a real lead.</p><div class="meta mono"><span>Service 03 / 05</span><a href="https://saltservicesusa.com/services/" target="_top">Digital advertising →</a></div></div><div class="pic"><img src="../assets/img/market-lights.jpg" alt=""></div></div>
+        <div class="pane" role="tabpanel" id="p3" aria-labelledby="t3"><div class="txt"><h2>CRM · <span>the follow-up</span></h2><p>Every lead tracked, followed up, and closed.</p><div class="meta mono"><span>Service 04 / 05</span><a href="https://saltservicesusa.com/services/" target="_top">CRM implementation →</a></div></div><div class="pic"><img src="../assets/img/counter.jpg" alt=""></div></div>
+        <div class="pane" role="tabpanel" id="p4" aria-labelledby="t4"><div class="txt"><h2>AI · <span>the quick answer</span></h2><p>AI that answers leads in seconds, drafts follow-ups and books appointments, with a human in the loop.</p><div class="meta mono"><span>Service 05 / 05</span><a href="https://saltservicesusa.com/services/" target="_top">AI implementation →</a></div></div><div class="pic"><img src="../assets/img/window-rain.jpg" alt=""></div></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const R = !!SCENE.reduce;
+const row = document.getElementById('row'), light = document.getElementById('light'), street = document.getElementById('street');
+const tabs = [...row.querySelectorAll('[role=tab]')];
+/* draw each storefront around its sign: upper floor, awning, window, door (and two lamp posts) */
+tabs.forEach((t, i) => {
+  t.insertAdjacentHTML('afterbegin', '<span class="upper" aria-hidden="true"><span class="uw"></span><span class="uw"></span></span>');
+  t.insertAdjacentHTML('beforeend', '<span class="awnrow" aria-hidden="true"><span class="awn"></span><span class="val"></span></span><span class="front" aria-hidden="true"><span class="pl"></span><span class="win"></span><span class="kick"></span><span class="mid"></span><span class="door"></span><span class="pl"></span></span>' + (i % 2 ? '<span class="lamp" aria-hidden="true"></span>' : ''));
+});
+const fronts = tabs.map(t => t.querySelector('.front'));
+const panes = [...document.querySelectorAll('.pane')];
+let cur = 0, lastAct = 0, hold = false, settle = 0;
+
+function box(i){
+  const r = row.getBoundingClientRect(), f = fronts[i].getBoundingClientRect();
+  return { l:f.left - r.left, r:f.right - r.left, t:f.top - r.top, h:f.height };
+}
+/* place(i): the light sits in shop i. place(i, from): mid-flight, it stretches over both. */
+function place(i, from){
+  const a = box(i);
+  light.style.top = a.t + 'px'; light.style.height = a.h + 'px';
+  let l = a.l, rr = a.r;
+  if (from !== undefined){ const b = box(from); l = Math.min(a.l, b.l); rr = Math.max(a.r, b.r); }
+  light.style.left = l + 'px'; light.style.width = (rr - l) + 'px';
+}
+function select(i, focus){
+  if (focus) tabs[i].focus();
+  if (i === cur) return;
+  const from = cur; cur = i;
+  clearTimeout(settle);
+  if (R) place(i);
+  else {
+    place(i, from);
+    settle = setTimeout(() => { place(i); light.classList.remove('flick'); void light.offsetWidth; light.classList.add('flick'); }, 240);
+  }
+  tabs.forEach((t, j) => { const on = j === i; t.classList.toggle('on', on); t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; });
+  panes.forEach((p, j) => {
+    const on = j === i;
+    p.classList.remove('exitL');
+    if (j === from && i > from) p.classList.add('exitL');
+    p.classList.toggle('on', on); p.inert = !on; p.setAttribute('aria-hidden', !on);
+  });
+}
+panes.forEach((p, j) => { if (j) { p.inert = true; p.setAttribute('aria-hidden', 'true'); } });
+tabs.forEach((t, i) => {
+  t.addEventListener('click', () => { select(i); lastAct = performance.now(); });
+  t.addEventListener('keydown', e => {
+    const n = tabs.length, k = e.key;
+    const to = k === 'ArrowRight' ? (i + 1) % n : k === 'ArrowLeft' ? (i - 1 + n) % n : k === 'Home' ? 0 : k === 'End' ? n - 1 : -1;
+    if (to < 0) return;
+    e.preventDefault(); select(to, true); lastAct = performance.now();
+  });
+});
+street.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hold = true; });
+street.addEventListener('pointerleave', () => { hold = false; lastAct = performance.now(); });
+street.addEventListener('focusin', () => { hold = true; });
+street.addEventListener('focusout', () => { hold = false; lastAct = performance.now(); });
+
+function snapPlace(){ light.classList.add('snap'); place(cur); void light.offsetWidth; setTimeout(() => light.classList.remove('snap'), 30); }
+snapPlace();
+if (window.ResizeObserver) new ResizeObserver(snapPlace).observe(row); else addEventListener('resize', snapPlace);
+document.fonts && document.fonts.ready.then(snapPlace);
+/* the light walks the street on its own while nobody is choosing (not under reduced motion) */
+if (!R) setInterval(() => { if (!hold && !document.hidden && performance.now() - lastAct > 3600) select((cur + 1) % tabs.length); }, 3200);
+SCENE.onFirstEnter(() => { lastAct = performance.now() - 1200; });
+addEventListener('scene:enter', () => { select(0); lastAct = performance.now() - 1200; });
+</script>
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .2s; }
+  #wlDot.live,#wlRing.live{ opacity:1; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(233,161,59,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .2s; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  /* hidden until the first real pointer move, so the ring never waits parked mid-screen */
+  let mx=0,my=0,rx=0,ry=0,live=false;
+  addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';
+    if(!live){live=true;rx=mx;ry=my;dot.classList.add('live');ring.classList.add('live');if(!R)loop();}
+    if(R){ring.style.left=mx+'px';ring.style.top=my+'px';}
+  });
+  document.addEventListener('mouseleave',()=>{dot.classList.remove('live');ring.classList.remove('live');});
+  document.addEventListener('mouseenter',()=>{if(live){dot.classList.add('live');ring.classList.add('live');}});
+  function loop(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);}
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>Come on in · Salt Effect 14/76</title>
+<!-- PULL magnetic buttons: each button leans toward the cursor inside an invisible field and springs back on leave. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-1); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; font-size:17px; line-height:1.55; display:flex; flex-direction:column; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  /* an open door somewhere behind the words: light spilling out onto the step */
+  .door { position:fixed; left:50%; bottom:22vh; width:clamp(170px,17vw,260px); height:clamp(300px,54vh,540px); transform:translateX(-50%); pointer-events:none;
+    border-radius:6px 6px 0 0; background:linear-gradient(180deg, rgba(233,161,59,.02), rgba(233,161,59,.12) 55%, rgba(240,176,85,.3));
+    filter:blur(10px); }
+  .door::after { content:''; position:absolute; left:-30%; right:-30%; bottom:-6%; height:40%; background:radial-gradient(50% 60% at 50% 100%, rgba(240,176,85,.25), transparent 70%); }
+  .spill { position:fixed; left:50%; bottom:0; width:clamp(510px,51vw,780px); height:22vh; transform:translateX(-50%); pointer-events:none; filter:blur(7px); }
+  .spill::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(240,176,85,.24), rgba(233,161,59,.04) 80%, transparent);
+    clip-path:polygon(33.3% 0, 66.7% 0, 100% 100%, 0 100%); }
+  .vignette { position:fixed; inset:0; pointer-events:none; background:radial-gradient(80% 70% at 50% 55%, transparent 40%, rgba(14,8,31,.75)); }
+
+  header { position:relative; z-index:2; display:flex; justify-content:space-between; gap:16px; padding:88px clamp(20px,4vw,48px) 0; }
+  header b { color:var(--amber); font-weight:400; }
+
+  .stage { position:relative; z-index:2; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(26px,5vh,46px); padding:0 5vw 40px; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(56px,9vw,140px); letter-spacing:-.02em; text-align:center; line-height:.95; color:var(--bone); }
+  h1 em { font-style:italic; font-weight:500; color:var(--amber); }
+
+  .row { display:flex; gap:4px; flex-wrap:wrap; justify-content:center; }
+  .field { padding:22px; display:inline-flex; }           /* the invisible field the cursor pulls inside */
+
+  .magnetic { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:12px;
+    font:500 17px/1 'Instrument Sans',system-ui,sans-serif; letter-spacing:.01em;
+    color:var(--bone); text-decoration:none; border:1px solid rgba(179,170,205,.35); border-radius:999px; background:rgba(14,8,31,.45);
+    padding:28px 46px; overflow:hidden; will-change:transform; cursor:pointer; }
+  .magnetic .label { position:relative; z-index:2; transition:color .35s; will-change:transform; display:inline-flex; align-items:center; gap:12px; }
+  .magnetic .label svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .magnetic .fill { position:absolute; inset:0; background:var(--amber); border-radius:inherit;
+    transform:translateY(101%); transition:transform .5s cubic-bezier(.19,1,.22,1); }
+  .magnetic:hover .fill, .magnetic.on .fill { transform:translateY(0); }
+  .magnetic:hover .label, .magnetic.on .label { color:var(--ink-0); }
+  .magnetic.on { border-color:var(--amber); }
+
+  .line { min-height:6em; text-align:center; max-width:28em; color:var(--mist); }
+  .line strong { display:block; font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:clamp(22px,2.2vw,28px); line-height:1.2; color:var(--lilac); letter-spacing:-.01em; }
+  .line span { display:block; margin-top:6px; }
+  .line.swap { animation:sw .6s cubic-bezier(.19,1,.22,1); }
+  @keyframes sw { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+  .touch { display:none; }
+  @media (hover:none){ .fine { display:none; } .touch { display:inline; } }
+  footer { position:relative; z-index:2; display:flex; justify-content:space-between; gap:16px; padding:0 clamp(20px,4vw,48px) 26px; }
+  @media (max-width:700px){
+    header { flex-direction:column; gap:4px; }
+    .row { flex-direction:column; align-items:stretch; width:100%; max-width:340px; gap:0; }
+    .field { padding:6px 0; }
+    .magnetic { width:100%; padding:22px 30px; }
+    footer .mono:last-child { display:none; }
+    .door { bottom:30vh; width:150px; }
+    .spill { height:30vh; width:450px; }
+  }
+</style>
+</head>
+<body>
+  <div class="door" aria-hidden="true"></div><div class="spill" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+
+  <header><span class="mono"><b>II · The door</b> — 14/76</span><span class="mono">Three ways in</span></header>
+
+  <div class="stage">
+    <h1>Come on <em>in.</em></h1>
+    <div class="row">
+      <span class="field"><button class="magnetic" type="button" data-say="One tap, and they're talking to a person." data-sub="Not a menu. Not a voicemail box that's full.">
+        <span class="fill"></span><span class="label"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Call us</span></button></span>
+      <span class="field"><button class="magnetic" type="button" data-say="The address opens straight in their maps." data-sub="Parking's around back. Say so before they ask.">
+        <span class="fill"></span><span class="label"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Stop by</span></button></span>
+      <span class="field"><button class="magnetic" type="button" data-say="They pick a slot that's actually open." data-sub="No phone tag. A confirmation lands before they put the phone down.">
+        <span class="fill"></span><span class="label"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Book a time</span></button></span>
+    </div>
+    <p class="line" id="line"><strong>Make it easy to say yes.</strong><span>Every door should open on the first try.</span></p>
+  </div>
+
+  <footer>
+    <span class="mono"><span class="fine">Bring the cursor close. They lean in.</span><span class="touch">Tap one. It answers.</span></span>
+    <span class="mono">Kodak, TN · 35.97° N, 83.62° W</span>
+  </footer>
+
+<script>
+/* ---------- magnetic engine: pull inside an invisible field, spring release ---------- */
+document.querySelectorAll('.field').forEach(field => {
+  const el = field.querySelector('.magnetic');
+  const label = el.querySelector('.label');
+  const strength = .4;
+  let raf = null, tx = 0, ty = 0, cx = 0, cy = 0;
+
+  function tick(){
+    cx += (tx - cx) * .16; cy += (ty - cy) * .16;
+    el.style.transform = `translate(${cx}px, ${cy}px)`;
+    label.style.transform = `translate(${cx * .35}px, ${cy * .35}px)`;
+    if (Math.abs(tx - cx) > .1 || Math.abs(ty - cy) > .1 || tx !== 0 || ty !== 0) raf = requestAnimationFrame(tick);
+    else { el.style.transform = ''; label.style.transform = ''; raf = null; }
+  }
+  field.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    tx = (e.clientX - (r.left + r.width / 2)) * strength;
+    ty = (e.clientY - (r.top + r.height / 2)) * strength;
+    if (!raf) raf = requestAnimationFrame(tick);
+  });
+  field.addEventListener('mouseleave', () => {
+    tx = 0; ty = 0;
+    /* spring: brief overshoot on release */
+    el.animate([
+      { transform:`translate(${cx}px, ${cy}px)` },
+      { transform:`translate(${-cx * .3}px, ${-cy * .3}px)` },
+      { transform:'translate(0,0)' }
+    ], { duration:520, easing:'cubic-bezier(.34,1.56,.64,1)' });
+    if (!raf) raf = requestAnimationFrame(tick);
+  });
+
+  /* each button answers in the line below */
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.magnetic').forEach(b => b.classList.toggle('on', b === el));
+    const line = document.getElementById('line');
+    line.innerHTML = `<strong>${el.dataset.say}</strong><span>${el.dataset.sub}</span>`;
+    line.classList.remove('swap'); void line.offsetWidth; line.classList.add('swap');
+  });
+});
+</script>
+<!-- SIGNATURE CURSOR -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--bone); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(245,243,237,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--bone); mix-blend-mode:difference; transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  dot.style.opacity=ring.style.opacity='0';   /* hidden until the first pointer move, so nothing parks over the copy */
+  document.body.append(dot,ring);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{if(ring.style.opacity){rx=e.clientX;ry=e.clientY;dot.style.opacity=ring.style.opacity='';}mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

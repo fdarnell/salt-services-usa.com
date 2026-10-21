@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · Hold to open</title>
+<!-- Scene 10/76 · from template 41 THE DOOR Hold to Enter.
+     Press and hold: the ring fills, amber light leaks through the seam, the doors part and swing
+     open on a lit shop. Keyboard: hold Space or Enter on the button. Close the doors to try again. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+    --p:0; --g:1;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; -webkit-user-select:none; user-select:none; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  /* inside the shop (behind the doors) */
+  .inner { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:72px 24px 40px;
+    background:var(--ink-1); overflow:hidden; }
+  .inner .photo { position:absolute; inset:-3%; background:var(--ink-1) url(../assets/img/counter.jpg) center/cover no-repeat;
+    transform:scale(1.12); transition:transform 2.4s cubic-bezier(.19,1,.22,1); }
+  body.open .inner .photo { transform:scale(1.02); }
+  .inner .wash { position:absolute; inset:0; background:
+      radial-gradient(55% 50% at 50% 46%, rgba(240,176,85,.30), transparent 70%),
+      linear-gradient(180deg, rgba(14,8,31,.55), rgba(14,8,31,.35) 40%, rgba(14,8,31,.8)); }
+  .inner > :not(.photo):not(.wash) { position:relative; }
+  .inner h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(64px,11vw,168px); letter-spacing:-.02em; line-height:.95; color:var(--bone);
+    text-shadow:0 2px 40px rgba(14,8,31,.6); opacity:0; transform:translateY(24px); transition:opacity .9s .7s, transform 1.2s .7s cubic-bezier(.19,1,.22,1); }
+  .inner h1 em { font-style:italic; font-weight:500; color:var(--amber); }
+  .inner p { margin-top:22px; font-size:clamp(17px,1.5vw,20px); line-height:1.55; color:var(--lilac); max-width:28em;
+    opacity:0; transition:opacity .9s 1.1s; text-shadow:0 1px 20px rgba(14,8,31,.8); }
+  body.open .inner h1 { opacity:1; transform:none; }
+  body.open .inner p { opacity:1; }
+  #reset { margin-top:34px; font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--lilac); background:rgba(14,8,31,.45); border:1px solid rgba(234,231,244,.22); padding:12px 24px; border-radius:999px; cursor:pointer; transition:all .3s;
+    opacity:0; pointer-events:none; }
+  body.open #reset { opacity:1; pointer-events:auto; transition:all .3s, opacity .6s 1.6s; }
+  #reset:hover, #reset:focus-visible { color:var(--bone); border-color:var(--amber); outline:none; }
+
+  /* the doors: panelled, a brass pull each, light leaking through the seam as you hold */
+  .door { position:fixed; top:0; bottom:0; width:50.5%; z-index:40; background:linear-gradient(180deg, #1d1338, var(--ink-1) 60%, #140c2a); }
+  body.open .door, body.closing .door { transition:transform 1.25s cubic-bezier(.76,0,.24,1); }
+  .door.l { left:0; transform:translateX(calc(var(--p) * -14px)); }
+  .door.r { right:0; transform:translateX(calc(var(--p) * 14px)); }
+  .door .panel { position:absolute; left:14%; right:14%; border:1px solid var(--ink-2); border-radius:2px;
+    box-shadow:inset 0 0 0 6px rgba(14,8,31,.35), inset 0 0 0 7px rgba(43,29,82,.7); }
+  .door .panel.a { top:12%; height:38%; background:linear-gradient(180deg, rgba(43,29,82,.35), rgba(14,8,31,.2)); }
+  .door .panel.b { top:56%; height:30%; }
+  .door .pull { position:absolute; top:50%; width:4px; height:12%; border-radius:3px; background:linear-gradient(var(--amber-hi), var(--amber) 50%, #9c6420);
+    box-shadow:0 0 calc(6px + var(--p) * 18px) rgba(240,176,85,calc(.25 + var(--p) * .5)); }
+  .door.l .pull { right:max(14%, 96px); } .door.r .pull { left:max(14%, 96px); }
+  /* the glowing inner edge travels with each door */
+  .door::after { content:''; position:absolute; top:0; bottom:0; width:2px; background:var(--amber-hi);
+    opacity:calc(var(--p) * 1); box-shadow:0 0 calc(var(--p) * var(--g) * 30px) calc(var(--p) * var(--g) * 8px) rgba(240,176,85,.75), 0 0 calc(var(--p) * var(--g) * 120px) calc(var(--p) * var(--g) * 30px) rgba(233,161,59,.35); }
+  .door.l::after { right:0; } .door.r::after { left:0; }
+  body.open .door::after { opacity:1; box-shadow:0 0 calc(var(--g) * 30px) calc(var(--g) * 8px) rgba(240,176,85,.75), 0 0 calc(var(--g) * 120px) calc(var(--g) * 30px) rgba(233,161,59,.35); }
+  body.open .door.l { transform:translateX(-101%); }
+  body.open .door.r { transform:translateX(101%); }
+
+  /* the hold button */
+  .gate { position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; padding:72px 24px 40px;
+    text-align:center; transition:opacity .5s; pointer-events:none; }
+  .gate > * { pointer-events:auto; }
+  body.open .gate { opacity:0; }
+  body.open .gate > * { pointer-events:none; }
+  .gate h2 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(40px,5.4vw,80px); letter-spacing:-.02em; line-height:.98; color:var(--bone);
+    text-shadow:0 0 40px rgba(14,8,31,.9); pointer-events:none; }
+  .gate h2 em { font-style:italic; font-weight:500; color:var(--amber); }
+  #holdBtn { position:relative; width:150px; height:150px; border-radius:50%; background:rgba(14,8,31,.55); border:none; cursor:pointer; touch-action:none;
+    -webkit-tap-highlight-color:transparent; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); transition:transform .2s; }
+  #holdBtn svg { position:absolute; inset:0; transform:rotate(-90deg); }
+  #holdBtn .bg { fill:none; stroke:var(--ink-2); stroke-width:2.5; }
+  #holdBtn .fg { fill:none; stroke:var(--amber); stroke-width:2.5; stroke-linecap:round; stroke-dasharray:452; stroke-dashoffset:452;
+    filter:drop-shadow(0 0 6px rgba(233,161,59,.6)); }
+  #holdBtn .lbl { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--lilac); }
+  #holdBtn .pct { font-size:18px; font-weight:700; letter-spacing:.04em; color:var(--bone); }
+  #holdBtn.down { transform:scale(.96); }
+  #holdBtn:focus-visible { outline:2px solid var(--amber); outline-offset:6px; }
+  .gate .mono { pointer-events:none; }
+
+  .hud { position:fixed; z-index:60; pointer-events:none; }
+  .t1{ top:88px; left:32px; } .t2{ top:88px; right:32px; } .b2{ bottom:26px; right:32px; } .b1{ bottom:26px; left:32px; }
+  @media (max-width:640px){
+    .t1{ left:20px } .t2, .b2{ display:none } .b1{ left:20px }
+    .inner .photo { background-image:url(../assets/img/counter-tall.jpg); }
+    .door .panel { left:16%; right:16%; }
+    :root { --g:.45; }
+    /* the pulls sit low, under the hint line (which sits right under the dial), never behind type */
+    .door .pull { top:calc(50% + 196px); height:7%; }
+    .gate > .mono { background:rgba(14,8,31,.72); padding:8px 14px; border-radius:999px; }
+    .door.l .pull { right:22%; } .door.r .pull { left:22%; }
+    .gate { gap:24px; }
+  }
+</style>
+</head>
+<body>
+  <div class="inner">
+    <div class="photo" aria-hidden="true"></div>
+    <div class="wash" aria-hidden="true"></div>
+    <h1>Welcome <em>in.</em></h1>
+    <p>The lights are on and the door is propped open.</p>
+    <button id="reset" type="button">↻ Close the doors</button>
+  </div>
+
+  <div class="door l" aria-hidden="true"><div class="panel a"></div><div class="panel b"></div><div class="pull"></div></div>
+  <div class="door r" aria-hidden="true"><div class="panel a"></div><div class="panel b"></div><div class="pull"></div></div>
+
+  <div class="gate">
+    <h2>Hold to open<br>the <em>doors.</em></h2>
+    <button id="holdBtn" type="button" aria-label="Press and hold to open the doors">
+      <svg viewBox="0 0 150 150" aria-hidden="true"><circle class="bg" cx="75" cy="75" r="72"/><circle class="fg" id="ring" cx="75" cy="75" r="72"/></svg>
+      <span class="lbl"><span class="pct" id="pct">0%</span>Hold</span>
+    </button>
+    <span class="mono">Press and keep pressing · <span id="holdTime">1.4</span> seconds</span>
+  </div>
+
+  <span class="mono hud t1">I · The grain — 10/76</span>
+  <span class="mono hud t2">Opening day · 7:00 AM</span>
+  <span class="mono hud b1">Kodak, TN</span>
+  <span class="mono hud b2">35.97° N, 83.62° W</span>
+
+<script>
+const HOLD_TIME = 1.4;
+document.getElementById('holdTime').textContent = HOLD_TIME;
+
+const root = document.documentElement;
+const ring = document.getElementById('ring');
+const pct = document.getElementById('pct');
+const btn = document.getElementById('holdBtn');
+const CIRC = 452;
+let p = 0, holding = false, raf = 0, last = 0;
+
+function render(){
+  ring.style.strokeDashoffset = CIRC * (1 - p);
+  pct.textContent = Math.round(p * 100) + '%';
+  root.style.setProperty('--p', p.toFixed(3));
+}
+function tick(now){
+  const dt = Math.min(.05, (now - (last || now)) / 1000); last = now;
+  p += holding ? dt / HOLD_TIME : -dt * 2.4;
+  p = Math.max(0, Math.min(1, p));
+  render();
+  if (p >= 1){ holding = false; btn.classList.remove('down'); document.body.classList.add('open'); last = 0; return; }
+  if (p > 0 || holding) raf = requestAnimationFrame(tick); else last = 0;
+}
+function start(e){
+  if (e) e.preventDefault();
+  if (document.body.classList.contains('open')) return;
+  holding = true; btn.classList.add('down');
+  cancelAnimationFrame(raf); last = 0; raf = requestAnimationFrame(tick);
+}
+function stop(){ holding = false; btn.classList.remove('down'); }
+
+btn.addEventListener('pointerdown', e => { btn.setPointerCapture && btn.setPointerCapture(e.pointerId); start(e); });
+btn.addEventListener('pointerup', stop);
+btn.addEventListener('pointercancel', stop);
+addEventListener('pointerup', stop);
+addEventListener('blur', stop);
+btn.addEventListener('contextmenu', e => e.preventDefault());
+/* keyboard: hold Space or Enter */
+btn.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) start(e); else if (e.key === ' ' || e.key === 'Enter') e.preventDefault(); });
+btn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') stop(); });
+
+document.getElementById('reset').addEventListener('click', () => {
+  document.body.classList.add('closing');
+  document.body.classList.remove('open');
+  p = 0; render();
+  setTimeout(() => document.body.classList.remove('closing'), 1300);
+  btn.focus({ preventScroll:true });
+});
+render();
+</script>
+<!-- signature cursor, brand colours, off on touch -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .2s; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(234,231,244,.75); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .2s; }
+  .cur-on #wlDot, .cur-on #wlRing { opacity:1; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  const R=document.documentElement;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';R.classList.add('cur-on');});
+  document.addEventListener('mouseleave',()=>R.classList.remove('cur-on'));
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

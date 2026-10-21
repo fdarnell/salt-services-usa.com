@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>Before and after · Salt Effect 20/76</title>
+<!-- LENS reveal comparer: the cursor is a lens. The dark block is underneath; the lens shows the same block with its lights on. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @media (hover:hover) and (pointer:fine){ * { cursor:none; } }
+  html,body { height:100%; overflow:hidden; background:var(--ink-0); }
+  body { font-family:'Instrument Sans',system-ui,sans-serif; font-size:17px; line-height:1.55; color:var(--lilac); touch-action:pan-y; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  .layer { position:fixed; inset:0; }
+  .layer img { width:100%; height:100%; object-fit:cover; display:block; }
+  #remixLayer { will-change:clip-path; clip-path:circle(0px at 50% 50%); }
+  .scrim { position:fixed; inset:0; pointer-events:none; z-index:10;
+    background:linear-gradient(180deg, rgba(14,8,31,.92) 0%, rgba(14,8,31,.55) 26%, rgba(14,8,31,0) 44%),
+               linear-gradient(0deg, rgba(14,8,31,.8) 0%, rgba(14,8,31,0) 18%); }
+
+  #lensRing { position:fixed; left:0; top:0; width:20px; height:20px; border:1.5px solid rgba(240,176,85,.9); border-radius:50%;
+    transform:translate(-50%,-50%); pointer-events:none; z-index:20; will-change:width,height,left,top;
+    box-shadow:0 0 0 1px rgba(14,8,31,.35), 0 0 40px rgba(233,161,59,.35), inset 0 0 30px rgba(14,8,31,.25); }
+  #lensTag { position:fixed; left:0; top:0; z-index:21; pointer-events:none; transform:translate(-50%,-100%);
+    padding:6px 11px; border-radius:999px; background:var(--amber); color:var(--ink-0); font-size:11px; letter-spacing:.1em; white-space:nowrap; }
+
+  .hud { position:fixed; z-index:30; }
+  .tl { top:88px; left:clamp(20px,4vw,48px); max-width:min(620px,88vw); } .tr { top:88px; right:clamp(20px,4vw,48px); text-align:right; }
+  .bl { bottom:26px; left:clamp(20px,4vw,48px); } .br { bottom:26px; right:clamp(20px,4vw,48px); text-align:right; }
+  .tl .mono b { color:var(--amber); font-weight:400; }
+  .hud .big { font-family:'Fraunces',Georgia,serif; font-weight:560; font-size:clamp(34px,4.4vw,66px); line-height:.98; letter-spacing:-.02em; text-transform:none; color:var(--bone); display:block; margin-top:14px; text-wrap:balance; }
+  .hud .big em { font-style:italic; font-weight:500; color:var(--amber); }
+  .tr .mono { color:var(--lilac); }
+  .tr .mono i { font-style:normal; color:var(--amber); }
+  .touch { display:none; }
+  @media (hover:none){ .fine { display:none; } .touch { display:inline; } }
+  @media (max-width:700px){ .tr { display:none; } .br { display:none; } }
+</style>
+</head>
+<body>
+  <!-- base = BEFORE (every window dark) -->
+  <div class="layer"><picture><source media="(max-aspect-ratio: 4/5)" srcset="../assets/img/main-street-dark-tall.jpg"><img id="imgA" src="../assets/img/main-street-dark.jpg" alt="A row of small-town shops at night with every window dark"></picture></div>
+  <!-- lens layer = AFTER (the same block, lights on), clipped to a circle at the cursor -->
+  <div class="layer" id="remixLayer"><picture><source media="(max-aspect-ratio: 4/5)" srcset="../assets/img/main-street-lit-tall.jpg"><img id="imgB" src="../assets/img/main-street-lit.jpg" alt="The same row of shops with most windows lit amber"></picture></div>
+  <div class="scrim" aria-hidden="true"></div>
+  <div id="lensRing" aria-hidden="true"></div>
+  <span id="lensTag" class="mono" aria-hidden="true">After</span>
+
+  <div class="hud tl"><span class="mono"><b>II · The door</b> — 20/76</span><span class="big">The block, before and after <em>the lights came on.</em></span></div>
+  <div class="hud tr"><span class="mono" id="stateLabel">Before · the lens shows <i>after</i></span></div>
+  <div class="hud bl"><span class="mono"><span class="fine">Hold click. The lens grows.</span><span class="touch">Press and hold. The lens grows.</span></span></div>
+  <div class="hud br"><span class="mono">Kodak, TN · 35.97° N, 83.62° W</span></div>
+
+<script>
+const remixLayer = document.getElementById('remixLayer');
+const ring = document.getElementById('lensRing'), tag = document.getElementById('lensTag'), state = document.getElementById('stateLabel');
+
+/* ================= the lens ================= */
+let mx = innerWidth/2, my = innerHeight * .62, lx = mx, ly = my;
+let r = 0, held = false, lastMove = -1e9;
+const baseR = () => Math.min(150, Math.max(90, innerWidth * .26));
+
+addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+addEventListener('pointerdown', e => { held = true; mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+addEventListener('pointerup',   () => held = false);
+addEventListener('pointercancel', () => held = false);
+addEventListener('blur', () => held = false);
+
+let lastHeld = null;
+(function loop(){
+  requestAnimationFrame(loop);
+  /* idle: the lens wanders along the shopfronts on its own */
+  if (performance.now() - lastMove > 2800){
+    const t = performance.now() / 1600;
+    mx = innerWidth  * (.5 + Math.cos(t) * .32);
+    my = innerHeight * (.62 + Math.sin(t * 1.3) * .14);
+  }
+  lx += (mx - lx) * .14; ly += (my - ly) * .14;
+  const goal = held ? Math.max(innerWidth, innerHeight) * .75 : baseR();
+  r += (goal - r) * .1;
+  remixLayer.style.clipPath = `circle(${r}px at ${lx}px ${ly}px)`;
+  ring.style.left = lx + 'px'; ring.style.top = ly + 'px';
+  ring.style.width = r * 2 + 'px'; ring.style.height = r * 2 + 'px';
+  tag.style.left = lx + 'px'; tag.style.top = (ly - r - 10) + 'px';
+  tag.style.opacity = (ly - r - 40 > 0 && r < innerHeight * .6) ? 1 : 0;
+  if (held !== lastHeld){
+    lastHeld = held;
+    state.innerHTML = held ? 'After · let go to see <i>before</i>' : 'Before · the lens shows <i>after</i>';
+  }
+})();
+</script>
+</body>
+</html>

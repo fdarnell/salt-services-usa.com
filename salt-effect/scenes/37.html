@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Little things stick · The Salt Effect</title>
+<!-- 25/76 · III The street · effect: Sticker Trail Cursor (template 37).
+     Stickers burst along the pointer path, tumble and fall with gravity.
+     Left alone (or on a phone) the dot dances by itself; a finger drag sheds stickers too. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @media (hover:hover) and (pointer:fine){ * { cursor:none; } }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-1); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; touch-action:pan-y; }
+  body::before { content:''; position:fixed; inset:0; pointer-events:none;
+    background:
+      radial-gradient(50vmax 40vmax at 50% 46%, rgba(233,161,59,.12), transparent 70%),
+      radial-gradient(120vmax 90vmax at 50% 50%, transparent 45%, var(--ink-0) 100%); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  .center { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:5; pointer-events:none; text-align:center; padding:0 20px; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:580; font-size:clamp(54px,10vw,150px); line-height:.92; letter-spacing:-.025em;
+    font-variation-settings:"opsz" 144, "SOFT" 100, "WONK" 1; }
+  h1 em { font-style:italic; font-weight:520; color:var(--amber); }
+  .center .mono { margin-top:26px; max-width:34ch; line-height:1.7; }
+  .center .mono:first-child { margin:0 0 24px; }
+  .corner { position:fixed; z-index:6; }
+  .c3{ bottom:24px; left:30px; } .c4{ bottom:24px; right:30px; }
+
+  /* die-cut stickers: bone outline, a little drop shadow, slightly hand-made */
+  .st { position:fixed; left:0; top:0; z-index:4; pointer-events:none; will-change:transform, opacity; white-space:nowrap;
+    font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:24px; line-height:1; letter-spacing:-.01em;
+    padding:11px 18px 13px; border-radius:999px; border:3px solid var(--bone);
+    box-shadow:0 6px 0 -1px rgba(14,8,31,.55), 0 10px 22px rgba(14,8,31,.45); }
+  .st.s0 { background:var(--amber); color:var(--ink-text); font-style:italic; }
+  .st.s1 { background:var(--bone); color:var(--ink-text); border-color:var(--amber); }
+  .st.s2 { background:var(--ink-2); color:var(--lilac); font-family:'Space Mono',ui-monospace,monospace; font-weight:700; font-size:16px; text-transform:uppercase; letter-spacing:.06em; padding:12px 16px; border-radius:10px; }
+  .st.s3 { background:var(--lilac); color:var(--ink-text); font-style:italic; border-radius:14px; }
+  .st.logo { width:74px; height:74px; padding:0; border-radius:50%; background:var(--ink-0) url('../assets/logo/salt-logo.png') center/86% no-repeat; border-color:var(--amber); }
+  #cursorDot { position:fixed; left:0; top:0; width:14px; height:14px; background:var(--amber); border:2.5px solid var(--bone); border-radius:50%;
+    transform:translate(-100px,-100px); pointer-events:none; z-index:20; box-shadow:0 0 18px rgba(233,161,59,.7); }
+  @media (max-width:640px){
+    .st { font-size:19px; padding:9px 14px 11px; border-width:2.5px; }
+    .st.s2 { font-size:13px; padding:10px 12px; }
+    .st.logo { width:60px; height:60px; }
+    .c3 { left:20px; bottom:20px; } .c4 { display:none; }
+  }
+</style>
+</head>
+<body>
+  <span class="mono corner c3" id="hint">Move the cursor, or just wait</span>
+  <span class="mono corner c4">Kodak, TN · 35.97° N, 83.62° W</span>
+
+  <div class="center">
+    <span class="mono">III · The street — 25/76</span>
+    <h1>Little things<br><em>stick.</em></h1>
+    <span class="mono">Small kindnesses, said out loud, every day</span>
+  </div>
+  <div id="cursorDot"></div>
+
+<script>
+const STICKERS = [
+  { t:'thank you!', c:'s0' },
+  { t:'see you tuesday', c:'s1' },
+  { t:'the usual', c:'s2' },
+  { t:'on the house', c:'s3' },
+  { t:'you’re the best', c:'s0' },
+  { t:'', c:'logo' },
+  { t:'the usual', c:'s1' },
+  { t:'thank you!', c:'s2' }
+];
+if (matchMedia('(hover:none)').matches) document.getElementById('hint').textContent = 'Drag a finger, or just wait';
+
+const parts = [];
+let lastX = -1, lastY = -1, lastMove = 0, n = 0;
+const dot = document.getElementById('cursorDot');
+const STEP = () => innerWidth < 640 ? 58 : 74;      /* px of travel between stickers */
+const moveDot = (x, y) => dot.style.transform = `translate(${x - 7}px, ${y - 7}px)`;
+
+function track(x, y){
+  moveDot(x, y);
+  lastMove = performance.now();
+  if (lastX < 0){ lastX = x; lastY = y; return; }
+  const dx = x - lastX, dy = y - lastY;
+  if (Math.hypot(dx, dy) < STEP()) return;
+  spawn(x, y, dx * .12, dy * .12);
+  lastX = x; lastY = y;
+}
+addEventListener('mousemove', e => track(e.clientX, e.clientY));
+addEventListener('touchmove', e => { const t = e.touches[0]; if (t) track(t.clientX, t.clientY); }, { passive:true });
+
+function spawn(x, y, vx, vy){
+  if (parts.length > 22) return;
+  const s = STICKERS[n++ % STICKERS.length];
+  const el = document.createElement('div');
+  el.className = 'st ' + s.c;
+  el.textContent = s.t;
+  document.body.appendChild(el);
+  parts.push({ el, x, y, w: el.offsetWidth / 2, h: el.offsetHeight / 2,
+    vx: vx + (Math.random()-.5)*2.4, vy: vy - Math.random()*2.5 - 1,
+    rot: (Math.random()-.5)*30, vr: (Math.random()-.5)*5, life: 1 });
+  el.style.transform = `translate(${x - el.offsetWidth / 2}px, ${y - el.offsetHeight / 2}px)`;
+}
+
+let running = true;
+addEventListener('scene:leave', () => running = false);
+addEventListener('scene:enter', () => running = true);
+
+(function loop(){
+  requestAnimationFrame(loop);
+  if (!running) return;
+  /* idle auto-play: the dot strolls on its own and sheds stickers */
+  if (performance.now() - lastMove > 2600){
+    const t = performance.now() / 1300;
+    const x = innerWidth/2 + Math.cos(t) * innerWidth * .3;
+    const y = innerHeight/2 + Math.sin(t * 1.5) * innerHeight * .24;
+    moveDot(x, y);
+    if (lastX < 0){ lastX = x; lastY = y; }
+    if (Math.hypot(x - lastX, y - lastY) >= STEP()){
+      spawn(x, y, (x-lastX)*.05, (y-lastY)*.05); lastX = x; lastY = y;
+    }
+  }
+  for (let i = parts.length - 1; i >= 0; i--){
+    const p = parts[i];
+    p.vy += .15;
+    p.x += p.vx; p.y += p.vy;
+    p.rot += p.vr;
+    p.life -= .009;
+    p.el.style.transform = `translate(${p.x - p.w}px, ${p.y - p.h}px) rotate(${p.rot}deg) scale(${Math.max(.25, .55 + p.life * .5)})`;
+    p.el.style.opacity = Math.max(0, p.life * 1.4 - .2);
+    if (p.life <= 0 || p.y > innerHeight + 80){ p.el.remove(); parts.splice(i, 1); }
+  }
+})();
+</script>
+</body>
+</html>

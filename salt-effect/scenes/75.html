@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>World · The Salt Effect</title>
+<!-- No. 75 SUPREME Particle Hero, rebuilt as a town at night seen from a ridge. The particles
+     are the town's lit windows: on arrival they switch on one by one, then the lights that matter
+     travel across the rooftops and settle into the word WORLD while the rest stay the town.
+     The cursor (or a car on its own, when idle) is a pair of headlights that make nearby windows
+     flicker brighter. Starts on first enter, replays on enter, pauses on leave. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  @media (hover:hover) and (pointer:fine){ html.moved, html.moved *{cursor:none} }
+  html,body{height:100%;overflow:hidden}
+  body{background:var(--ink-0);color:var(--lilac);font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .mono{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mist)}
+  .hud{position:fixed;z-index:10;pointer-events:none}
+  .b1{bottom:26px;left:32px} .b2{bottom:26px;right:32px;text-align:right}
+  .line{position:fixed;left:0;right:0;top:clamp(96px,14vh,136px);z-index:10;text-align:center;pointer-events:none;padding:0 20px;
+    opacity:0;transform:translateY(12px);transition:opacity 1.4s ease .5s,transform 1.4s ease .5s}
+  .line h1{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.02em;line-height:1.02;
+    font-size:clamp(28px,3.4vw,50px);color:var(--bone);text-wrap:balance}
+  .line h1 em{font-style:italic;color:var(--amber)}
+  .line .mono{display:block;margin-top:14px}
+  .on .line{opacity:1;transform:none}
+  @media (max-width:640px){
+    .line{top:92px}
+    .b1{left:16px;bottom:18px} .b2{right:16px;bottom:18px} .b2 .c{display:none}
+  }
+</style>
+</head>
+<body>
+  <canvas id="c" role="img" aria-label="A valley town at night under layered mountain ridges. Its lit windows move across the rooftops and spell the word WORLD."></canvas>
+  <div class="line"><h1>Change the <em>world</em> around you.</h1><span class="mono" id="hint">Your headlights wake the windows</span></div>
+  <span class="mono hud b1">VI · The world — 66/76</span>
+  <span class="mono hud b2"><span class="c">Kodak, TN · </span>35.97° N, 83.62° W</span>
+
+<script>
+(function(){
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const bg = document.createElement('canvas'), g = bg.getContext('2d');
+const bl = document.createElement('canvas'), lx = bl.getContext('2d');      // small bloom buffer
+const bl2 = document.createElement('canvas'), lx2 = bl2.getContext('2d');   // its blurred copy
+const AMBER = '#e9a13b', BONE = '#f5f3ed', HI = '#f0b055';
+const touch = matchMedia('(hover: none)').matches;
+if (touch) document.getElementById('hint').textContent = 'Touch the town to drive through it';
+if (SCENE.reduce) document.getElementById('hint').textContent = 'Kodak, TN, after dark';
+const reduce = !!SCENE.reduce;
+
+/* timeline (seconds after the visitor arrives) */
+const ON_FROM = .25, ON_SPAN = 2.4, MOVE_AT = 3.1, MOVE_SWEEP = 1.35;
+
+const hex = h => [1,3,5].map(i => parseInt(h.substr(i,2),16));
+const mix = (a,b,t) => { a = hex(a); b = hex(b); return 'rgb(' + a.map((v,i) => Math.round(v + (b[i]-v)*t)).join(',') + ')'; };
+function rng(s){ return () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+
+let W, H, DPR, phone, u, K, townTop, townBot;
+let wins = [], movers = [], pitch = { x: 8, y: 10 }, carY;
+let T0 = null, running = false, raf = 0, ready = false, want = false;
+
+function ridge(R, amp, f){
+  const p = [R()*6, R()*6, R()*6], k = [f, f*2.3, f*5.1];
+  return x => { const n = .55*Math.sin(x*k[0] + p[0]) + .3*Math.sin(x*k[1] + p[1]) + .15*Math.sin(x*k[2] + p[2]); return amp*(n*.5 + .5); };
+}
+
+function build(){
+  W = innerWidth; H = innerHeight; DPR = Math.min(devicePixelRatio || 1, 2); phone = W < 700;
+  cv.width = bg.width = Math.round(W*DPR); cv.height = bg.height = Math.round(H*DPR);
+  K = phone ? 1/4 : 1/5;
+  bl.width = bl2.width = Math.ceil(W*K); bl.height = bl2.height = Math.ceil(H*K);
+  u = Math.max(.52, Math.min(1, (W + H)/2340));
+  const R = rng(66076);
+  g.setTransform(DPR,0,0,DPR,0,0);
+
+  const hzn = H*(phone ? .33 : .30);
+  townTop = H*(phone ? .47 : .465); townBot = H*(phone ? .84 : .86);
+
+  /* sky: indigo, a little lighter toward the ridges */
+  let gr = g.createLinearGradient(0,0,0,townTop);
+  gr.addColorStop(0, '#0e081f'); gr.addColorStop(.55, '#180f2f'); gr.addColorStop(1, '#2b1d52');
+  g.fillStyle = gr; g.fillRect(0,0,W,H);
+  for (let i = 0, n = phone ? 70 : 160; i < n; i++){
+    const x = R()*W, y = R()*R()*hzn*1.1, s = R() < .07 ? 1.6 : 1;
+    g.fillStyle = `rgba(245,243,237,${.12 + R()*.5})`; g.fillRect(x, y, s, s);
+  }
+
+  /* layered Smoky Mountain ridges, far ones hazy, near ones dark, haze pooled between */
+  const LAY = 5;
+  for (let k = 0; k < LAY; k++){
+    const f = k/(LAY-1);
+    const base = hzn + (townTop - hzn)*(.08 + f*.82);
+    const amp = H*(.085 - f*.035)*(phone ? .8 : 1);
+    const crest = ridge(R, amp, (2.2 + k*.9)/W*Math.PI);
+    g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W + 4; x += 4) g.lineTo(x, base - crest(x));
+    g.lineTo(W, H); g.closePath();
+    g.fillStyle = mix('#46396b', '#180f2f', Math.pow(f, .8));
+    g.fill();
+    gr = g.createLinearGradient(0, base - amp*.6, 0, base + H*.05);
+    gr.addColorStop(0, 'rgba(179,170,205,0)'); gr.addColorStop(1, `rgba(179,170,205,${.09 - f*.04})`);
+    g.fillStyle = gr; g.fillRect(0, base - amp*.6, W, H*.05 + amp*.6);
+  }
+  /* valley floor */
+  gr = g.createLinearGradient(0, townTop - H*.03, 0, H);
+  gr.addColorStop(0, 'rgba(24,15,47,0)'); gr.addColorStop(.18, '#180f2f'); gr.addColorStop(1, '#0e081f');
+  g.fillStyle = gr; g.fillRect(0, townTop - H*.03, W, H);
+
+  /* the viewer's ridge: crest line and pines, it hides the bottom of the town */
+  const fgBase = H*(phone ? .885 : .9), fgCrest = ridge(R, H*.035, 1.6/W*Math.PI);
+  const cover = new Float32Array(Math.ceil(W) + 2);
+  for (let x = 0; x < cover.length; x++) cover[x] = fgBase - fgCrest(x);
+  const pines = [];
+  for (let x = -10; x < W + 10; ){
+    const h = u*(14 + R()*34)*(R() < .25 ? 1.5 : 1), w = h*(.36 + R()*.12);
+    if (R() < .78) pines.push([x, h, w]);
+    x += w*(.45 + R()*.9);
+  }
+  for (const [px, ph, pw] of pines){
+    const top = fgBase - fgCrest(px) - ph;
+    for (let x = Math.max(0, Math.floor(px - pw/2)); x <= Math.min(W, Math.ceil(px + pw/2)); x++)
+      cover[x] = Math.min(cover[x], top + ph*Math.abs(x - px)/(pw/2));
+  }
+
+  /* the town: rows of buildings from far (small, hazy) to near (bigger, darker) */
+  const ROWS = phone ? 12 : 15, rows = [];
+  for (let r = 0; r < ROWS; r++){
+    const z = r/(ROWS-1), base = townTop + (townBot - townTop)*Math.pow(z, 1.2) + H*.012, s = u*(.32 + .9*z);
+    const row = { z, s, b: [] };
+    for (let x = -R()*30; x < W + 30; ){
+      const bw = s*(20 + R()*44), tall = R() < .09 ? 1.9 : 1, bh = s*(13 + R()*28)*tall;
+      const edge = Math.abs(x + bw/2 - W/2)/(W/2);
+      const skip = R() < Math.pow(edge, 2.2)*(1 - z*.7)*.9;
+      if (!skip){
+        const gable = R() < .58, roofH = gable ? bw*(.2 + R()*.16) : s*1.6;
+        row.b.push({ x0: x, x1: x + bw, base, top: base - bh, gable, roofH, spire: tall > 1 && R() < .22 });
+      }
+      x += bw + s*(1.5 + R()*5) + (R() < .07 ? s*26 : 0);
+    }
+    rows.push(row);
+  }
+  const roofAt = (b, x) => b.gable ? b.top - b.roofH*(1 - Math.abs(x - (b.x0 + b.x1)/2)/((b.x1 - b.x0)/2)) : b.top - b.roofH;
+  /* windows, worked out near-to-far so a building in front hides the windows behind it */
+  wins = [];
+  for (let r = ROWS - 1; r >= 0; r--){
+    const { s, b: bs, z } = rows[r];
+    const ww = Math.max(1, s*3.1), wh = Math.max(1.1, s*4.2), sx = s*7.4, sy = s*9.2, m = s*3.4;
+    for (const b of bs){
+      const cols = Math.floor((b.x1 - b.x0 - 2*m + sx - ww)/sx), rws = Math.floor((b.base - b.top - m*1.6 + sy - wh)/sy);
+      if (cols < 1 || rws < 1) continue;
+      const ox = b.x0 + (b.x1 - b.x0 - (cols - 1)*sx - ww)/2;
+      for (let j = 0; j < rws; j++) for (let i = 0; i < cols; i++){
+        if (R() < .18) continue;
+        const x = ox + i*sx, y = b.top + m + j*sy;
+        let vis = true;
+        for (let c = Math.max(0, Math.floor(x)); c <= Math.min(W, Math.ceil(x + ww)); c++) if (y + wh > cover[c] - .5){ vis = false; break; }
+        if (vis) wins.push({ x, y, w: ww, h: wh, z, c: R() < .24 ? 1 : 0, b: .5 + R()*.5, on: -1, mv: -1, off: 0, seed: R()*100, blink: R() < .3 });
+      }
+    }
+    for (const b of bs) for (let c = Math.max(0, Math.floor(b.x0)); c <= Math.min(W, Math.ceil(b.x1)); c++){
+      const top = b.spire && Math.abs(c - (b.x0 + b.x1)/2) < s*2 ? b.top - b.roofH - s*26 : roofAt(b, c);
+      cover[c] = Math.min(cover[c], top);
+    }
+  }
+  /* paint buildings far to near */
+  for (const { z, s, b: bs } of rows){
+    const facade = mix('#261a4f', '#130c29', Math.pow(z, .6)), roof = mix('#30235c', '#1b1236', Math.pow(z, .6));
+    for (const b of bs){
+      g.fillStyle = facade; g.fillRect(b.x0, b.top, b.x1 - b.x0, b.base - b.top + 2);
+      g.fillStyle = roof; g.beginPath();
+      const cx = (b.x0 + b.x1)/2;
+      if (b.gable){ g.moveTo(b.x0 - s, b.top + .5); g.lineTo(cx, b.top - b.roofH); g.lineTo(b.x1 + s, b.top + .5); }
+      else { g.rect(b.x0 - s*.5, b.top - b.roofH, b.x1 - b.x0 + s, b.roofH + .5); }
+      g.fill();
+      if (b.spire){ g.beginPath(); g.moveTo(cx - s*2, b.top - b.roofH + 1); g.lineTo(cx, b.top - b.roofH - s*26); g.lineTo(cx + s*2, b.top - b.roofH + 1); g.fill(); }
+    }
+  }
+  /* a little valley haze over the far rows */
+  gr = g.createLinearGradient(0, townTop - H*.02, 0, townTop + H*.14);
+  gr.addColorStop(0, 'rgba(179,170,205,0)'); gr.addColorStop(.25, 'rgba(179,170,205,.07)'); gr.addColorStop(1, 'rgba(179,170,205,0)');
+  g.fillStyle = gr; g.fillRect(0, townTop - H*.02, W, H*.16);
+  /* the viewer's ridge on top */
+  g.fillStyle = '#0e081f'; g.beginPath(); g.moveTo(0, H);
+  for (let x = 0; x <= W + 3; x += 3) g.lineTo(x, fgBase - fgCrest(x));
+  g.lineTo(W, H); g.closePath(); g.fill();
+  for (const [px, ph, pw] of pines){
+    const y0 = fgBase - fgCrest(px) + 2;
+    g.beginPath();
+    for (let t = 0; t < 3; t++){
+      const yy = y0 - ph*t*.3, ww = pw*(1 - t*.25)/2;
+      g.moveTo(px - ww, yy); g.lineTo(px, yy - ph*(.55 - t*.05)); g.lineTo(px + ww, yy);
+    }
+    g.fill();
+  }
+  carY = x => townTop + (townBot - townTop)*(.6 + .14*Math.sin(x/W*4.2 + .8));
+
+  /* the word: a grid of window cells cut from WORLD */
+  const o = document.createElement('canvas'); o.width = Math.ceil(W); o.height = Math.ceil(H);
+  const oc = o.getContext('2d', { willReadFrequently: true });
+  const font = s => `600 ${s}px Fraunces, Georgia, serif`;
+  oc.font = font(100);
+  let mt = oc.measureText('WORLD');
+  let fs = 100*W*(phone ? .9 : .8)/mt.width;
+  const capMax = H*(phone ? .2 : .3);
+  const asc = mt.actualBoundingBoxAscent || 70;
+  if (asc*fs/100 > capMax) fs = capMax/asc*100;
+  oc.font = font(fs); mt = oc.measureText('WORLD');
+  const capH = (mt.actualBoundingBoxAscent || fs*.7) + (mt.actualBoundingBoxDescent || 0);
+  const cy = townTop + (townBot - townTop)*(phone ? .42 : .44);
+  oc.textAlign = 'center'; oc.textBaseline = 'alphabetic'; oc.fillStyle = '#fff';
+  const baseY = cy + capH/2 - (mt.actualBoundingBoxDescent || 0);
+  oc.fillText('WORLD', W/2, baseY);
+  pitch.y = capH/(phone ? 15 : 22); pitch.x = pitch.y*.8;
+  const left = W/2 - mt.width/2 - pitch.x, top = baseY - capH - pitch.y;
+  const gw = Math.ceil((mt.width + 2*pitch.x)/pitch.x), gh = Math.ceil((capH + 3*pitch.y)/pitch.y);
+  const px = oc.getImageData(0, 0, o.width, o.height).data;
+  const tg = [];
+  for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++){
+    const sx = Math.round(left + (i + .5)*pitch.x), sy = Math.round(top + (j + .5)*pitch.y);
+    if (sx < 0 || sy < 0 || sx >= o.width || sy >= o.height) continue;
+    if (px[(sy*o.width + sx)*4 + 3] > 120) tg.push({ x: left + i*pitch.x + pitch.x*.2, y: top + j*pitch.y + pitch.y*.19 });
+  }
+  const wl = left, wwid = gw*pitch.x;
+
+  /* light the town: enough windows that the word can borrow its lights and the town stays lit */
+  const order = wins.map((_, i) => i).sort(() => R() - .5);
+  const lit = order.slice(0, Math.min(wins.length, Math.max(Math.round(tg.length*1.85), Math.round(wins.length*(phone ? .72 : .6)))));
+  for (const i of lit){ const t = R(); wins[i].on = ON_FROM + Math.pow(t, .85)*ON_SPAN; }
+  const src = lit.filter(i => wins[i].w >= 1.5 || R() < .5).slice(0, tg.length);
+  const srcS = src.map(i => [i, wins[i].x + (R() - .5)*W*.09]).sort((a,b) => a[1] - b[1]);
+  tg.sort((a,b) => a.x - b.x);
+  movers = [];
+  const n = Math.min(srcS.length, tg.length);
+  for (let k = 0; k < n; k++){
+    const w = wins[srcS[k][0]], t = tg[k], d = Math.hypot(t.x - w.x, t.y - w.y);
+    const at = MOVE_AT + (t.x - wl)/wwid*MOVE_SWEEP + R()*.45;
+    w.mv = movers.length;
+    movers.push({ w, tx: t.x, ty: t.y, at, dur: .95 + R()*.5 + d/W*.6, lift: -Math.min(H*.18, d*.45) - R()*20, b: .82 + R()*.18 });
+  }
+  if (!running) draw(performance.now());
+}
+
+/* headlights: the cursor, or a car driving through town on its own */
+let mx = -1, my = -1, lastMove = -1e9, hx = -999, hy = -999, carX = -120, hdx = 1;
+function onMove(x, y){ mx = x; my = y; lastMove = performance.now(); document.documentElement.classList.add('moved'); }
+addEventListener('pointermove', e => onMove(e.clientX, e.clientY));
+addEventListener('pointerdown', e => onMove(e.clientX, e.clientY));
+document.addEventListener('mouseleave', () => { lastMove = -1e9; });
+
+let lastNow = 0, nextFlick = 0;
+function draw(now){
+  const T = reduce ? 1e4 : T0 === null ? -1 : (now - T0)/1000;
+  const dt = Math.min(.05, Math.max(0, (now - lastNow)/1000)); lastNow = now;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.drawImage(bg, 0, 0, W, H);
+  lx.setTransform(1,0,0,1,0,0); lx.clearRect(0, 0, bl.width, bl.height); lx.setTransform(K,0,0,K,0,0);
+
+  /* where the headlights are */
+  const showCar = !reduce && T0 !== null;
+  const px0 = hx;
+  if (now - lastMove < 2600 && mx >= 0){ hx += (mx - hx)*.18; hy += (my - hy)*.18; }
+  else {
+    carX += dt*W*(phone ? .085 : .06);
+    if (carX > W + 140) carX = -140;
+    const ty = carY(carX);
+    if (Math.abs(hx - carX) > 200){ hx = carX; hy = ty; } else { hx += (carX - hx)*.12; hy += (ty - hy)*.12; }
+  }
+  if (Math.abs(hx - px0) > .3 && Math.abs(hx - px0) < 150) hdx = hx - px0;
+  const RR = phone ? 80 : 140, RR2 = RR*RR;
+
+  /* occasional window going dark and coming back, once the word has formed */
+  if (!reduce && T > 7 && now > nextFlick){
+    const w = wins[Math.floor(Math.random()*wins.length)];
+    if (w.on >= 0 && w.mv < 0) w.off = T + 1.5 + Math.random()*4;
+    nextFlick = now + 260 + Math.random()*500;
+  }
+
+  /* town windows */
+  const boost = [];
+  for (let pass = 0; pass < 2; pass++){
+    ctx.fillStyle = lx.fillStyle = pass ? BONE : AMBER;
+    for (const w of wins){
+      if (w.c !== pass || w.on < 0 || T < w.on || T < w.off) continue;
+      const age = T - w.on;
+      let a = w.b*(pass ? .8 : 1);
+      if (age < .35) a *= w.blink ? (age < .05 ? .9 : age < .11 ? .15 : age < .16 ? .7 : age < .2 ? .3 : 1) : Math.min(1, age/.18);
+      if (w.mv >= 0){ const m = movers[w.mv]; if (T > m.at) a *= Math.max(0, 1 - (T - m.at)/.18); }
+      if (a <= .01) continue;
+      if (w.z < .25) a *= .75 + .25*w.z*4;
+      ctx.globalAlpha = a; ctx.fillRect(w.x, w.y, w.w, w.h);
+      lx.globalAlpha = a*.9; lx.fillRect(w.x - 1, w.y - 1, w.w + 2, w.h + 2);
+      if (showCar){ const dx = w.x - hx, dy = w.y - hy, d2 = dx*dx + dy*dy; if (d2 < RR2) boost.push(w, 1 - Math.sqrt(d2)/RR); }
+    }
+  }
+
+  /* the word's windows: behind each arrived light a darker pane, so the letters read clearly */
+  const cw = pitch.x*.6, ch = pitch.y*.62;
+  ctx.fillStyle = '#0e081f';
+  for (const m of movers){
+    const e = (T - m.at)/m.dur;
+    if (e <= .6) continue;
+    ctx.globalAlpha = Math.min(1, (e - .6)/.4)*.62;
+    ctx.fillRect(m.tx - pitch.x*.2, m.ty - pitch.y*.19, pitch.x, pitch.y);
+  }
+  const flight = [];
+  for (let pass = 0; pass < 2; pass++){
+    ctx.fillStyle = lx.fillStyle = pass ? BONE : AMBER;
+    for (const m of movers){
+      if (m.w.c !== pass || T < m.at) continue;
+      const e = Math.min(1, (T - m.at)/m.dur);
+      const a = m.b*(pass ? .88 : 1);
+      if (e < 1){ flight.push(m, e); continue; }
+      const since = T - m.at - m.dur;
+      ctx.globalAlpha = a; ctx.fillRect(m.tx, m.ty, cw, ch);
+      lx.globalAlpha = a*.75; lx.fillRect(m.tx - 1.5, m.ty - 1.5, cw + 3, ch + 3);
+      if (since < .4) boost.push({ x: m.tx, y: m.ty, w: cw, h: ch, seed: 0, flash: 1 }, (1 - since/.4)*.9);
+      else if (showCar){ const dx = m.tx - hx, dy = m.ty - hy, d2 = dx*dx + dy*dy; if (d2 < RR2) boost.push({ x: m.tx, y: m.ty, w: cw, h: ch, seed: m.b*90 }, 1 - Math.sqrt(d2)/RR); }
+    }
+  }
+  /* lights in flight, each with a short streak */
+  ctx.lineCap = 'round';
+  for (let i = 0; i < flight.length; i += 2){
+    const m = flight[i], e = flight[i+1], w = m.w;
+    const P = k => { const q = ease(k), bx = (w.x + m.tx)/2, by = (w.y + m.ty)/2 + m.lift;
+      return [(1-q)*(1-q)*w.x + 2*(1-q)*q*bx + q*q*m.tx, (1-q)*(1-q)*w.y + 2*(1-q)*q*by + q*q*m.ty]; };
+    const [x, y] = P(e), [x0, y0] = P(Math.max(0, e - .07));
+    const sz = w.w + (cw - w.w)*e, c = w.c ? BONE : HI;
+    ctx.strokeStyle = c; ctx.globalAlpha = .35; ctx.lineWidth = Math.max(1, sz*.8);
+    ctx.beginPath(); ctx.moveTo(x0 + sz/2, y0 + sz/2); ctx.lineTo(x + sz/2, y + sz/2); ctx.stroke();
+    ctx.fillStyle = lx.fillStyle = c; ctx.globalAlpha = 1;
+    ctx.fillRect(x, y, sz, sz*1.15);
+    lx.globalAlpha = 1; lx.fillRect(x - 2, y - 2, sz + 4, sz + 4);
+  }
+
+  /* headlights make nearby windows flicker brighter */
+  ctx.fillStyle = BONE;
+  for (let i = 0; i < boost.length; i += 2){
+    const w = boost[i], k = boost[i+1];
+    const f = w.flash ? k : k*(.5 + .5*Math.sin(now*.035 + w.seed*7))*Math.min(1, k*1.6);
+    if (f <= .02) continue;
+    ctx.globalAlpha = Math.min(1, f*.9); ctx.fillRect(w.x - .5, w.y - .5, w.w + 1, w.h + 1);
+    lx.globalAlpha = f; lx.fillStyle = HI; lx.fillRect(w.x - 2, w.y - 2, w.w + 4, w.h + 4); lx.fillStyle = BONE;
+  }
+
+  /* bloom: the small buffer, blurred and laid over with light */
+  lx2.setTransform(1,0,0,1,0,0); lx2.clearRect(0, 0, bl2.width, bl2.height);
+  lx2.filter = 'blur(2px)'; lx2.drawImage(bl, 0, 0); lx2.filter = 'none';
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = .55; ctx.drawImage(bl2, 0, 0, W, H);
+  ctx.globalAlpha = .35; ctx.drawImage(bl, 0, 0, W, H);
+
+  /* the car itself */
+  if (showCar){
+    const dir = hdx >= 0 ? 1 : -1, L = RR*1.25;
+    const bm = ctx.createLinearGradient(hx, hy, hx + dir*L, hy);
+    bm.addColorStop(0, 'rgba(245,243,237,.26)'); bm.addColorStop(1, 'rgba(245,243,237,0)');
+    ctx.globalAlpha = 1; ctx.fillStyle = bm; ctx.beginPath();
+    ctx.moveTo(hx + dir*3, hy - 1.5); ctx.lineTo(hx + dir*L, hy - L*.3); ctx.lineTo(hx + dir*L, hy + L*.22); ctx.lineTo(hx + dir*3, hy + 1.5); ctx.fill();
+    const gr = ctx.createRadialGradient(hx, hy, 0, hx, hy, RR*.9);
+    gr.addColorStop(0, 'rgba(245,243,237,.22)'); gr.addColorStop(.35, 'rgba(240,176,85,.08)'); gr.addColorStop(1, 'rgba(240,176,85,0)');
+    ctx.globalAlpha = 1; ctx.fillStyle = gr; ctx.fillRect(hx - RR, hy - RR, RR*2, RR*2);
+    ctx.fillStyle = BONE;
+    ctx.beginPath(); ctx.arc(hx + dir*2, hy - 1.2, 1.5, 0, 7); ctx.arc(hx + dir*2, hy + 1.2, 1.5, 0, 7); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+}
+
+function loop(now){ if (!running) return; draw(now); raf = requestAnimationFrame(loop); }
+function start(){
+  if (!ready){ want = true; return; }
+  document.body.classList.add('on');
+  T0 = performance.now();
+  for (const w of wins) w.off = 0;
+  if (reduce){ draw(T0); return; }
+  if (!running){ running = true; raf = requestAnimationFrame(loop); }
+}
+function stop(){ running = false; cancelAnimationFrame(raf); }
+
+let rt = 0;
+addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (ready) build(); }, 120); });
+const fontOk = document.fonts && document.fonts.load ? Promise.race([document.fonts.load('600 100px Fraunces'), new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
+fontOk.catch(() => {}).then(() => { ready = true; build(); if (want) start(); });
+
+SCENE.onFirstEnter(start);
+addEventListener('scene:enter', () => { if (T0 !== null) start(); });
+addEventListener('scene:leave', stop);
+})();
+</script>
+</body>
+</html>

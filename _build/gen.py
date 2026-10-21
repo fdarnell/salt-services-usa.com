@@ -320,7 +320,8 @@ if __name__ == "__main__":
     from pages_content import PAGES
     seen_t, seen_d = set(), set()
     written = [build(spec, seen_t, seen_d) for spec in PAGES]
-    write_sitemap([p for spec, p in zip(PAGES, written) if not spec.get("noindex")])
+    # /salt-effect/ is a standalone page (copied in, never generated) but belongs in the sitemap
+    write_sitemap([p for spec, p in zip(PAGES, written) if not spec.get("noindex")] + ["/salt-effect/"])
     print(f"{len(written)} pages built")
 
 

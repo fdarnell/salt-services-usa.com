@@ -81,7 +81,9 @@ def stamp_html(root: pathlib.Path) -> int:
             if f.suffix in (".css", ".js"):
                 code_ver[f"/{d}/{f.name}"] = _hash(f)
 
-    pages = [p for p in root.rglob("*.html") if ".git" not in p.parts]
+    # salt-effect/ is a self-contained page with its own relative assets; leave it byte-for-byte alone
+    pages = [p for p in root.rglob("*.html")
+             if ".git" not in p.parts and "salt-effect" not in p.relative_to(root).parts]
     touched = 0
     for page in pages:
         text = original = page.read_text(encoding="utf-8")

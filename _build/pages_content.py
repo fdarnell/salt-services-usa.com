@@ -771,6 +771,19 @@ WORK_ENTRIES = "".join([
         "Sandblasting and powder coating out of Sevierville, serving everyone from gearheads with a single part to industrial contractors with a full run. A working site for a working shop."),
 ])
 
+# Salt's own showcase — featured above the client grid, clearly marked as ours
+WORK_FEATURE = """<div class="card work-feature">
+      <a href="/salt-effect/">
+        <img src="/images/salt-effect.jpg" alt="The Salt Effect opening screen — a hand sprinkling glowing grains of salt beside the title" width="1200" height="630">
+        <div class="work-body">
+          <span class="work-tag">Our own showcase &middot; not a client site</span>
+          <h2>The Salt Effect</h2>
+          <p>Our own story of businesses that change the world around them, told in 76 hand-built web effects.</p>
+          <span class="card-link">Play The Salt Effect &rsaquo;</span>
+        </div>
+      </a>
+    </div>"""
+
 WORK_LD = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -794,8 +807,10 @@ WORK_BODY = f"""<section class="section">
     <div class="section-head">
       <h1>Our work, live and <em>clickable</em></h1>
       {SPRINKLE}
-      <p>Every site below belongs to a real client and is live right now — click through and judge for yourself. Most are here in Sevier County, because that's home turf; we build for clients well beyond it too.</p>
+      <p>Every client site below belongs to a real business and is live right now — click through and judge for yourself. Most are here in Sevier County, because that's home turf; we build for clients well beyond it too.</p>
     </div>
+    {WORK_FEATURE}
+    <h2 class="work-subhead">Client sites</h2>
     <ul class="card-grid two">
       {WORK_ENTRIES}
     </ul>

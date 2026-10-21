@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<link rel="icon" href="data:,">
+<title>Its own light · The Salt Effect</title>
+<!-- No. 77 AMBIENT Live Wallpaper Kit, re-skinned: four switchable canvas wallpapers, each a
+     place near Kodak with its own light. Tours itself (from first enter) until the visitor picks. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0; --lilac:#eae7f4; --mist:#b3aacd;
+    --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+  canvas { position:fixed; inset:0; display:block; transition:opacity .45s ease; }
+  canvas.out { opacity:0; }
+  .center { position:fixed; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center; pointer-events:none; padding:72px 20px 120px; }
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(42px,6.4vw,96px); letter-spacing:-.02em; line-height:.95; color:var(--bone);
+    text-shadow:0 2px 40px rgba(14,8,31,.7); max-width:12ch; }
+  h1 em { font-style:normal; color:var(--amber); }
+  .center .mono { text-shadow:0 1px 12px rgba(14,8,31,.9); }
+  .chips { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); z-index:10; display:flex; gap:8px; }
+  .chips button { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+    background:rgba(24,15,47,.55); border:1px solid rgba(179,170,205,.28); color:var(--lilac); padding:14px 20px;
+    border-radius:999px; cursor:pointer; transition:background .3s, color .3s, border-color .3s; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .chips button:hover { border-color:var(--amber); }
+  .chips button.on { background:var(--amber); color:var(--ink-0); border-color:var(--amber); }
+  .chips button:focus-visible { outline:2px solid var(--amber-hi); outline-offset:3px; }
+  .hud { position:fixed; z-index:10; bottom:44px; pointer-events:none; }
+  .b1{ left:32px; } .b2{ right:32px; }
+  @media (max-width:900px){ .hud { display:none; } }
+  @media (max-width:640px){
+    .chips { bottom:20px; width:calc(100% - 32px); flex-wrap:wrap; justify-content:center; }
+    .chips button { flex:1 1 calc(50% - 8px); padding:14px 10px; }
+    .center { padding-bottom:150px; }
+  }
+  @media (pointer:fine){
+    * { cursor:none !important; }
+    #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+    #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber-hi); transform:translate(-50%,-50%); }
+    #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(245,243,237,.7); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease; }
+    .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+    @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+  }
+</style>
+</head>
+<body>
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <div class="center">
+    <span class="mono">VI · The world — 69/76</span>
+    <h1>Every place has its own <em>light.</em></h1>
+    <span class="mono">Four places near Kodak, Tennessee</span>
+  </div>
+  <div class="chips" role="group" aria-label="Wallpaper">
+    <button data-m="dusk" class="on" aria-pressed="true">Smokies dusk</button>
+    <button data-m="street" aria-pressed="false">Main Street</button>
+    <button data-m="lake" aria-pressed="false">Douglas Lake</button>
+    <button data-m="field" aria-pressed="false">Firefly field</button>
+  </div>
+  <span class="mono hud b1">35.97° N, 83.62° W</span>
+  <span class="mono hud b2" id="modeTag">Now: Smokies dusk</span>
+
+<script>
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let W, H, mode = 'dusk', items = [], cabins = [];
+let mx = .5, my = .5;
+addEventListener('pointermove', e => { mx = e.clientX/W; my = e.clientY/H; });
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const AMBER = [233,161,59], HI = [240,176,85], BONE = [245,243,237], MIST = [179,170,205], LILAC = [234,231,244], PLUM = [99,90,125];
+
+function init(){
+  const n = W < 700 ? .6 : 1;
+  if (mode === 'field')  items = Array.from({length:Math.round(110*n)}, () => ({ x:Math.random()*W, y:H*.25+Math.random()*H*.8, v:Math.random()*.35+.08, r:Math.random()*1.8+1.1, ph:Math.random()*7, sp:Math.random()*1.5+.6 }));
+  if (mode === 'street') items = Array.from({length:Math.round(42*n)}, () => ({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*60+18, hue:[AMBER,AMBER,AMBER,HI,HI,BONE,MIST][Math.floor(Math.random()*7)], v:Math.random()*.4+.08, ph:Math.random()*7 }));
+  if (mode === 'lake'){
+    const N = 30;
+    items = Array.from({length:N}, (_,i) => ({ k:i/N, amp:Math.random()*10+4, sp:Math.random()*.6+.25, ph:Math.random()*7 }));
+    cabins = Array.from({length:5}, (_,i) => ({ x:.1+i*.18+Math.random()*.08, ph:Math.random()*7 }));
+  }
+}
+const fit = () => { W = cv.width = innerWidth; H = cv.height = innerHeight; init(); };
+fit(); addEventListener('resize', fit);
+
+/* Smokies dusk: layered ridges, mist sliding between them, last light on the horizon */
+function ridgeY(x, i, t){
+  const s = 1 + i*.6;
+  return H*(.5+i*.11) + Math.sin(x*.0021*s + i*1.7)*H*.05 + Math.sin(x*.0057*s + i)*H*.025 + Math.sin(x*.013 + i*3)*H*.008;
+}
+function dusk(t){
+  const sky = ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,'#0e081f'); sky.addColorStop(.55,'#2b1d52'); sky.addColorStop(1,'#0e081f');
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+  const glow = ctx.createRadialGradient(W*(.62-(mx-.5)*.05), H*.56, 0, W*.62, H*.56, W*.5);
+  glow.addColorStop(0, rgba(AMBER,.32)); glow.addColorStop(1, rgba(AMBER,0));
+  ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
+  const fills = ['#2b1d52','#211543','#180f2f','#0e081f'];
+  for (let i = 0; i < 4; i++){
+    const off = (mx-.5)*30*(i+1);
+    ctx.beginPath(); ctx.moveTo(0,H);
+    for (let x = 0; x <= W+14; x += 14) ctx.lineTo(x, ridgeY(x+off, i, t));
+    ctx.lineTo(W,H); ctx.closePath();
+    ctx.fillStyle = fills[i]; ctx.fill();
+    /* mist band resting on this ridge */
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.beginPath();
+    for (let x = 0; x <= W+14; x += 14){
+      const y = ridgeY(x+off, i, t) + 10 + Math.sin(x*.004 + t*(.25+i*.08) + i*2)*16;
+      x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.lineTo(W,H*(.6+i*.11)); ctx.lineTo(0,H*(.6+i*.11)); ctx.closePath();
+    ctx.fillStyle = rgba(MIST, .035 + (3-i)*.008); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  }
+}
+/* Firefly field: soft lights that blink on and off and wander */
+function field(t){
+  ctx.fillStyle = 'rgba(14,8,31,.3)'; ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation = 'lighter';
+  for (const e of items){
+    e.y -= e.v*.5; e.x += Math.sin(e.ph + t*e.sp)*.7 + (mx-.5)*1.1;
+    if (e.y < H*.15){ e.y = H+10; e.x = Math.random()*W; }
+    if (e.x < -10) e.x = W+10; if (e.x > W+10) e.x = -10;
+    const blink = Math.max(0, Math.sin(e.ph*3 + t*e.sp*1.3));
+    const on = blink*blink;
+    if (on < .02) continue;
+    const g = ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r*7);
+    g.addColorStop(0, rgba(HI,.5*on)); g.addColorStop(1, rgba(AMBER,0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(e.x,e.y,e.r*7,0,7); ctx.fill();
+    ctx.fillStyle = rgba(BONE,.8*on); ctx.beginPath(); ctx.arc(e.x,e.y,e.r*.7,0,7); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  const grass = ctx.createLinearGradient(0,H*.78,0,H);
+  grass.addColorStop(0,'rgba(14,8,31,0)'); grass.addColorStop(1,'rgba(14,8,31,.6)');
+  ctx.fillStyle = grass; ctx.fillRect(0,H*.78,W,H*.22);
+}
+/* Douglas Lake: a far shore with a few lit cabins, their light laid across moving water */
+function lake(t){
+  const hz = H*.46;
+  const sky = ctx.createLinearGradient(0,0,0,hz);
+  sky.addColorStop(0,'#0e081f'); sky.addColorStop(1,'#2b1d52');
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,hz);
+  ctx.fillStyle = '#0e081f'; ctx.fillRect(0,hz,W,H-hz);
+  ctx.beginPath(); ctx.moveTo(0,hz);
+  for (let x = 0; x <= W+12; x += 12) ctx.lineTo(x, hz - 18 - Math.sin(x*.003+1)*22 - Math.sin(x*.011)*6);
+  ctx.lineTo(W,hz); ctx.closePath(); ctx.fillStyle = '#180f2f'; ctx.fill();
+  for (const c of cabins){
+    const x = c.x*W, f = .75 + Math.sin(t*2 + c.ph)*.08;
+    const y = hz - 10 - Math.sin(x*.003+1)*10;
+    const g = ctx.createRadialGradient(x,y,0,x,y,44);
+    g.addColorStop(0, rgba(HI,.45*f)); g.addColorStop(1, rgba(AMBER,0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x,y,44,0,7); ctx.fill();
+    ctx.fillStyle = rgba(HI, f); ctx.fillRect(x-2, y-2, 4, 3);
+  }
+  ctx.lineWidth = 1;
+  for (const L of items){
+    const y0 = hz + 6 + (H-hz)*Math.pow(L.k, 1.5);
+    const amp = L.amp*(.3+L.k);
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += 10){
+      const y = y0 + Math.sin(x*.006/(.4+L.k) + t*L.sp + L.ph)*amp*.5 + (my-.5)*14*L.k;
+      x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    const g = ctx.createLinearGradient(0,0,W,0);
+    g.addColorStop(0, rgba(MIST,.15));
+    for (const c of cabins){
+      const cx = Math.min(.98, Math.max(.02, c.x + (mx-.5)*.04));
+      g.addColorStop(Math.max(0,cx-.03), rgba(MIST,.15));
+      g.addColorStop(cx, rgba(HI,.8*(1-L.k*.4)));
+      g.addColorStop(Math.min(1,cx+.03), rgba(MIST,.15));
+    }
+    g.addColorStop(1, rgba(MIST,.15));
+    ctx.strokeStyle = g; ctx.stroke();
+  }
+}
+/* Main Street: shop windows and street lamps, out of focus */
+function street(t){
+  ctx.fillStyle = 'rgba(24,15,47,.22)'; ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation = 'lighter';
+  for (const b of items){
+    b.x += Math.sin(b.ph + t*.4)*.3 + (mx-.5)*.8; b.y -= b.v;
+    if (b.y < -80){ b.y = H+80; b.x = Math.random()*W; }
+    const g = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);
+    const a = b.hue === AMBER || b.hue === HI ? 1 : .55;
+    g.addColorStop(0, rgba(b.hue,.11*a)); g.addColorStop(.8, rgba(b.hue,.04*a)); g.addColorStop(1, rgba(b.hue,0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,7); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+const ENGINES = { dusk, field, lake, street };
+const NAMES = { dusk:'Smokies dusk', street:'Main Street', lake:'Douglas Lake', field:'Firefly field' };
+(function loop(){
+  requestAnimationFrame(loop);
+  ENGINES[mode](performance.now()/1000);
+})();
+
+const btns = [...document.querySelectorAll('.chips button')];
+let swapTimer;
+function setMode(m){
+  if (m === mode) return;
+  btns.forEach(x => { const on = x.dataset.m === m; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
+  document.getElementById('modeTag').textContent = 'Now: ' + NAMES[m];
+  cv.classList.add('out');
+  clearTimeout(swapTimer);
+  swapTimer = setTimeout(() => {
+    mode = m; ctx.fillStyle = '#0e081f'; ctx.fillRect(0,0,W,H); init();
+    cv.classList.remove('out');
+  }, 450);
+}
+/* tour the four places until the visitor picks one */
+let tour = null;
+const order = ['dusk','street','lake','field'];
+const stopTour = () => { clearInterval(tour); tour = null; };
+btns.forEach(b => b.addEventListener('click', () => { stopTour(); setMode(b.dataset.m); }));
+SCENE.onFirstEnter(() => {
+  tour = setInterval(() => setMode(order[(order.indexOf(mode)+1) % order.length]), 6000);
+});
+
+(function(){
+  if (!matchMedia('(pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  let mx=-99,my=-99,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

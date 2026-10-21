@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · Signed</title>
+<!-- Scene 8/76 · from template 65 PENMANSHIP Self-Drawing Strokes.
+     A sheet under a desk lamp: a circle scribbles around a word, three boxes get ticked, and
+     "Signed." writes itself in one stroke (SVG stroke-dashoffset). Starts on first enter; replay button. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:
+      radial-gradient(38% 46% at 30% 22%, rgba(233,161,59,.22), transparent 70%),
+      radial-gradient(80% 70% at 50% 55%, var(--ink-1), var(--ink-0) 85%); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  /* the desk lamp that lights the page */
+  .lamp { position:fixed; left:30%; top:0; width:1px; height:9vh; background:linear-gradient(var(--ink-2), rgba(234,231,244,.3)); }
+  .lamp::after { content:''; position:absolute; left:50%; bottom:-5px; width:10px; height:10px; border-radius:50%; transform:translateX(-50%);
+    background:var(--amber-hi); box-shadow:0 0 16px 5px rgba(240,176,85,.55), 0 0 60px 18px rgba(233,161,59,.22); }
+
+  .stage { position:relative; display:flex; flex-direction:column; align-items:center; padding:84px 20px 30px; }
+  .sheet { position:relative; width:min(640px, calc(100vw - 40px)); background:var(--bone); color:var(--ink-text);
+    padding:clamp(24px,4vw,44px) clamp(22px,4.4vw,48px) clamp(20px,3vw,32px); border-radius:3px; transform:rotate(-1.2deg);
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 30px 60px -20px rgba(0,0,0,.6), 0 60px 120px -40px rgba(14,8,31,.9);
+    background-image:
+      radial-gradient(70% 60% at 22% 0%, rgba(240,176,85,.20), transparent 70%),
+      linear-gradient(180deg, var(--bone), var(--bone-2)); }
+  .sheet::after { content:''; position:absolute; inset:0; pointer-events:none; opacity:.05; border-radius:inherit;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>"); }
+  .sheet .mono { color:var(--plum); }
+  .row { display:flex; justify-content:space-between; gap:16px; }
+
+  h1 { font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:clamp(34px,4.6vw,56px); line-height:1.1; letter-spacing:-.02em; margin:22px 0 26px; }
+  h1 .circled { position:relative; white-space:nowrap; font-style:italic; margin-left:.18em; }
+  h1 .circled svg { position:absolute; left:-24%; top:-30%; width:150%; height:160%; overflow:visible; }
+  .stroke { fill:none; stroke:var(--amber); stroke-width:3.4; stroke-linecap:round; stroke-linejoin:round; }
+
+  .checks { display:flex; gap:clamp(14px,3vw,30px); flex-wrap:wrap; }
+  .check { display:flex; align-items:center; gap:10px; font-family:'Space Mono',ui-monospace,monospace; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-text); }
+  .box { position:relative; width:22px; height:22px; border:1.5px solid var(--plum); border-radius:3px; }
+  .box svg { position:absolute; left:-4px; top:-10px; width:34px; height:34px; overflow:visible; }
+  .ink { fill:none; stroke:var(--ink-text); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+
+  .sigwrap { position:relative; margin-top:16px; }
+  #sig { display:block; width:100%; height:auto; overflow:visible; }
+  #sig .ink { stroke-width:3; }
+  .rule { height:1px; background:var(--plum); opacity:.5; margin-top:-2px; }
+  .under { margin-top:10px; }
+
+  #replay { margin-top:30px; font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--mist); background:none; border:1px solid var(--ink-2); padding:12px 22px; border-radius:999px; cursor:pointer; transition:all .3s; }
+  #replay:hover, #replay:focus-visible { color:var(--bone); border-color:var(--amber); outline:none; }
+  .corner { position:fixed; z-index:10; }
+  .c1{ top:88px; left:32px; } .c2{ top:88px; right:32px; } .c3{ bottom:26px; left:32px; } .c4{ bottom:26px; right:32px; }
+  @media (max-width:760px){
+    .c2, .c3, .c4 { display:none; }
+    .c1 { left:20px; }
+    .lamp { left:76%; height:13vh; }
+    body { background:radial-gradient(60% 40% at 76% 14%, rgba(233,161,59,.22), transparent 70%), radial-gradient(80% 70% at 50% 55%, var(--ink-1), var(--ink-0) 85%); }
+    .stage { padding-top:120px; }
+    .sheet .row .mono:last-child { display:none; }
+    .check { font-size:12px; gap:8px; }
+  }
+  @media (max-height:760px) and (min-width:761px){ h1 { margin:14px 0 18px; } .sigwrap { margin-top:6px; } }
+</style>
+</head>
+<body>
+  <div class="lamp" aria-hidden="true"></div>
+  <span class="mono corner c1">I · The grain — 8/76</span>
+  <span class="mono corner c3">Every stroke draws itself</span>
+
+  <div class="stage">
+    <div class="sheet">
+      <div class="row"><span class="mono">Opening papers · Kodak, TN</span><span class="mono">35.97° N, 83.62° W</span></div>
+      <h1>Ink makes it
+        <span class="circled">real.<svg viewBox="0 0 200 80" aria-hidden="true"><path class="stroke draw" data-dur="1" data-delay=".3" d="M12,44 C10,16 68,4 112,8 C168,13 196,30 190,50 C183,72 108,80 62,72 C24,65 6,56 14,38" /></svg></span>
+      </h1>
+
+      <div class="checks">
+        <span class="check"><span class="box"><svg viewBox="0 0 34 34" aria-hidden="true"><path class="ink draw" data-dur=".35" data-delay="1.25" d="M7,19 C9,21 11,24 13,27 C17,18 23,9 31,3"/></svg></span>Lease</span>
+        <span class="check"><span class="box"><svg viewBox="0 0 34 34" aria-hidden="true"><path class="ink draw" data-dur=".35" data-delay="1.65" d="M7,18 C9,21 11,23 13,27 C18,17 24,10 30,4"/></svg></span>Loan</span>
+        <span class="check"><span class="box"><svg viewBox="0 0 34 34" aria-hidden="true"><path class="ink draw" data-dur=".35" data-delay="2.05" d="M6,19 C9,21 11,24 13,26 C17,18 24,8 31,4"/></svg></span>License</span>
+      </div>
+
+      <div class="sigwrap">
+        <svg id="sig" viewBox="0 0 340 150" role="img" aria-label="Signed.">
+          <!-- one continuous stroke: S i g n e d -->
+          <path class="ink draw" data-dur="2.6" data-delay="2.6" d="M88,30 C82,16 56,14 50,30 C44,46 84,56 82,78 C80,98 52,106 38,98 C30,93 34,86 42,88 C54,92 68,100 82,96 C90,92 95,80 98,70 C97,82 95,96 103,100 C109,102 115,96 120,88 C126,76 138,70 146,74 C140,66 122,68 120,84 C118,100 140,100 146,76 C150,100 150,124 140,134 C130,142 116,132 124,120 C132,110 150,104 164,98 C166,88 168,78 170,70 C170,82 168,92 168,100 C170,84 178,70 188,70 C198,70 196,88 196,98 C196,102 200,102 204,98 C214,90 224,82 224,74 C224,66 212,66 208,76 C204,88 210,100 222,100 C230,100 236,94 240,88 C244,74 254,70 262,74 C256,66 238,68 236,84 C234,100 256,100 262,78 C264,60 268,36 270,20 C270,44 266,76 266,92 C266,100 272,102 280,96"/>
+          <!-- the dot on the i, the full stop, and a flourish -->
+          <path class="ink draw" data-dur=".12" data-delay="5.3" d="M99,52 C99.5,52.5 100,53 100.4,53.6"/>
+          <path class="ink draw" data-dur=".12" data-delay="5.5" d="M290,97 C290.5,97.5 291,98 291.4,98.6"/>
+          <path class="stroke draw" data-dur=".9" data-delay="5.75" d="M26,142 C110,132 210,138 318,124"/>
+        </svg>
+        <div class="rule"></div>
+        <div class="row under"><span class="mono">Owner's signature</span><span class="mono">Opening year</span></div>
+      </div>
+    </div>
+    <button id="replay" type="button">↻ Sign it again</button>
+  </div>
+
+<script>
+const paths = [...document.querySelectorAll('.draw')];
+function reset(){
+  paths.forEach(p => {
+    const len = p.getTotalLength() + 1;
+    p.style.transition = 'none';
+    p.style.strokeDasharray = len;
+    p.style.strokeDashoffset = len;
+  });
+}
+function play(){
+  reset();
+  void document.body.getBoundingClientRect();
+  paths.forEach(p => {
+    const dur = +p.dataset.dur, delay = +p.dataset.delay;
+    /* handwriting moves at a steady pace; the long signature eases only at its ends */
+    const ease = dur > 2 ? 'cubic-bezier(.4,0,.6,1)' : 'cubic-bezier(.65,0,.35,1)';
+    p.style.transition = `stroke-dashoffset ${dur}s ${ease} ${delay}s`;
+    p.style.strokeDashoffset = 0;
+  });
+}
+reset();
+SCENE.onFirstEnter(play);
+document.getElementById('replay').addEventListener('click', play);
+</script>
+<!-- signature cursor, brand colours, off on touch -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .2s; mix-blend-mode:difference; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--bone); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(245,243,237,.85); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .2s; }
+  .cur-on #wlDot, .cur-on #wlRing { opacity:1; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  const R=document.documentElement;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';R.classList.add('cur-on');});
+  document.addEventListener('mouseleave',()=>R.classList.remove('cur-on'));
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>

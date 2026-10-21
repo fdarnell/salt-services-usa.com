@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" data-scene="static">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="_bridge.js"></script>
+<title>The Salt Effect · What if</title>
+<!-- Scene 5/76 · from template 12 CIPHER Text Scramble.
+     Four late-night questions decode one after another, letters shuffling through glyphs and resolving
+     left to right. The index at the bottom scrambles on hover and jumps to a question on click. -->
+<link rel="stylesheet" href="../kit/fonts/fonts.css">
+<style>
+  :root{
+    --ink-0:#0e081f; --ink-1:#180f2f; --ink-2:#2b1d52;
+    --amber:#e9a13b; --amber-hi:#f0b055;
+    --bone:#f5f3ed; --bone-2:#ece9e0;
+    --lilac:#eae7f4; --mist:#b3aacd; --plum:#635a7d; --ink-text:#201439;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--ink-0); color:var(--lilac); font-family:'Instrument Sans',system-ui,sans-serif; display:flex; flex-direction:column;
+    background:
+      radial-gradient(60% 50% at 50% 115%, rgba(233,161,59,.13), transparent 70%),
+      radial-gradient(80% 60% at 50% 45%, var(--ink-1), var(--ink-0) 80%); }
+  .mono { font-family:'Space Mono',ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mist); }
+
+  header { display:flex; justify-content:space-between; align-items:center; padding:88px 38px 0; }
+  .blink { animation:bl 1.1s steps(2) infinite; color:var(--amber); }
+  @keyframes bl { 50% { opacity:0; } }
+
+  .stage { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:34px; text-align:center; padding:0 5vw; }
+  #bigword { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(40px,6.4vw,100px); letter-spacing:-.02em; line-height:1.06;
+    color:var(--bone); max-width:12.5em; min-height:2.12em; display:flex; align-items:center; justify-content:center; }
+  #bigword .txt { display:block; }
+  #bigword .w { display:inline-block; white-space:nowrap; }
+  #bigword .ch { display:inline-block; text-align:center; overflow:visible; }
+  #bigword .ch.em { font-style:italic; font-weight:500; color:var(--amber); }
+  #bigword .ch.junk { font-family:'Space Mono',ui-monospace,monospace; font-style:normal; font-weight:400; color:var(--amber); font-size:.62em; }
+  #bigword .ch.wait { color:var(--ink-2); font-size:.5em; }
+  .caption { line-height:2; }
+  .count { color:var(--amber); }
+
+  footer { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding:26px 38px; }
+  nav { display:flex; gap:28px; flex-wrap:wrap; }
+  nav a { color:var(--mist); text-decoration:none; transition:color .3s; padding:6px 0; border-bottom:1px solid transparent; }
+  nav a:hover, nav a:focus-visible { color:var(--bone); outline:none; }
+  nav a.on { color:var(--amber); border-bottom-color:var(--amber); }
+  nav a .n { color:var(--plum); margin-right:6px; }
+  @media (max-width:700px){
+    header { padding:88px 20px 0; }
+    header .coords { display:none; }
+    #bigword { font-size:clamp(36px,11.5vw,50px); min-height:3.2em; }
+    footer { padding:22px 20px; }
+    footer .coords { display:none; }
+    nav { gap:0 20px; }
+    nav a { display:inline-flex; align-items:center; min-height:44px; padding:0; }   /* 44px tap targets on phones */
+    nav a.on { border-bottom-color:transparent; background:linear-gradient(var(--amber),var(--amber)) 0 calc(100% - 7px)/100% 1px no-repeat; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <span class="mono">I · The grain — 5/76 <span class="blink">▊</span></span>
+    <span class="mono coords">Kodak, TN · 35.97° N, 83.62° W</span>
+  </header>
+
+  <div class="stage">
+    <div id="bigword" aria-live="polite"></div>
+    <p class="caption mono">Questions that keep somebody up · <span class="count" id="count">1 of 4</span></p>
+  </div>
+
+  <footer>
+    <nav id="index" aria-label="Questions">
+      <a href="#" data-i="0" data-scramble>Properly</a>
+      <a href="#" data-i="1" data-scramble>Every call</a>
+      <a href="#" data-i="2" data-scramble>This town</a>
+      <a href="#" data-i="3" data-scramble>Ours</a>
+    </nav>
+    <span class="mono coords">After midnight</span>
+  </footer>
+
+<script>
+const GLYPHS = '!<>-_\\/[]{}=+*^?#@$%&AXKZR0147';
+/* *word* = the emphasised word, set in amber italic */
+const LINES = [
+  'What if we did it *properly?*',
+  'What if we answered every *call?*',
+  'What if this town had *one?*',
+  'What if it were *ours?*'
+];
+
+/* -------- generic scramble for short plain text (the index links) -------- */
+function scrambleTo(el, text, { charTime = 45, perCharDelay = 3 } = {}){
+  if (el.__anim) cancelAnimationFrame(el.__anim);
+  const from = el.textContent, len = Math.max(from.length, text.length);
+  const queue = [];
+  for (let i = 0; i < len; i++){
+    const start = i * perCharDelay + Math.floor(Math.random() * 4);
+    queue.push({ to: text[i] || '', from: from[i] || '', start, end: start + Math.floor(Math.random() * 5) + 4 });
+  }
+  let frame = 0, last = 0;
+  function step(now){
+    if (now - last >= charTime){
+      last = now; frame++;
+      let out = '', done = 0;
+      for (const q of queue){
+        if (frame >= q.end){ out += q.to; done++; }
+        else if (frame >= q.start) out += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+        else out += q.from;
+      }
+      el.textContent = out;
+      if (done === queue.length) return;
+    }
+    el.__anim = requestAnimationFrame(step);
+  }
+  el.__anim = requestAnimationFrame(step);
+}
+
+/* -------- the big line: proportional Fraunces, so every letter gets a fixed slot
+   measured from its final glyph; the layout never jumps while it decodes -------- */
+const big = document.getElementById('bigword');
+const meas = document.createElement('canvas').getContext('2d');
+let slots = [], anim = 0;
+function build(line){
+  const fs = parseFloat(getComputedStyle(big).fontSize);
+  big.innerHTML = '';
+  big.setAttribute('aria-label', line.replace(/\*/g, ''));
+  const txt = document.createElement('span'); txt.className = 'txt'; txt.setAttribute('aria-hidden', 'true');
+  slots = [];
+  line.split(' ').forEach((word, wi) => {
+    const em = /^\*.*\*$/.test(word); word = word.replace(/\*/g, '');
+    meas.font = (em ? 'italic 500 ' : '600 ') + fs + "px Fraunces, Georgia, serif";
+    const w = document.createElement('span'); w.className = 'w';
+    [...word].forEach(c => {
+      const s = document.createElement('span');
+      s.className = 'ch' + (em ? ' em' : '');
+      s.style.width = (meas.measureText(c).width - fs * .02) + 'px';  /* letter-spacing -0.02em */
+      w.appendChild(s); slots.push({ el: s, to: c, em });
+    });
+    if (wi) txt.appendChild(document.createTextNode(' '));
+    txt.appendChild(w);
+  });
+  big.appendChild(txt);
+}
+function decode(line, { charTime = 40, perCharDelay = 2 } = {}){
+  cancelAnimationFrame(anim);
+  build(line);
+  const q = slots.map((s, i) => {
+    const start = i * perCharDelay + Math.floor(Math.random() * 4);
+    return { ...s, start, end: start + Math.floor(Math.random() * 5) + 4, state: -1 };
+  });
+  q.forEach(s => { s.el.textContent = '·'; s.el.className = 'ch wait'; });
+  let frame = 0, last = 0;
+  function step(now){
+    if (now - last >= charTime){
+      last = now; frame++;
+      let done = 0;
+      for (const s of q){
+        if (frame >= s.end){
+          if (s.state !== 2){ s.el.textContent = s.to; s.el.className = 'ch' + (s.em ? ' em' : ''); s.state = 2; }
+          done++;
+        } else if (frame >= s.start){
+          s.el.textContent = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          if (s.state !== 1){ s.el.className = 'ch junk'; s.state = 1; }
+        }
+      }
+      if (done === q.length) return;
+    }
+    anim = requestAnimationFrame(step);
+  }
+  anim = requestAnimationFrame(step);
+}
+
+/* -------- cycle through the questions in turn -------- */
+const links = [...document.querySelectorAll('#index a')];
+const count = document.getElementById('count');
+let li = 0, timer = 0;
+function show(i){
+  li = (i + LINES.length) % LINES.length;
+  decode(LINES[li]);
+  links.forEach((a, k) => a.classList.toggle('on', k === li));
+  count.textContent = (li + 1) + ' of ' + LINES.length;
+  clearTimeout(timer);
+  timer = setTimeout(() => show(li + 1), 4200);
+}
+links.forEach(a => {
+  const original = a.textContent;
+  a.addEventListener('mouseenter', () => scrambleTo(a, original, { charTime:30, perCharDelay:2 }));
+  a.addEventListener('click', e => { e.preventDefault(); show(+a.dataset.i); });
+});
+
+/* before the visitor arrives, the first question sits there undecoded */
+build(LINES[0]); slots.forEach(s => { s.el.textContent = '·'; s.el.className = 'ch wait'; });
+let started = false;
+document.fonts.load("600 64px Fraunces").then(() => {
+  SCENE.onFirstEnter(() => { started = true; show(0); });
+});
+addEventListener('scene:enter', () => { if (started) show(0); });
+addEventListener('resize', () => { if (started) { cancelAnimationFrame(anim); build(LINES[li]); slots.forEach(s => { s.el.textContent = s.to; }); } });
+</script>
+<!-- signature cursor, brand colours, off on touch -->
+<style>
+@media (hover:hover) and (pointer:fine){
+  * { cursor:none !important; }
+  #wlDot,#wlRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .2s; }
+  #wlDot{ width:6px; height:6px; border-radius:50%; background:var(--amber); transform:translate(-50%,-50%); }
+  #wlRing{ width:36px; height:36px; border-radius:50%; border:1.5px solid rgba(234,231,244,.75); transform:translate(-50%,-50%); transition:width .25s ease, height .25s ease, opacity .2s; }
+  .cur-on #wlDot, .cur-on #wlRing { opacity:1; }
+  .wlRipple{ position:fixed; pointer-events:none; z-index:9998; width:8px; height:8px; border-radius:50%; border:2px solid var(--amber); transform:translate(-50%,-50%); animation:wlrip .55s ease-out forwards; }
+  @keyframes wlrip{ to{ width:70px; height:70px; opacity:0; } }
+}
+</style>
+<script>
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const dot=document.createElement('div'); dot.id='wlDot';
+  const ring=document.createElement('div'); ring.id='wlRing';
+  document.body.append(dot,ring);
+  const R=document.documentElement;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';R.classList.add('cur-on');});
+  document.addEventListener('mouseleave',()=>R.classList.remove('cur-on'));
+  (function f(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(f)})();
+  addEventListener('mousedown',e=>{const r=document.createElement('div');r.className='wlRipple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),600);});
+  document.body.addEventListener('mouseover',e=>{
+    const hit = e.target.closest('a,button');
+    ring.style.width = hit ? '60px' : '36px'; ring.style.height = hit ? '60px' : '36px';
+  });
+})();
+</script>
+</body>
+</html>
