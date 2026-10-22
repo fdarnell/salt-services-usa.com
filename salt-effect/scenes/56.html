@@ -57,7 +57,7 @@ let W, H, parts = [], box = { x:0, y:0, w:0, h:0 };
 const fit = () => { W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0); };
 fit();
 if (SCENE.reduce) document.getElementById('hint').textContent = 'Main Street, every grain home';
-else if (matchMedia('(hover:none)').matches) document.getElementById('hint').textContent = 'Tap to scatter it again';
+else if (matchMedia('(hover:none)').matches) document.getElementById('hint').textContent = 'Drag to build the picture · tap to finish it';
 
 /* where the picture sits: right of the copy on wide screens, above it on phones */
 function layout(img){
@@ -109,7 +109,24 @@ function scatter(){
   parts.forEach(p => { p.found = false; p.vx += (Math.random()-.5)*18; p.vy += (Math.random()-.5)*18; });
   autoT0 = performance.now();
 }
-addEventListener('click', scatter);
+/* phones: a drag builds the picture under the finger, a tap finishes it all at once, and a tap on
+   the finished picture scatters it again. A lifted finger counts as a tap too (iPhones don't
+   reliably send "click" for a tap on a canvas); whichever comes first wins. */
+const touchOnly = matchMedia('(hover:none)').matches, hintEl = document.getElementById('hint');
+let lastTap = -1e9, tapDown = null, built = false;
+function assemble(){ parts.forEach(p => { if (!p.found) { p.found = true; found++; } }); }
+function tapped(){
+  const now = performance.now();
+  if (now - lastTap < 400) return;
+  lastTap = now;
+  if (touchOnly && found < parts.length * .9) assemble(); else scatter();
+}
+addEventListener('pointerdown', e => { tapDown = { x:e.clientX, y:e.clientY, t:performance.now() }; });
+addEventListener('pointerup', e => {
+  if (tapDown && Math.hypot(e.clientX - tapDown.x, e.clientY - tapDown.y) < 14 && performance.now() - tapDown.t < 600) tapped();
+  tapDown = null;
+});
+addEventListener('click', tapped);
 SCENE.onFirstEnter(() => { auto = true; autoT0 = performance.now(); document.body.classList.add('go'); });
 addEventListener('scene:enter', () => { running = true; if (!auto) return; if (found < parts.length * .5) autoT0 = performance.now(); });
 addEventListener('scene:leave', () => { running = false; if (auto) scatter(); });
@@ -150,6 +167,10 @@ let running = true;
     else { ctx.globalAlpha = p.a; ctx.fillStyle = p.d; ctx.fillRect(p.x, p.y, 1.7, 1.7); }
   }
   ctx.globalAlpha = 1;
+  if (touchOnly && !SCENE.reduce && parts.length && built !== (found >= parts.length * .9)){
+    built = !built;
+    hintEl.textContent = built ? 'Tap to scatter it again' : 'Drag to build the picture · tap to finish it';
+  }
 })();
 </script>
 <!-- signature cursor: a soft brush ring (fine pointers only) -->
