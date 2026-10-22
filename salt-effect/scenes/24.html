@@ -36,12 +36,13 @@
     .b1 { left:20px; bottom:24px; } .b2 { left:20px; right:auto; text-align:left; bottom:46px; }
     .t2 { display:none; }
   }
+  .t-only{display:none} @media (hover: none){ .m-only{display:none} .t-only{display:inline} }
 </style>
 </head>
 <body>
   <div id="gl"></div>
   <div class="cap"><h1 id="h">Influence travels further than <em>you'll ever see.</em></h1></div>
-  <span class="mono hud t2">Drag to turn it</span>
+  <span class="mono hud t2"><span class="m-only">Drag to turn it</span><span class="t-only">Touch to send a wave</span></span>
   <span class="mono hud b1">VI · The world — 60/76</span>
   <span class="mono hud b2" id="count">One town, in grains of salt</span>
 
