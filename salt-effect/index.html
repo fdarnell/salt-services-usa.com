@@ -411,7 +411,10 @@ function story() {
     const out = [];
     for (const s of scenes) {
       out.push(s.top);
-      if (s.free) {
+      if (!paged) {
+        // computers: a scroll scene is read freely with the wheel; only its end is a stop
+        if (s.mode === 'scroll' && s.docH > vh) out.push(s.top + (s.docH - vh));
+      } else if (s.free) {
         // a reading scene scrolls inside itself; the page only stops at its top
       } else if (s.mode === 'scroll' && s.docH > vh && s.stops && s.stops.length) {
         // the scene said where its panels, cards or chapters sit
@@ -433,7 +436,7 @@ function story() {
     if (to == null) return;
     // a reading scene we glide into starts at its top, or at its bottom when we come back up to it
     const dest = scenes.find(x => x.top === to);
-    if (dest && dest.free) send(dest, { t: 'arrive', dir });
+    if (paged && dest && dest.free) send(dest, { t: 'arrive', dir });
     gliding = true; swipes++;
     const done = () => {
       if (!gliding) return;
@@ -457,6 +460,45 @@ function story() {
       const dy = sy - e.changedTouches[0].clientY, dt = performance.now() - st; sy = null;
       if (Math.abs(dy) > 50 && dt < 600) go(dy > 0 ? 1 : -1);
     }, { passive: true });
+  }
+
+  // ---------- computers: each section locks into place ----------
+  // One push of the wheel or trackpad moves exactly one section and the rest of that push
+  // (a trackpad's momentum tail, a fast spin of the wheel) is ignored, so a hard flick never
+  // carries into the next section. Inside a scroll scene the wheel reads through it smoothly,
+  // but stops dead at its end; only a new push moves on. Nothing inside a scene changes: the
+  // scene still just receives the story's scroll position.
+  let wLock = false, wLast = 0, wPrev = 0;
+  function sceneAt(y) { return scenes.find(s => y >= s.top - 2 && y < s.top + s.h - 2); }
+  function wheelStep(dy) {
+    if (!lenis) return false;                          // reduced motion: plain scrolling
+    const now = performance.now(), abs = Math.abs(dy);
+    const quiet = now - wLast > 220;                   // the last push has ended
+    const fresh = abs > 30 && abs > wPrev * 2.2;       // a new push during a fading momentum tail
+    wLast = now; wPrev = abs;
+    if ((quiet || fresh) && !gliding) wLock = false;
+    if (wLock || gliding || abs < 1) return true;
+    const dir = dy > 0 ? 1 : -1, y = target(), s = sceneAt(y);
+    if (s && s.mode === 'scroll' && s.docH > vh) {
+      const end = s.top + s.docH - vh;
+      if ((dir > 0 && y < end - 1) || (dir < 0 && y > s.top + 1)) {
+        const to = Math.max(s.top, Math.min(end, y + dy));
+        scrollTo(to);
+        if (to === end || to === s.top) wLock = true;  // reached its end: the next section needs a new push
+        return true;
+      }
+    }
+    wLock = true;
+    go(dir);
+    return true;
+  }
+  if (!paged) {
+    addEventListener('wheel', e => {
+      if (e.ctrlKey || e.target.closest && e.target.closest('.index')) return;   // pinch-zoom, the scene list
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1;
+      if (wheelStep(e.deltaY * k)) { e.preventDefault(); e.stopImmediatePropagation(); }
+    }, { passive: false, capture: true });
   }
 
   // ---------- layout ----------
@@ -510,6 +552,7 @@ function story() {
     else if (d.t === 'size' && s.i === current) { document.body.classList.toggle('scroll-scene', d.mode === 'scroll'); }
     // a few pixels of wobble (fonts, images settling) is not worth moving the page for on phones
     if (d.t === 'size') { s.free = !!d.free; if (d.mode !== s.mode || (d.mode === 'scroll' && Math.abs(d.h - s.docH) > (paged && s.docH ? 40 : 2))) setHeight(s, d.mode, d.h); }
+    else if (d.t === 'wheel' && !paged && wheelStep(d.dy)) {}
     else if (d.t === 'wheel') {
       if (lenis) window.dispatchEvent(new WheelEvent('wheel', { deltaY: d.dy, deltaMode: 0, cancelable: true }));
       else window.scrollBy(0, d.dy);
