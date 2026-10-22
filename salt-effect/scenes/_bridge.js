@@ -62,6 +62,9 @@
   }
   // A scene with a light ground tells the story page so its header can switch to dark ink.
   // Scenes that change ground (e.g. a noon sky) can call SCENE.tone(true/false) themselves.
+  // Scroll scenes: where a phone swipe should land, in this page's own scroll pixels (one per
+  // panel, card or chapter). Call it on load and whenever the layout changes.
+  S.setStops = function (ys) { if (embedded) post({ t: 'stops', ys: (ys || []).map(function (v) { return Math.round(v); }) }); };
   S.tone = function (light) { if (embedded) post({ t: 'tone', light: !!light }); };
   // A scene whose effect IS a site header (the navbar scene) can hide the story's header
   // while it is on screen: SCENE.chrome(false) on scene:enter. The story restores it on leave.

@@ -94,6 +94,12 @@ const read = () => {
   target = Math.max(0, Math.min(1, scrollY / max));
 };
 addEventListener('scroll', read, { passive:true }); read();
+/* phones: each swipe lands one whole panel */
+function sendStops() {
+  const max = Math.max(1, rail.offsetHeight - innerHeight);
+  if (window.SCENE && SCENE.setStops) SCENE.setStops(panels.map((p, i) => i / (panels.length - 1) * max));
+}
+addEventListener('load', sendStops); addEventListener('resize', sendStops); sendStops();
 
 (function loop(){
   requestAnimationFrame(loop);
