@@ -411,7 +411,9 @@ function story() {
     const out = [];
     for (const s of scenes) {
       out.push(s.top);
-      if (s.mode === 'scroll' && s.docH > vh && s.stops && s.stops.length) {
+      if (s.mode === 'scroll' && s.docH > vh && s.free) {
+        out.push(s.top + (s.docH - vh));              // read freely in between; only its end is a stop
+      } else if (s.mode === 'scroll' && s.docH > vh && s.stops && s.stops.length) {
         // the scene said where its panels, cards or chapters sit
         for (const v of s.stops) if (v > 4) out.push(s.top + Math.min(v, s.docH - vh));
       } else if (s.mode === 'scroll' && s.docH > vh) {
@@ -503,13 +505,39 @@ function story() {
     if (d.t === 'ready') { s.ready = true; s.frame.classList.add('on'); tick(true); }
     else if (d.t === 'size' && s.i === current) { document.body.classList.toggle('scroll-scene', d.mode === 'scroll'); }
     // a few pixels of wobble (fonts, images settling) is not worth moving the page for on phones
-    if (d.t === 'size') { if (d.mode !== s.mode || (d.mode === 'scroll' && Math.abs(d.h - s.docH) > (paged && s.docH ? 40 : 2))) setHeight(s, d.mode, d.h); }
+    if (d.t === 'size') { s.free = !!d.free; if (d.mode !== s.mode || (d.mode === 'scroll' && Math.abs(d.h - s.docH) > (paged && s.docH ? 40 : 2))) setHeight(s, d.mode, d.h); }
     else if (d.t === 'wheel') {
       if (lenis) window.dispatchEvent(new WheelEvent('wheel', { deltaY: d.dy, deltaMode: 0, cancelable: true }));
       else window.scrollBy(0, d.dy);
     }
     else if (d.t === 'stops') s.stops = d.ys;
+    else if (d.t === 'swipe' && s.free && paged) {
+      // a reading scene pages on only when the flick started at its bottom (or its top)
+      if (s.grabEdge === d.dir) { s.paged = true; go(d.dir); }
+    }
     else if (d.t === 'swipe') go(d.dir);
+    else if (d.t === 'grab' && paged) {
+      const y = scrollY(), end = s.top + Math.max(0, s.docH - vh);
+      s.grabEdge = y >= end - 6 ? 1 : y <= s.top + 6 ? -1 : 0;
+      s.paged = false;
+      if (s.coast) { s.coast = false; scrollTo(y, true); }   // a thumb on the glass stops the coast
+    }
+    else if (d.t === 'drag' && paged && !gliding) {
+      const end = s.top + Math.max(0, s.docH - vh);
+      scrollTo(Math.max(s.top, Math.min(end, scrollY() + d.dy)), true);
+    }
+    else if (d.t === 'release' && paged && !gliding) {
+      // let it coast a little, like a normal page, but never past the scene's own ends
+      setTimeout(() => {
+        if (s.paged || gliding || !d.v) return;
+        const end = s.top + Math.max(0, s.docH - vh), y = scrollY();
+        const to = Math.max(s.top, Math.min(end, y + d.v * 260));
+        if (Math.abs(to - y) < 2) return;
+        s.coast = true;
+        if (lenis) lenis.scrollTo(to, { duration: 0.7, easing: t => 1 - Math.pow(1 - t, 3), force: true, onComplete: () => { s.coast = false; } });
+        else window.scrollTo({ top: to, behavior: 'smooth' });
+      }, 0);
+    }
     else if (d.t === 'interact') hideHint(s.i);
     else if (d.t === 'touch') scrollTo(window.scrollY + d.dy, true);
     else if (d.t === 'fling') scrollTo(window.scrollY + d.v * 320);
