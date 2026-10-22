@@ -107,10 +107,27 @@
     post({ t: 'wheel', dy: e.deltaY * k });
   }, { passive: false });
 
-  // Touch: vertical swipes inside a scene scroll the story (taps and sideways drags still
-  // belong to the scene). A scene whose own effect needs vertical dragging sets
-  // <html data-own-touch>; a scene that calls preventDefault on a touchmove keeps that move.
-  if (!root.hasAttribute('data-own-touch')) {
+  // Phones: the story moves one section per deliberate flick (index.html "paged" mode).
+  // Nothing scrolls while a thumb is down, so holding and dragging always belongs to the
+  // scene; only a quick vertical flick lifted within 0.6 s counts as "next" or "previous".
+  var coarse = matchMedia('(pointer: coarse)').matches && !matchMedia('(hover: hover)').matches;
+  if (coarse) {
+    css.textContent += 'html.scene-embedded{touch-action:pan-x pinch-zoom}';
+    var fx = 0, fy = null, ft = 0;
+    addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) { fy = null; return; }
+      fx = e.touches[0].clientX; fy = e.touches[0].clientY; ft = performance.now();
+    }, { passive: true });
+    addEventListener('touchend', function (e) {
+      if (fy === null) return;
+      var t0 = e.changedTouches[0], dy = fy - t0.clientY, dx = fx - t0.clientX, dt = performance.now() - ft;
+      fy = null;
+      if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx) * 1.4 && dt < 600) post({ t: 'swipe', dir: dy > 0 ? 1 : -1 });
+    }, { passive: true });
+  } else if (!root.hasAttribute('data-own-touch')) {
+  // Touch without paging (a touch laptop): vertical swipes inside a scene scroll the story.
+  // A scene whose own effect needs vertical dragging sets <html data-own-touch>; a scene that
+  // calls preventDefault on a touchmove keeps that move.
     css.textContent += 'html.scene-embedded{touch-action:pan-x pinch-zoom}';
     var ty = null, tt = 0, tv = 0;
     addEventListener('touchstart', function (e) {
@@ -133,6 +150,11 @@
       if (Math.abs(tv) > 0.15) post({ t: 'fling', v: tv });
     }, { passive: true });
   }
+
+  var told = false;
+  function interacted() { if (!told) { told = true; post({ t: 'interact' }); } }
+  addEventListener('pointerdown', interacted, true);
+  addEventListener('keydown', interacted, true);
 
   var KEYS = { ArrowDown: 1, ArrowUp: 1, PageDown: 1, PageUp: 1, ' ': 1, Home: 1, End: 1 };
   addEventListener('keydown', function (e) {
@@ -171,6 +193,7 @@
     }
     else if (d.t === 'progress') dispatchEvent(new CustomEvent('scene:progress', { detail: { p: d.p } }));
     else if (d.t === 'enter') {
+      told = false;
       if (S.thaw) S.thaw();
       tone();
       fire();

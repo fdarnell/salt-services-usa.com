@@ -83,7 +83,7 @@ body.light-scene .band { background: linear-gradient(#f5f3ed 30%, rgba(245, 243,
 
 /* ---------- scenes ---------- */
 .scene { position: relative; height: 140vh; }
-.stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; background: var(--ink-1); }
+.stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--ink-1); }
 .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;
   opacity: 0; transition: opacity .5s ease; background: var(--ink-1); }
 .stage iframe.on { opacity: 1; }
@@ -109,6 +109,32 @@ body.light-scene .where .pos { color: #635a7d; }
 }
 @media (max-width: 1180px) { .where .ch-name { display: none; } }
 @media (prefers-reduced-motion: reduce) { .stage iframe { transition: none; } }
+/* phones: one section at a time; the page never free-scrolls under a thumb */
+html.paged, html.paged body { overscroll-behavior: none; }
+html.paged #story { touch-action: none; }
+/* how to play with this scene: a small liquid-glass pop-up */
+.hint { position: fixed; z-index: 38; max-width: min(300px, calc(100vw - 32px)); padding: 12px 16px 12px 14px;
+  display: flex; gap: 11px; align-items: center; border-radius: 18px; color: var(--lilac);
+  background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.05)), rgba(24,15,47,.42);
+  border: 1px solid rgba(255,255,255,.22); box-shadow: 0 12px 40px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.25);
+  backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+  opacity: 0; transform: translateY(8px) scale(.98); pointer-events: none;
+  transition: opacity .45s ease, transform .55s cubic-bezier(.2,.8,.2,1); }
+.hint.show { opacity: 1; transform: none; }
+.hint svg { flex: none; width: 26px; height: 26px; color: var(--amber); }
+.hint b { display: block; font: 500 15px/1.3 var(--sans); }
+.hint small { display: block; margin-top: 3px; font: 400 11px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mist); }
+body.light-scene .hint { color: #201439; background: linear-gradient(135deg, rgba(255,255,255,.7), rgba(255,255,255,.45)); border-color: rgba(32,20,57,.14); }
+body.light-scene .hint small { color: #635a7d; }
+.hint[data-pos="bottom"] { left: 50%; bottom: calc(22px + var(--bottom)); translate: -50% 0; }
+.hint[data-pos="top"] { left: 50%; top: calc(76px + var(--top)); translate: -50% 0; }
+.hint[data-pos="left"] { left: 16px; top: 50%; translate: 0 -50%; }
+.hint[data-pos="right"] { right: 16px; top: 50%; translate: 0 -50%; }
+.hint[data-pos="bottom-left"] { left: 16px; bottom: calc(22px + var(--bottom)); }
+.hint[data-pos="bottom-right"] { right: 16px; bottom: calc(22px + var(--bottom)); }
+.hint[data-pos="top-left"] { left: 16px; top: calc(76px + var(--top)); }
+.hint[data-pos="top-right"] { right: 16px; top: calc(76px + var(--top)); }
+@media (prefers-reduced-motion: reduce) { .hint { transition: opacity .2s linear; transform: none; } }
 
 /* ---------- welcome: a computer chooses the desktop or the phone version ---------- */
 /* Shown only when the script in <head> adds html.choose (a computer, no deep link, not inside
@@ -283,6 +309,7 @@ html.choose .welcome, .welcome.leaving { display: flex; }
 <span id="end"></span>
 
 <div class="band" aria-hidden="true"></div>
+<div class="hint" role="status" aria-live="polite"></div>
 
 <noscript><p style="padding:120px 16px;max-width:60ch;margin:auto">The Salt Effect needs JavaScript to play its 76 scenes. Call Salt Services at (866) 721-7258 or write info@saltservicesusa.com.</p></noscript>
 
@@ -371,6 +398,52 @@ function story() {
   };
   const target = () => lenis && lenis.isScrolling ? lenis.targetScroll : window.scrollY;
 
+  // ---------- phones: one section at a time ----------
+  // While a thumb is down nothing scrolls, so holding and dragging always plays with the
+  // scene. A quick, deliberate flick glides to the next or previous stop. Scroll-driven
+  // scenes have several stops, so their story still plays out, one swipe at a time.
+  const paged = matchMedia('(pointer: coarse)').matches && !matchMedia('(hover: hover)').matches;
+  document.documentElement.classList.toggle('paged', paged);
+  let gliding = false, swipes = 0, glideTimer = 0;
+  function stops() {
+    const out = [];
+    for (const s of scenes) {
+      out.push(s.top);
+      if (s.mode === 'scroll' && s.docH > vh) {
+        const end = s.top + (s.docH - vh), step = Math.round(vh * 0.8);
+        for (let y = s.top + step; y < end - vh * 0.25; y += step) out.push(y);
+        out.push(end);
+      }
+    }
+    return out;
+  }
+  function go(dir) {
+    if (gliding) return;
+    const y = scrollY(), list = stops();
+    let to = null;
+    if (dir > 0) to = list.find(v => v > y + 4);
+    else for (let k = list.length - 1; k >= 0; k--) if (list[k] < y - 4) { to = list[k]; break; }
+    if (to == null) return;
+    gliding = true; swipes++;
+    const done = () => { gliding = false; clearTimeout(glideTimer); };
+    glideTimer = setTimeout(done, 1500);            // never stay locked
+    if (lenis) lenis.scrollTo(to, { duration: reduce ? 0.01 : 0.9, easing: t => 1 - Math.pow(1 - t, 3), force: true, lock: true, onComplete: done });
+    else { window.scrollTo({ top: to, behavior: reduce ? 'instant' : 'smooth' }); setTimeout(done, reduce ? 50 : 800); }
+  }
+  if (paged) {
+    // swipes that start on the page itself (header, a poster before its scene loads)
+    let sy = null, st = 0;
+    addEventListener('touchstart', e => {
+      if (e.touches.length === 1 && !e.target.closest('.index')) { sy = e.touches[0].clientY; st = performance.now(); } else sy = null;
+    }, { passive: true });
+    addEventListener('touchmove', e => { if (!e.target.closest('.index')) e.preventDefault(); }, { passive: false });
+    addEventListener('touchend', e => {
+      if (sy === null) return;
+      const dy = sy - e.changedTouches[0].clientY, dt = performance.now() - st; sy = null;
+      if (Math.abs(dy) > 50 && dt < 600) go(dy > 0 ? 1 : -1);
+    }, { passive: true });
+  }
+
   // ---------- layout ----------
   let vh = innerHeight;
   function layout() {
@@ -421,10 +494,15 @@ function story() {
       if (lenis) window.dispatchEvent(new WheelEvent('wheel', { deltaY: d.dy, deltaMode: 0, cancelable: true }));
       else window.scrollBy(0, d.dy);
     }
+    else if (d.t === 'swipe') go(d.dir);
+    else if (d.t === 'interact') hideHint(s.i);
     else if (d.t === 'touch') scrollTo(window.scrollY + d.dy, true);
     else if (d.t === 'fling') scrollTo(window.scrollY + d.v * 320);
     else if (d.t === 'chrome') { if (s.i === current) document.body.classList.toggle('chrome-off', !d.show); }
     else if (d.t === 'tone') { if (s.i === current) document.body.classList.toggle('light-scene', d.light); }
+    else if (d.t === 'key' && paged && /^(ArrowDown|ArrowUp|PageDown|PageUp| )$/.test(d.k)) {
+      go(d.k === 'ArrowUp' || d.k === 'PageUp' || (d.k === ' ' && d.shift) ? -1 : 1);   // phones move a whole section
+    }
     else if (d.t === 'key') {
       const step = { ArrowDown: 120, ArrowUp: -120, PageDown: vh * .9, PageUp: -vh * .9, ' ': d.shift ? -vh * .9 : vh * .9 }[d.k];
       if (step) scrollTo(target() + step);
@@ -432,6 +510,30 @@ function story() {
       else if (d.k === 'End') scrollTo(1e9);
     }
   });
+
+  // ---------- how to play with each scene ----------
+  // A small liquid-glass pop-up shortly after a scene arrives, in the spot that scene leaves
+  // free (design/hints.json). It fades on the first touch or click, or after a few seconds.
+  const hintEl = document.querySelector('.hint');
+  let HINTS = {}, hintTimer = 0, hintFor = -1;
+  const ICON_TOUCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5V9a1.5 1.5 0 0 1 3 0v2"/><path d="M15 10.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-.6a6 6 0 0 1-4.6-2.2L4.5 15a1.5 1.5 0 0 1 2.3-1.9L9 15"/></svg>';
+  const ICON_MOUSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.5" y="3" width="11" height="18" rx="5.5"/><path d="M12 7v3"/></svg>';
+  fetch('hints.json').then(r => r.ok ? r.json() : {}).then(j => { HINTS = j || {}; if (current > -1) showHint(scenes[current]); }).catch(() => {});
+  function showHint(s) {
+    clearTimeout(hintTimer); hintEl.classList.remove('show'); hintFor = s.i;
+    const h = HINTS[pad(s.no)];
+    const text = h && (paged ? h.touch : h.mouse);
+    if (!text) return;
+    hintTimer = setTimeout(() => {
+      if (hintFor !== s.i) return;
+      hintEl.dataset.pos = (paged && h.posPhone) || h.pos || 'bottom';
+      hintEl.innerHTML = (paged ? ICON_TOUCH : ICON_MOUSE) + '<span><b></b>' + (paged && swipes < 3 ? '<small>Swipe up for the next one</small>' : '') + '</span>';
+      hintEl.querySelector('b').textContent = text;
+      hintEl.classList.add('show');
+      hintTimer = setTimeout(() => hintEl.classList.remove('show'), 6500);
+    }, 900);
+  }
+  function hideHint(i) { if (i !== hintFor) return; clearTimeout(hintTimer); hintEl.classList.remove('show'); }
 
   // ---------- the frame loop ----------
   const bar = document.querySelector('.progress');
@@ -475,6 +577,7 @@ function story() {
         document.body.classList.toggle('scroll-scene', s.mode === 'scroll');
         s.link.setAttribute('aria-current', 'true');
         if (history.replaceState) history.replaceState(null, '', '#' + s.el.dataset.key);
+        showHint(s);
       }
       const s = scenes[current];
       if (s && s.ready && !s.entered) { s.entered = true; send(s, { t: 'enter' }); }

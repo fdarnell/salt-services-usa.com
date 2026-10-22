@@ -1,0 +1,401 @@
+{
+  "01": {
+    "touch": "Tap Start the story to begin",
+    "mouse": "Move your mouse to shift the headline",
+    "pos": "top"
+  },
+  "02": {
+    "touch": "Just watch the light behind the glass",
+    "mouse": "Hover a pane to tilt it",
+    "pos": "top"
+  },
+  "03": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll slowly to read it through",
+    "pos": "bottom"
+  },
+  "04": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll faster to speed up the marquees",
+    "pos": "bottom"
+  },
+  "07": {
+    "touch": "Drag a finger down the street",
+    "mouse": "Move the mouse down the street",
+    "pos": "top"
+  },
+  "08": {
+    "touch": "Tap a button to hear its answer",
+    "mouse": "Bring the cursor close to a button",
+    "pos": "bottom",
+    "posPhone": "top"
+  },
+  "10": {
+    "touch": "Hold and drag to light the block",
+    "mouse": "Move the lens; hold click to grow it",
+    "pos": "bottom"
+  },
+  "11": {
+    "touch": "Watch it measure, then tap Measure again",
+    "mouse": "Watch it measure, then click Measure again",
+    "pos": "top-left"
+  },
+  "12": {
+    "touch": "Tap a word below to decode it",
+    "mouse": "Hover or click the words below",
+    "pos": "top"
+  },
+  "13": {
+    "touch": "Touch and drag to carry the light",
+    "mouse": "Move your mouse to carry the light",
+    "pos": "top"
+  },
+  "14": {
+    "touch": "Tap the pictures to point the lamp",
+    "mouse": "Move the lamp; hold click to brighten",
+    "pos": "bottom-left",
+    "posPhone": "bottom"
+  },
+  "15": {
+    "touch": "Tap a card to open it",
+    "mouse": "Hover a card to open it",
+    "pos": "top-right",
+    "posPhone": "bottom"
+  },
+  "16": {
+    "touch": "Touch a picture to ripple all three",
+    "mouse": "Move across one picture, watch the rest",
+    "pos": "bottom",
+    "posPhone": "top"
+  },
+  "17": {
+    "touch": "Just watch the town through the word",
+    "mouse": "Move your mouse to shift the window",
+    "pos": "top"
+  },
+  "18": {
+    "touch": "Tap Next to sweep the page",
+    "mouse": "Click Next or a tab to sweep",
+    "pos": "top-right",
+    "posPhone": "top"
+  },
+  "19": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll to take the shaker apart",
+    "pos": "top-right",
+    "posPhone": "top"
+  },
+  "20": {
+    "touch": "Touch the lights to brush them",
+    "mouse": "Brush the lights with your cursor",
+    "pos": "top"
+  },
+  "21": {
+    "touch": "Just watch the gallery float by",
+    "mouse": "Scroll or drag to fly through",
+    "pos": "top"
+  },
+  "22": {
+    "touch": "Drag to turn it; tap a finish",
+    "mouse": "Drag to turn it; pick a finish",
+    "pos": "top"
+  },
+  "23": {
+    "touch": "Just watch the shaker turn",
+    "mouse": "Drag to turn the shaker",
+    "pos": "top"
+  },
+  "24": {
+    "touch": "Drag a finger to send waves",
+    "mouse": "Move to ripple it; drag to turn",
+    "pos": "top"
+  },
+  "25": {
+    "touch": "Touch the light to wake it",
+    "mouse": "Bring your cursor to the light",
+    "pos": "top"
+  },
+  "26": {
+    "touch": "Tap the menu button to toggle it",
+    "mouse": "Hover a service to see its picture",
+    "pos": "bottom-left",
+    "posPhone": "bottom"
+  },
+  "27": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll down to travel sideways",
+    "pos": "bottom"
+  },
+  "28": {
+    "touch": "Grab a sticker and fling it",
+    "mouse": "Grab a sticker and throw it",
+    "pos": "bottom"
+  },
+  "29": {
+    "touch": "Drag a finger to bend the light",
+    "mouse": "Move your mouse to bend the light",
+    "pos": "top"
+  },
+  "31": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll to turn the page",
+    "pos": "top-right",
+    "posPhone": "right"
+  },
+  "32": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll slowly; the words ink in",
+    "pos": "bottom"
+  },
+  "33": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll to deal the next card",
+    "pos": "bottom"
+  },
+  "34": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll to step through each window",
+    "pos": "bottom"
+  },
+  "35": {
+    "touch": "Tap the board to reshuffle it",
+    "mouse": "Click the board to reshuffle it",
+    "pos": "bottom-left",
+    "posPhone": "bottom"
+  },
+  "36": {
+    "touch": "Swipe the row sideways to throw it",
+    "mouse": "Grab the row and throw it",
+    "pos": "top-right",
+    "posPhone": "bottom"
+  },
+  "37": {
+    "touch": "Drag a finger to shed stickers",
+    "mouse": "Move the cursor to shed stickers",
+    "pos": "top"
+  },
+  "38": {
+    "touch": "Drag across the cards to light them",
+    "mouse": "Move across the cards to light them",
+    "pos": "top"
+  },
+  "39": {
+    "touch": "Hold and drag across the sign",
+    "mouse": "Move over the sign; hold to grow",
+    "pos": "top-left",
+    "posPhone": "top"
+  },
+  "40": {
+    "touch": "Drag through the letters to scatter them",
+    "mouse": "Try to catch the letters",
+    "pos": "top"
+  },
+  "41": {
+    "touch": "Press and hold to open the doors",
+    "mouse": "Hold the button to open the doors",
+    "pos": "top"
+  },
+  "42": {
+    "touch": "Tap the hand five times",
+    "mouse": "Type hello, or click the hand",
+    "pos": "top"
+  },
+  "43": {
+    "touch": "Tap to scatter the grains",
+    "mouse": "Click to scatter; move to push",
+    "pos": "bottom",
+    "posPhone": "top"
+  },
+  "44": {
+    "touch": "Hold anywhere to warp faster",
+    "mouse": "Hold the mouse down to warp faster",
+    "pos": "bottom"
+  },
+  "45": {
+    "touch": "Touch the field to gather fireflies",
+    "mouse": "Move the lantern; hold to scatter them",
+    "pos": "top"
+  },
+  "46": {
+    "touch": "Drag across the word to erode it",
+    "mouse": "Sweep your cursor across the word",
+    "pos": "top-right",
+    "posPhone": "top"
+  },
+  "47": {
+    "touch": "Touch the water to bend the current",
+    "mouse": "Move your cursor to bend the flow",
+    "pos": "bottom"
+  },
+  "48": {
+    "touch": "Tap a star to pin it",
+    "mouse": "Move to link stars; click to pin",
+    "pos": "top-left",
+    "posPhone": "left"
+  },
+  "49": {
+    "touch": "Tap a season, or drag for wind",
+    "mouse": "Pick a season; move for wind",
+    "pos": "top"
+  },
+  "50": {
+    "touch": "Tap anywhere to throw confetti",
+    "mouse": "Click anywhere to throw confetti",
+    "pos": "bottom"
+  },
+  "51": {
+    "touch": "Tap anywhere to throw sparks",
+    "mouse": "Move fast, then click for sparks",
+    "pos": "bottom"
+  },
+  "52": {
+    "touch": "Drag your finger; tap to flip it",
+    "mouse": "Move to pull; click to push instead",
+    "pos": "top"
+  },
+  "53": {
+    "touch": "Touch the words to stir the salt",
+    "mouse": "Stir the salt with your cursor",
+    "pos": "top"
+  },
+  "54": {
+    "touch": "Tap the water to drop a grain",
+    "mouse": "Move across the water; click to drop",
+    "pos": "bottom"
+  },
+  "55": {
+    "touch": "Drag to stir; hold to spin",
+    "mouse": "Move to stir the arms; hold to spin",
+    "pos": "top-left",
+    "posPhone": "top"
+  },
+  "56": {
+    "touch": "Brush with a finger; tap to scatter",
+    "mouse": "Brush the dust; click to scatter it",
+    "pos": "top"
+  },
+  "57": {
+    "touch": "Drag a finger to trail smoke",
+    "mouse": "Move slowly; the smoke follows",
+    "pos": "bottom"
+  },
+  "58": {
+    "touch": "Drag a finger to wipe the fog",
+    "mouse": "Move your cursor to wipe the fog",
+    "pos": "top"
+  },
+  "59": {
+    "touch": "Touch a letter to make it swell",
+    "mouse": "Move near the letters to swell them",
+    "pos": "bottom"
+  },
+  "60": {
+    "touch": "Watch the lines, or tap Again",
+    "mouse": "Watch the lines, or click Again",
+    "pos": "top-right",
+    "posPhone": "top"
+  },
+  "61": {
+    "touch": "Tap Flip, Blur or Slide",
+    "mouse": "Click Flip, Blur or Slide to restyle",
+    "pos": "top"
+  },
+  "62": {
+    "touch": "Tap Roll the numbers again to replay",
+    "mouse": "Click Roll the numbers again to replay",
+    "pos": "top"
+  },
+  "63": {
+    "touch": "Press and hold a row to stop it",
+    "mouse": "Hover a row to stop and read it",
+    "pos": "top"
+  },
+  "64": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll to fill the words with ink",
+    "pos": "bottom"
+  },
+  "65": {
+    "touch": "Watch, then tap Sign it again",
+    "mouse": "Watch, then click Sign it again",
+    "pos": "top-right",
+    "posPhone": "top"
+  },
+  "66": {
+    "touch": "Tap the headline to break the signal",
+    "mouse": "Hover the headline to hold the glitch",
+    "pos": "bottom"
+  },
+  "68": {
+    "touch": "Tap a shop to move the light",
+    "mouse": "Click a shop to move the light",
+    "pos": "top"
+  },
+  "69": {
+    "touch": "Tap a moon to hear its rule",
+    "mouse": "Click a moon to hear its rule",
+    "pos": "bottom"
+  },
+  "70": {
+    "touch": "Swipe the signs; the lamp follows",
+    "mouse": "Point at a sign; the lamp follows",
+    "pos": "bottom-left",
+    "posPhone": "top"
+  },
+  "71": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll to light each chapter",
+    "pos": "bottom"
+  },
+  "72": {
+    "touch": "Tap a question to open it",
+    "mouse": "Click a question to open it",
+    "pos": "bottom-left",
+    "posPhone": "top"
+  },
+  "73": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll down, then hover the wordmark",
+    "pos": "bottom"
+  },
+  "74": {
+    "touch": "Swipe up to move through it",
+    "mouse": "Scroll and watch the top bar",
+    "pos": "bottom"
+  },
+  "75": {
+    "touch": "Touch the town to wake the windows",
+    "mouse": "Move your headlights over the windows",
+    "pos": "bottom"
+  },
+  "77": {
+    "touch": "Tap a place to change the light",
+    "mouse": "Pick a place to change the light",
+    "pos": "top"
+  },
+  "78": {
+    "touch": "Drag sideways to tune a channel",
+    "mouse": "Move the cursor to tune a channel",
+    "pos": "top"
+  },
+  "79": {
+    "touch": "Tap a time to change the sky",
+    "mouse": "Pick a time to change the sky",
+    "pos": "top"
+  },
+  "80": {
+    "touch": "Touch the rain to part it",
+    "mouse": "Move your cursor to part the rain",
+    "pos": "bottom"
+  },
+  "81": {
+    "touch": "Watch it count down to opening",
+    "mouse": "Watch it count down to opening",
+    "pos": "top"
+  },
+  "82": {
+    "touch": "Just watch the embers rise",
+    "mouse": "Hover the links to scramble them",
+    "pos": "top"
+  }
+}
