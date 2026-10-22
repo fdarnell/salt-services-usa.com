@@ -79,6 +79,11 @@
       "source": "/salt-effect",
       "destination": "/salt-effect/",
       "permanent": true
+    },
+    {
+      "source": "/salt-effect/phone",
+      "destination": "/salt-effect/phone/",
+      "permanent": true
     }
   ],
   "headers": [

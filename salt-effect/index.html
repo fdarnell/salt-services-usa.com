@@ -109,9 +109,164 @@ body.light-scene .where .pos { color: #635a7d; }
 }
 @media (max-width: 1180px) { .where .ch-name { display: none; } }
 @media (prefers-reduced-motion: reduce) { .stage iframe { transition: none; } }
+
+/* ---------- welcome: a computer chooses the desktop or the phone version ---------- */
+/* Shown only when the script in <head> adds html.choose (a computer, no deep link, not inside
+   the phone frame). Phones and touch tablets never see it: the story starts on its own. */
+.welcome { display: none; }
+html.choose { overflow: hidden; }
+html.choose .bar, html.choose .band, html.choose .progress, html.choose .skip { visibility: hidden; }
+html.choose .welcome, .welcome.leaving { display: flex; }
+.welcome { position: fixed; inset: 0; z-index: 90; flex-direction: column; overflow-y: auto; overscroll-behavior: contain;
+  --ease: cubic-bezier(.16, 1, .3, 1); --text: rgba(234, 231, 244, .76); --quiet: rgba(234, 231, 244, .54); --line: rgba(255, 255, 255, .09);
+  color: var(--text); background-color: var(--ink-0);
+  background-image:
+    radial-gradient(1100px 680px at 82% -12%, rgba(233, 161, 59, .17), transparent 62%),
+    radial-gradient(900px 720px at -12% 112%, rgba(98, 70, 178, .34), transparent 62%),
+    linear-gradient(180deg, #1a1033 0%, #120a27 55%, #0e081f 100%);
+  -webkit-font-smoothing: antialiased; transition: opacity .7s var(--ease), visibility 0s linear 0s; }
+.welcome.leaving { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .7s var(--ease), visibility 0s linear .7s; }
+/* film grain and a sprinkle of salt, drawn by the browser: no image files */
+.welcome::before, .welcome::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.welcome::before { opacity: .07; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+.welcome::after { opacity: .55; animation: w-twinkle 6s ease-in-out infinite alternate;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 22%, rgba(245, 243, 237, .9), transparent 60%),
+    radial-gradient(1px 1px at 27% 9%, rgba(245, 243, 237, .7), transparent 60%),
+    radial-gradient(1.6px 1.6px at 46% 16%, rgba(240, 176, 85, .9), transparent 60%),
+    radial-gradient(1px 1px at 63% 7%, rgba(245, 243, 237, .7), transparent 60%),
+    radial-gradient(1.3px 1.3px at 78% 26%, rgba(245, 243, 237, .8), transparent 60%),
+    radial-gradient(1px 1px at 91% 13%, rgba(245, 243, 237, .6), transparent 60%),
+    radial-gradient(1.2px 1.2px at 6% 64%, rgba(245, 243, 237, .55), transparent 60%),
+    radial-gradient(1.5px 1.5px at 95% 58%, rgba(240, 176, 85, .7), transparent 60%),
+    radial-gradient(1px 1px at 55% 92%, rgba(245, 243, 237, .5), transparent 60%),
+    radial-gradient(1.2px 1.2px at 85% 88%, rgba(245, 243, 237, .55), transparent 60%); }
+@keyframes w-twinkle { from { opacity: .35; } to { opacity: .7; } }
+.welcome > * { position: relative; z-index: 1; }
+.welcome :focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+.w-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; max-width: 1160px; margin: 0 auto;
+  padding: calc(20px + var(--top)) clamp(16px, 4vw, 48px) 12px; }
+.w-brand { display: inline-flex; align-items: center; gap: 10px; color: var(--bone); text-decoration: none; font: 600 17px/1 var(--serif); letter-spacing: -.01em; border-radius: 10px; }
+.w-brand img { width: 30px; height: 30px; display: block; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .1); }
+.w-coords { color: var(--quiet); }
+.w-stage { flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; max-width: 1160px; margin: 0 auto;
+  padding: clamp(4px, 1.6vh, 28px) clamp(16px, 4vw, 48px) clamp(12px, 2.6vh, 36px); }
+.w-intro { max-width: 900px; }
+.w-eyebrow { display: inline-flex; align-items: center; gap: 12px; margin: 0; color: var(--amber); }
+.w-eyebrow::before { content: ""; width: 28px; height: 1px; background: currentColor; opacity: .8; }
+.welcome h1 { margin: clamp(10px, 1.8vh, 20px) 0 0; font: 500 clamp(44px, min(6.2vw, 9.4vh), 96px)/.95 var(--serif); letter-spacing: -.025em;
+  color: var(--bone); font-variation-settings: 'opsz' 144; }
+.welcome h1 em { font-style: italic; color: var(--amber); text-shadow: 0 0 40px rgba(233, 161, 59, .28); }
+.w-lede { margin: clamp(12px, 2vh, 20px) 0 0; max-width: 34em; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.5; color: var(--text); text-wrap: pretty; }
+.w-choices { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2vw, 28px); margin-top: clamp(20px, 4.4vh, 48px); }
+.w-choice { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: flex; flex-direction: column; border-radius: 26px; overflow: hidden; isolation: isolate;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .065), rgba(255, 255, 255, .02)); border: 1px solid var(--line);
+  box-shadow: 0 34px 70px -40px rgba(0, 0, 0, .85), inset 0 1px 0 rgba(255, 255, 255, .07);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: transform .6s var(--ease), border-color .35s, box-shadow .6s var(--ease); }
+.w-choice:hover, .w-choice:focus-visible { transform: translateY(-5px); border-color: rgba(233, 161, 59, .5);
+  box-shadow: 0 46px 90px -40px rgba(0, 0, 0, .9), 0 0 70px -24px rgba(233, 161, 59, .45), inset 0 1px 0 rgba(255, 255, 255, .1); }
+.w-choice:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+.w-art { position: relative; display: block; height: clamp(140px, 29vh, 268px); container-type: size; overflow: hidden; border-bottom: 1px solid var(--line);
+  background: radial-gradient(70% 90% at 50% 105%, rgba(233, 161, 59, .2), transparent 70%), radial-gradient(50% 60% at 50% 0%, rgba(255, 255, 255, .035), transparent 70%); }
+.w-art::after { content: ""; position: absolute; inset: auto 0 0 0; height: 30%; background: linear-gradient(0deg, rgba(14, 8, 31, .55), transparent); pointer-events: none; }
+.w-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* the laptop */
+.w-laptop { position: absolute; left: 50%; bottom: 9cqh; width: min(74cqw, 128cqh); transform: translateX(-50%); transition: transform .8s var(--ease); }
+.w-choice:hover .w-laptop, .w-choice:focus-visible .w-laptop { transform: translateX(-50%) translateY(-2.5cqh) scale(1.025); }
+.w-lid { display: block; position: relative; aspect-ratio: 16 / 10; border-radius: 3.2cqh 3.2cqh .8cqh .8cqh; padding: 2.3cqh 2.3cqh 3.6cqh;
+  background: linear-gradient(180deg, #2a2536, #15121c); box-shadow: 0 0 0 1px rgba(255, 255, 255, .12), 0 24px 40px -18px rgba(0, 0, 0, .8); }
+.w-lid::before { content: ""; position: absolute; top: .9cqh; left: 50%; width: 1cqh; height: 1cqh; border-radius: 50%; background: #3a3448; transform: translateX(-50%); }
+.w-lid img { border-radius: .6cqh; object-position: 0 50%; }
+.w-base { display: block; position: relative; height: 3.4cqh; margin: 0 -7%; border-radius: 0 0 2.6cqh 2.6cqh;
+  background: linear-gradient(180deg, #bdb6c9, #7c7590 55%, #4a4458); box-shadow: 0 18px 30px -10px rgba(0, 0, 0, .7); }
+.w-base::before { content: ""; position: absolute; top: 0; left: 50%; width: 16%; height: 1.3cqh; border-radius: 0 0 1.2cqh 1.2cqh; background: rgba(0, 0, 0, .28); transform: translateX(-50%); }
+/* the phone */
+.w-handset { position: absolute; left: 50%; bottom: -16cqh; height: 104cqh; aspect-ratio: 9 / 18.6; transform: translateX(-50%); border-radius: 7cqh; padding: 1.6cqh;
+  background: linear-gradient(150deg, #6d667b, #24202d 30%, #110f16 60%, #3a3446);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .12), 0 30px 50px -20px rgba(0, 0, 0, .85); transition: transform .8s var(--ease); }
+.w-choice:hover .w-handset, .w-choice:focus-visible .w-handset { transform: translateX(-50%) translateY(-5cqh); }
+.w-glass { display: block; position: relative; height: 100%; border-radius: 5.6cqh; overflow: hidden; background: #0e081f; padding-top: 7cqh; }
+.w-glass::before { content: ""; position: absolute; z-index: 2; top: 1.8cqh; left: 50%; width: 32%; height: 4.4cqh; border-radius: 3cqh; background: #000; transform: translateX(-50%); }
+.w-glass img { object-position: 50% 0; height: auto; }
+/* the words under the art */
+.w-body { display: flex; align-items: center; gap: 18px; padding: clamp(14px, 2.4vh, 26px) clamp(18px, 2vw, 28px); }
+.w-icon { flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; color: var(--amber-hi);
+  background: rgba(233, 161, 59, .1); box-shadow: inset 0 0 0 1px rgba(233, 161, 59, .25); }
+.w-icon svg, .w-go svg { width: 22px; height: 22px; display: block; }
+.w-text { display: flex; flex-direction: column; min-width: 0; }
+.w-title { font: 500 clamp(19px, 1.75vw, 25px)/1.15 var(--serif); color: var(--bone); letter-spacing: -.01em; }
+.w-sub { font-size: 14.5px; line-height: 1.4; color: var(--quiet); margin-top: 4px; }
+.w-go { flex: none; margin-left: auto; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; transition: transform .5s var(--ease), background .3s; }
+.w-choice--desktop .w-go { background: var(--amber); color: var(--ink-1); box-shadow: 0 10px 30px -8px rgba(233, 161, 59, .6); }
+.w-choice--phone .w-go { color: var(--bone); box-shadow: inset 0 0 0 1px rgba(245, 243, 237, .32); }
+.w-choice:hover .w-go, .w-choice:focus-visible .w-go { transform: translateX(4px); }
+.w-choice--desktop:hover .w-go { background: var(--amber-hi); }
+.w-choice--phone:hover .w-go { background: rgba(245, 243, 237, .08); }
+.w-foot { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 0; column-gap: 22px; padding: 14px 16px calc(20px + var(--bottom)); color: var(--quiet); text-align: center; }
+.w-foot span + span::before { content: ""; display: inline-block; width: 4px; height: 4px; margin: 0 22px 2px 0; border-radius: 50%; background: var(--amber); opacity: .7; vertical-align: middle; }
+.w-foot kbd { font: inherit; color: var(--lilac); padding: 2px 6px; border-radius: 5px; box-shadow: inset 0 0 0 1px rgba(234, 231, 244, .22); }
+@keyframes w-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.w-rise { animation: w-rise .9s var(--ease) both; }
+.w-r1 { animation-delay: .05s; } .w-r2 { animation-delay: .16s; } .w-r3 { animation-delay: .28s; } .w-r4 { animation-delay: .38s; }
+@media (max-height: 760px) { .w-top { padding-top: calc(14px + var(--top)); padding-bottom: 6px; } .w-foot { padding-top: 8px; padding-bottom: calc(12px + var(--bottom)); } }
+@media (max-width: 760px) {
+  .w-choices { grid-template-columns: 1fr; }
+  .w-art { height: clamp(130px, 22vh, 200px); }
+  .w-coords { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome, .welcome.leaving, .welcome *, .welcome::after { animation: none !important; transition: none !important; }
+}
 </style>
+<script>
+// Decide before the first paint whether a computer sees the welcome. Rules:
+//   ?frame=phone       this page is inside the phone view (/salt-effect/phone/): no welcome, no view count
+//   a phone or tablet  touch-first screen or a phone browser: the story starts straight away
+//   #no-NN or ?view=desktop   they came for the story on purpose: straight in
+(function () {
+  var q = new URLSearchParams(location.search), d = document.documentElement;
+  var touch = matchMedia('(hover: none), (pointer: coarse)').matches ||
+    /iPhone|iPod|Android.+Mobile|Windows Phone|Mobi/i.test(navigator.userAgent);
+  if (q.get('frame') === 'phone') d.classList.add('framed');
+  else if (!touch && !/^#no-\d+$/.test(location.hash) && q.get('view') !== 'desktop') d.classList.add('choose');
+})();
+</script>
 </head>
 <body>
+<div class="welcome" id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title" aria-describedby="welcome-lede">
+  <header class="w-top">
+    <a class="w-brand" href="https://saltservicesusa.com/"><img src="assets/logo/salt-mark.svg" alt="" width="30" height="30">Salt Services</a>
+    <span class="mono w-coords">Kodak, TN · 35.97° N, 83.62° W</span>
+  </header>
+  <div class="w-stage">
+    <div class="w-intro">
+      <p class="mono w-eyebrow w-rise w-r1">A Salt Services showcase · 7 chapters · 76 scenes</p>
+      <h1 id="welcome-title" class="w-rise w-r2">The Salt <em>Effect</em></h1>
+      <p class="w-lede w-rise w-r3" id="welcome-lede">A story about businesses that change the world around them, told in 76 hand-built web effects.</p>
+    </div>
+    <div class="w-choices w-rise w-r4" role="group" aria-label="Choose a version">
+      <button class="w-choice w-choice--desktop" type="button" data-go="desktop">
+        <span class="w-art" aria-hidden="true"><span class="w-laptop"><span class="w-lid"><img src="assets/img/welcome-desktop.jpg" alt="" width="960" height="600" decoding="async"></span><span class="w-base"></span></span></span>
+        <span class="w-body">
+          <span class="w-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4.5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 20h7M12 16.5V20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <span class="w-text"><span class="w-title">View the desktop version</span><span class="w-sub">Full screen, as it plays on a computer</span></span>
+          <span class="w-go"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </span>
+      </button>
+      <a class="w-choice w-choice--phone" href="phone/">
+        <span class="w-art" aria-hidden="true"><span class="w-handset"><span class="w-glass"><img src="assets/img/welcome-phone.jpg" alt="" width="390" height="844" decoding="async"></span></span></span>
+        <span class="w-body">
+          <span class="w-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="2.5" width="10" height="19" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.6 5.2h2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <span class="w-text"><span class="w-title">View the phone version</span><span class="w-sub">In a phone, at real phone size</span></span>
+          <span class="w-go"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </span>
+      </a>
+    </div>
+  </div>
+  <footer class="w-foot mono"><span>Press <kbd>Enter</kbd> for the desktop version</span><span>On a phone it starts on its own</span></footer>
+</div>
+
 <a class="skip" href="#end">Skip to contact</a>
 <div class="progress" aria-hidden="true"></div>
 <header class="bar">
@@ -133,7 +288,37 @@ body.light-scene .where .pos { color: #635a7d; }
 
 <script src="kit/lenis/lenis.min.js" defer></script>
 <script defer>
+// ---------- welcome ----------
+// On a computer the story waits here: no scene loads until the visitor picks the desktop version.
 addEventListener('DOMContentLoaded', () => {
+  const html = document.documentElement;
+  if (!html.classList.contains('choose')) { story(); return; }
+  const welcome = document.getElementById('welcome');
+  const desk = welcome.querySelector('[data-go="desktop"]');
+  const behind = [...document.body.children].filter(el => el !== welcome && el.tagName !== 'SCRIPT');
+  behind.forEach(el => { el.inert = true; });
+  desk.focus({ preventScroll: true });
+  let started = false;
+  const begin = () => {
+    if (started) return;
+    started = true;
+    behind.forEach(el => { el.inert = false; });
+    welcome.classList.add('leaving');
+    html.classList.remove('choose');
+    if (document.activeElement) document.activeElement.blur();
+    story();
+    const gone = () => { welcome.classList.remove('leaving'); welcome.hidden = true; };
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) gone(); else setTimeout(gone, 750);
+  };
+  desk.addEventListener('click', begin);
+  addEventListener('keydown', e => {
+    if (started || e.defaultPrevented) return;
+    // Escape skips the welcome; Enter anywhere but on a link or button picks the desktop version
+    if (e.key === 'Escape' || (e.key === 'Enter' && !e.target.closest('a, button'))) { e.preventDefault(); begin(); }
+  });
+});
+
+function story() {
   const CHAPTERS = { I: 'The grain', II: 'The door', III: 'The street', IV: 'The town', V: 'The signal', VI: 'The world', VII: 'Your turn' };
   const LIST = {
     I: [[11, 'Preloader Counter'], [1, 'Cinematic Hero'], [44, 'Starfield Hero'], [59, 'Variable Font Breathing'], [12, 'Text Scramble'], [61, 'Word Cycler'], [55, 'Galaxy Hero'], [65, 'Self-Drawing Strokes'], [81, 'Particle Countdown'], [41, 'Hold to Enter']],
@@ -326,15 +511,22 @@ addEventListener('DOMContentLoaded', () => {
   addEventListener('resize', () => { layout(); tick(true); });
   tick(true);
   setInterval(() => tick(), 500);   // catch scenes that load while the page sits still
-});
+}
 
 // ---------- all-time view count ----------
-// One small ping per page load to the Salt portal. `first` is true only on this
-// browser's first visit. Skipped for automated browsers (screenshots, crawlers).
+// One small ping per visit to the Salt portal: once per browser tab, so the welcome, the
+// phone view and a reload count once. `first` is true only on this browser's first visit.
+// Skipped inside the phone view's frame (the phone page counts that visit) and for automated
+// browsers (screenshots, crawlers).
 // All-time view counter, kept by the Salt portal (Admin → Dashboard → Agency Sites).
 const VIEW_URL = 'https://my.saltservicesusa.com/api/auth/page-view';
 (() => {
+  if (document.documentElement.classList.contains('framed')) return;
   if (navigator.webdriver || /HeadlessChrome/.test(navigator.userAgent) || !navigator.sendBeacon) return;
+  try {
+    if (sessionStorage.getItem('salt-effect.counted')) return;
+    sessionStorage.setItem('salt-effect.counted', '1');
+  } catch (e) {}
   let first = false;
   try {
     if (!localStorage.getItem('salt-effect.seen')) { first = true; localStorage.setItem('salt-effect.seen', '1'); }
@@ -344,6 +536,13 @@ const VIEW_URL = 'https://my.saltservicesusa.com/api/auth/page-view';
   } catch (e) {}
 })();
 </script>
-<script defer src="/_vercel/insights/script.js"></script>
+<script>
+// Vercel Web Analytics, except inside the phone view's frame (the phone page itself counts).
+if (!document.documentElement.classList.contains('framed')) {
+  const va = document.createElement('script');
+  va.defer = true; va.src = '/_vercel/insights/script.js';
+  document.body.appendChild(va);
+}
+</script>
 </body>
 </html>
