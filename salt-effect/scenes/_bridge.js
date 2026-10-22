@@ -136,6 +136,26 @@
       fy = null;
       if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx) * 1.4 && dt < 600) post({ t: 'swipe', dir: dy > 0 ? 1 : -1 });
     }, { passive: true });
+    // A reading scene (<html data-free-scroll>) is dragged like a normal page: the thumb moves
+    // the story 1:1 and a flick coasts. The story only pages on to the next section once the
+    // scene has been read to its bottom (or back to its top).
+    if (root.hasAttribute('data-free-scroll')) {
+      var ly = 0, lt = 0, vel = 0;
+      addEventListener('touchstart', function (e) {
+        if (e.touches.length !== 1) return;
+        ly = e.touches[0].clientY; lt = performance.now(); vel = 0;
+        post({ t: 'grab' });
+      }, { passive: true });
+      addEventListener('touchmove', function (e) {
+        if (e.touches.length !== 1) return;
+        var y = e.touches[0].clientY, now = performance.now(), d = ly - y, dt = Math.max(now - lt, 1);
+        vel = vel * 0.5 + (d / dt) * 0.5; ly = y; lt = now;
+        if (d) post({ t: 'drag', dy: d });
+      }, { passive: true });
+      addEventListener('touchend', function () {
+        post({ t: 'release', v: performance.now() - lt > 120 ? 0 : vel });
+      }, { passive: true });
+    }
   } else if (!root.hasAttribute('data-own-touch')) {
   // Touch without paging (a touch laptop): vertical swipes inside a scene scroll the story.
   // A scene whose own effect needs vertical dragging sets <html data-own-touch>; a scene that
@@ -188,7 +208,7 @@
   }
   function report() {
     var b = document.body;
-    post({ t: 'size', h: Math.max(root.scrollHeight, b ? b.scrollHeight : 0), vh: innerHeight, mode: root.dataset.scene || 'static' });
+    post({ t: 'size', h: Math.max(root.scrollHeight, b ? b.scrollHeight : 0), vh: innerHeight, mode: root.dataset.scene || 'static', free: root.hasAttribute('data-free-scroll') });
   }
   addEventListener('load', function () {
     report();

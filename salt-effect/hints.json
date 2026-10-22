@@ -15,7 +15,7 @@
     "pos": "bottom"
   },
   "04": {
-    "touch": "Swipe up to move through it",
+    "touch": "Drag to read the wall",
     "mouse": "Scroll faster to speed up the marquees",
     "pos": "bottom"
   },
@@ -143,12 +143,12 @@
     "posPhone": "right"
   },
   "32": {
-    "touch": "Swipe up to move through it",
+    "touch": "Drag slowly; the words ink in as you read",
     "mouse": "Scroll slowly; the words ink in",
     "pos": "bottom"
   },
   "33": {
-    "touch": "Swipe up to move through it",
+    "touch": "Drag up to deal the cards",
     "mouse": "Scroll to deal the next card",
     "pos": "bottom"
   },
