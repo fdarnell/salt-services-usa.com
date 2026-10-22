@@ -139,18 +139,16 @@
       if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx) * 1.4 && dt < 600) post({ t: 'swipe', dir: dir });
     }, { passive: true });
     // A reading scene (<html data-free-scroll>) is dragged like a normal page. It scrolls ITSELF
-    // under the thumb, in the same frame, and only tells the story where it is: a round trip
-    // through the story page lagged a frame behind the thumb and judders on an iPhone. A flick
-    // coasts. The story pages on only from the scene's bottom (or, going up, its top).
+    // under the thumb while the story page holds completely still: moving the page along with it
+    // made the pinned frame judder on an iPhone. A flick coasts. The story pages on only from
+    // the scene's bottom (or, going up, its top).
     if (free) {
       var ly = 0, lt = 0, vel = 0, coast = 0;
       var maxY = function () { return Math.max(0, Math.max(root.scrollHeight, document.body.scrollHeight) - innerHeight); };
       var setY = function (y) {
         y = Math.round(Math.max(0, Math.min(maxY(), y)));
         if (y === Math.round(window.scrollY)) return false;
-        selfAt = performance.now();
         window.scrollTo(0, y);
-        post({ t: 'drag', y: y });
         return true;
       };
       addEventListener('touchstart', function (e) {
@@ -205,7 +203,6 @@
     }, { passive: true });
   }
 
-  var selfAt = -1e9;
   var told = false;
   function interacted() { if (!told) { told = true; post({ t: 'interact' }); } }
   addEventListener('pointerdown', interacted, true);
@@ -243,9 +240,12 @@
     var d = e.data;
     if (!d || !d.salt || e.source !== parent) return;
     if (d.t === 'scroll') {
-      if (performance.now() - selfAt < 400) return;   // a reading scene is moving itself
       if (S.thaw && d.y !== window.scrollY) S.thaw(700, false);   // scroll scenes still follow the scroll
       window.scrollTo(0, d.y);
+    }
+    else if (d.t === 'arrive') {                       // phones: a reading scene starts at the end we came from
+      var m = Math.max(0, Math.max(root.scrollHeight, document.body.scrollHeight) - innerHeight);
+      window.scrollTo(0, d.dir < 0 ? m : 0);
     }
     else if (d.t === 'progress') dispatchEvent(new CustomEvent('scene:progress', { detail: { p: d.p } }));
     else if (d.t === 'enter') {
