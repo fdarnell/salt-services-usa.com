@@ -411,8 +411,8 @@ function story() {
     const out = [];
     for (const s of scenes) {
       out.push(s.top);
-      if (s.mode === 'scroll' && s.docH > vh && s.free) {
-        out.push(s.top + (s.docH - vh));              // read freely in between; only its end is a stop
+      if (s.free) {
+        // a reading scene scrolls inside itself; the page only stops at its top
       } else if (s.mode === 'scroll' && s.docH > vh && s.stops && s.stops.length) {
         // the scene said where its panels, cards or chapters sit
         for (const v of s.stops) if (v > 4) out.push(s.top + Math.min(v, s.docH - vh));
@@ -431,6 +431,9 @@ function story() {
     if (dir > 0) to = list.find(v => v > y + 4);
     else for (let k = list.length - 1; k >= 0; k--) if (list[k] < y - 4) { to = list[k]; break; }
     if (to == null) return;
+    // a reading scene we glide into starts at its top, or at its bottom when we come back up to it
+    const dest = scenes.find(x => x.top === to);
+    if (dest && dest.free) send(dest, { t: 'arrive', dir });
     gliding = true; swipes++;
     const done = () => {
       if (!gliding) return;
@@ -462,7 +465,8 @@ function story() {
     vh = innerHeight;
     let y = 0;
     for (const s of scenes) {
-      s.h = s.mode !== 'scroll' ? Math.round(vh * HOLD) : s.docH > vh ? s.docH : Math.round(vh * Math.max(s.est, HOLD));
+      // phones: a reading scene scrolls inside itself while the page holds still, so it takes one screen
+      s.h = s.mode !== 'scroll' || (paged && s.free) ? Math.round(vh * HOLD) : s.docH > vh ? s.docH : Math.round(vh * Math.max(s.est, HOLD));
       s.el.style.height = s.h + 'px';
       s.top = y; y += s.h;
     }
@@ -512,8 +516,6 @@ function story() {
     }
     else if (d.t === 'stops') s.stops = d.ys;
     else if (d.t === 'swipe') go(d.dir);
-    // a reading scene scrolled itself; the story follows so the header, progress and stops agree
-    else if (d.t === 'drag' && paged && !gliding) scrollTo(s.top + Math.max(0, Math.min(s.docH - vh, d.y)), true);
     else if (d.t === 'interact') hideHint(s.i);
     else if (d.t === 'touch') scrollTo(window.scrollY + d.dy, true);
     else if (d.t === 'fling') scrollTo(window.scrollY + d.v * 320);
@@ -569,7 +571,7 @@ function story() {
       if (near) mount(s); else if (far) unmount(s);
       if (!s.frame) continue;
       const passed = Math.min(Math.max(y - s.top, 0), s.h);       // how far into the section
-      if (s.mode === 'scroll') send(s, { t: 'scroll', y: Math.min(passed, s.docH - vh) });
+      if (s.mode === 'scroll' && !(paged && s.free)) send(s, { t: 'scroll', y: Math.min(passed, s.docH - vh) });
       send(s, { t: 'progress', p: Math.min(Math.max((y - s.top + vh) / (s.h + vh), 0), 1) });
       // the stage leaves when the section's bottom rises past the viewport bottom
       const leave = Math.min(Math.max((vh - (rel + s.h)) / vh, 0), 1);
