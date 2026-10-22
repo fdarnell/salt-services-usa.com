@@ -67,6 +67,16 @@
     .twin .h3 { color:var(--mist); }
     .sign::before, .sign::after { height:36px; }
   }
+  /* touch: a grip ring on the thumb, tethered to the light riding above it */
+  #grip, #tether { display:none; }
+  @media (hover:none){
+    #grip { display:block; position:fixed; left:0; top:0; width:38px; height:38px; margin:-19px 0 0 -19px; border-radius:50%;
+      border:1px solid rgba(233,161,59,.7); box-shadow:0 0 14px rgba(233,161,59,.35), inset 0 0 10px rgba(233,161,59,.18);
+      pointer-events:none; z-index:6; opacity:0; transition:opacity .35s; will-change:transform; }
+    #tether { display:block; position:fixed; left:0; top:0; width:2px; margin-left:-1px; transform-origin:50% 0; pointer-events:none; z-index:6;
+      background:linear-gradient(rgba(233,161,59,.75), rgba(233,161,59,.12)); opacity:0; transition:opacity .35s; will-change:transform,height; }
+    .holding #grip, .holding #tether { opacity:1; }
+  }
 </style>
 </head>
 <body>
@@ -84,6 +94,8 @@
     <span class="mono hud h4" data-hint>Hold the click to grow it</span>
   </div>
   <div id="ring" aria-hidden="true"></div>
+  <div id="tether" aria-hidden="true"></div>
+  <div id="grip" aria-hidden="true"></div>
 
 <script>
 /* clone the page into an inverted twin; only the sign's words change */
@@ -94,18 +106,34 @@ document.body.insertBefore(twin, document.getElementById('ring'));
 const touch = matchMedia('(hover: none)').matches;
 if (touch){
   base.querySelector('[data-note]').textContent = 'Drag the light across the sign';
-  [base, twin].forEach(l => l.querySelector('[data-hint]').textContent = 'Press and hold to grow it');
+  [base, twin].forEach(l => l.querySelector('[data-hint]').textContent = 'The light rides above your thumb');
 }
 
 const ring = document.getElementById('ring');
 const BASE = () => Math.max(170, Math.min(340, Math.min(innerWidth, innerHeight) * .38));
 let mx = null, my = null, x = null, y = null, size = 0, targetSize = 0, lastMove = -1e9, held = false;
 
-addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
-addEventListener('pointerdown', e => { held = true; mx = e.clientX; my = e.clientY; lastMove = performance.now(); targetSize = Math.min(innerWidth, innerHeight) * .8; });
+addEventListener('pointermove', e => { if (touch && e.pointerType !== 'mouse') return; mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
+addEventListener('pointerdown', e => { if (touch && e.pointerType !== 'mouse') return; held = true; mx = e.clientX; my = e.clientY; lastMove = performance.now(); targetSize = Math.min(innerWidth, innerHeight) * .8; });
 addEventListener('pointerup', () => { held = false; targetSize = BASE(); });
 addEventListener('pointercancel', () => { held = false; targetSize = BASE(); });
 addEventListener('resize', () => { if (!held) targetSize = BASE(); });
+
+/* Touch: the light sits ~90px above the thumb (kept on screen) so the finger never hides the sign;
+   touchstart snaps it there, dragging eases it along, and no press-to-grow (every drag is a press).
+   After the thumb lifts, the light holds still for 2 s before it drifts back to the sign. */
+const LIFT = 90, HOLD = 2000;
+const grip = document.getElementById('grip'), tether = document.getElementById('tether');
+let fx = 0, fy = 0, holding = false;
+if (touch){
+  const aim = t => { fx = t.clientX; fy = t.clientY; lastMove = performance.now() + HOLD - 2800;
+    mx = Math.min(innerWidth - 12, Math.max(12, fx)); my = Math.min(innerHeight - 12, Math.max(12, fy - LIFT)); };
+  addEventListener('touchstart', e => { holding = true; document.body.classList.add('holding'); aim(e.touches[0]); x = mx; y = my; }, { passive: true });
+  addEventListener('touchmove', e => aim(e.touches[0]), { passive: true });
+  const lift = e => { if (e.touches.length) return; holding = false; document.body.classList.remove('holding');
+    lastMove = performance.now() + HOLD - 2800; };
+  addEventListener('touchend', lift, { passive: true }); addEventListener('touchcancel', lift, { passive: true });
+}
 
 /* the light opens up when the visitor arrives */
 let opened = false;
@@ -119,7 +147,7 @@ const signR = () => ctr(signEl), headR = () => ctr(headEl);
   requestAnimationFrame(loop);
   /* idle: the light rests on the CLOSED sign (so it reads OPEN), drifting a little; every
      few seconds it slips across toward the headline and comes straight back, never parking there */
-  const idle = performance.now() - lastMove > 2800 || mx === null;
+  const idle = !holding && (performance.now() - lastMove > 2800 || mx === null);
   /* resting, the light grows just enough to cover the whole sign, so it reads OPEN cleanly */
   if (opened && !held) targetSize = idle ? Math.max(BASE(), Math.min(Math.max(signEl.offsetWidth * 1.12, noteEl.offsetWidth * 1.24), Math.min(innerWidth, innerHeight) * .8)) : BASE();
   if (idle){
@@ -150,6 +178,12 @@ const signR = () => ctr(signEl), headR = () => ctr(headEl);
   ring.style.width = rx*2 + 'px'; ring.style.height = ry*2 + 'px';
   ring.style.opacity = size > 4 ? 1 : 0;
   ring.style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%) rotate(${ang}rad)`;
+  if (holding){                                  /* grip on the thumb, tether up to the light's edge */
+    grip.style.transform = `translate(${fx}px, ${fy}px)`;
+    const dx = x - fx, dy = y - fy, d = Math.hypot(dx, dy) || 1, len = Math.max(0, d - Math.min(rx, ry) - 19);
+    tether.style.height = len + 'px';
+    tether.style.transform = `translate(${fx + dx / d * 19}px, ${fy + dy / d * 19}px) rotate(${Math.atan2(dy, dx) - Math.PI / 2}rad)`;
+  }
 })();
 </script>
 </body>

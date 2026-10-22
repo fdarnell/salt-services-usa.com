@@ -73,6 +73,17 @@
     .hidden-line p { font-size:clamp(32px,9vw,42px); }
     .b2 { display:none; } .b1 { bottom:20px; }
   }
+  /* touch: a flashlight held in the thumb. The grip ring sits on the finger, the tether runs up to the beam. */
+  #grip, #tether { display:none; }
+  @media (hover:none){
+    #grip { display:block; position:fixed; left:0; top:0; width:38px; height:38px; margin:-19px 0 0 -19px; border-radius:50%;
+      border:1px solid rgba(240,176,85,.5); box-shadow:0 0 14px rgba(233,161,59,.35), inset 0 0 10px rgba(233,161,59,.18);
+      pointer-events:none; z-index:16; opacity:0; transition:opacity .35s; will-change:transform; }
+    #tether { display:block; position:fixed; left:0; top:0; width:2px; margin-left:-1px; transform-origin:50% 0; pointer-events:none; z-index:15;
+      background:linear-gradient(rgba(240,176,85,.45), rgba(240,176,85,.06)); opacity:0; transition:opacity .35s; will-change:transform,height; }
+    .holding #grip, .holding #tether { opacity:1; }
+    #beamRing { border-color:rgba(240,176,85,.28); }
+  }
 </style>
 </head>
 <body>
@@ -86,6 +97,8 @@
   </div>
   <div id="lamp"></div>
   <div id="beamRing"></div>
+  <div id="tether"></div>
+  <div id="grip"></div>
 
   <div class="told">
     <span class="mono">III · The street — 32/76</span>
@@ -93,7 +106,7 @@
     <p class="line">Somebody’s finishing the books, fixing tomorrow’s order, answering one more email.</p>
   </div>
   <span class="mono hud b1 fine">Move the lamp to look around · press to brighten</span>
-  <span class="mono hud b1 touch">Tap to point the lamp</span>
+  <span class="mono hud b1 touch">Drag · the lamp rides above your thumb</span>
   <span class="mono hud b2">Kodak, TN · 35.97° N, 83.62° W</span>
 
 <script>
@@ -116,15 +129,37 @@ addEventListener('pointermove', e => {
   mx = e.clientX; my = e.clientY; lastMove = performance.now();
 });
 addEventListener('pointerdown', e => {
+  if (TOUCH && e.pointerType !== 'mouse') return;
   mx = e.clientX; my = e.clientY; lastMove = performance.now() + (e.pointerType === 'mouse' ? 0 : 1600);
   targetR = baseR() * 2.2;
   if (e.pointerType !== 'mouse') setTimeout(() => targetR = baseR(), 900);
 });
 addEventListener('pointerup', e => { if (e.pointerType === 'mouse') targetR = baseR(); });
 
+/* Touch (phones, tablets): a small flashlight in the dark. The beam rides ~90px above the thumb so the
+   finger never covers what it lights; touchstart snaps it there, dragging eases it along. After the thumb
+   lifts the beam holds still for 2 s, then wanders again, below the copy, never parked on it. */
+const TOUCH = matchMedia('(hover: none)').matches;
+const grip = document.getElementById('grip'), tether = document.getElementById('tether');
+const told = document.querySelector('.told');
+const LIFT = 90, HOLD = 2000;
+let fx = 0, fy = 0, holding = false, liftedAt = -1e9, wanderFrom = 0;
+const aim = (cx, cy) => { fx = cx; fy = cy;
+  mx = Math.min(innerWidth - 12, Math.max(12, cx)); my = Math.min(innerHeight - 12, Math.max(12, cy - LIFT)); };
+if (TOUCH){
+  targetR = innerWidth < 760 ? 62 : 96;
+  addEventListener('resize', () => targetR = innerWidth < 760 ? 62 : 96);
+  addEventListener('touchstart', e => { const t = e.touches[0]; holding = true; document.body.classList.add('holding');
+    aim(t.clientX, t.clientY); x = mx; y = my; }, { passive: true });
+  addEventListener('touchmove', e => { const t = e.touches[0]; aim(t.clientX, t.clientY); }, { passive: true });
+  const lift = e => { if (e.touches.length) return; holding = false; liftedAt = performance.now(); document.body.classList.remove('holding'); };
+  addEventListener('touchend', lift, { passive: true }); addEventListener('touchcancel', lift, { passive: true });
+}
+
 (function loop(){
   requestAnimationFrame(loop);
   const W = innerWidth, H = innerHeight, phone = W < 760;
+  if (TOUCH){ touchFrame(W, H, phone); return; }
   if (performance.now() - lastMove > 2800){   /* idle: the lamp searches the shop by itself */
     const t = performance.now() / 1700;
     mx = W * (phone ? .5 + Math.cos(t) * .34 : .64 + Math.cos(t) * .26);
@@ -142,6 +177,35 @@ addEventListener('pointerup', e => { if (e.pointerType === 'mouse') targetR = ba
   ring.style.left = x + 'px'; ring.style.top = y + 'px';
   ring.style.width = ring.style.height = r * .9 + 'px';
 })();
+
+function touchFrame(W, H, phone){
+  const now = performance.now();
+  let k = .2;
+  if (!holding && now - liftedAt > HOLD){             /* idle: search the shop below the copy */
+    if (!wanderFrom) wanderFrom = now;
+    const t = now / 1700, top = Math.min(H * .6, told.getBoundingClientRect().bottom + r * 1.4), bot = H - 70;
+    mx = W * (.5 + Math.cos(t) * (phone ? .36 : .3));
+    my = top + (bot - top) * (.5 + Math.sin(t * 1.25) * .5);
+    k = Math.min(.12, .015 + (now - wanderFrom) / 40000); /* drift off the last spot gently, then follow the path */
+  } else wanderFrom = 0;
+  x += (mx - x) * k; y += (my - y) * k;
+  r += (targetR - r) * .09;
+  const soft = r * 1.6;
+  /* tight beam, and outside it the shop is only just there (7%) */
+  const m = `radial-gradient(circle ${soft}px at ${x}px ${y}px, #000 ${r * .5}px, rgba(0,0,0,.5) ${r * .9}px, rgba(0,0,0,.07) ${soft}px)`;
+  world.style.webkitMaskImage = m; world.style.maskImage = m;
+  const hm = `radial-gradient(circle ${r * .95}px at ${x - hb.left}px ${y - hb.top}px, #000 ${r * .55}px, transparent ${r * .95}px)`;
+  hidden.style.webkitMaskImage = hm; hidden.style.maskImage = hm;
+  lamp.style.background = `radial-gradient(circle ${soft * 1.15}px at ${x}px ${y}px, rgba(233,161,59,.18), rgba(233,161,59,.05) ${r}px, transparent ${soft * 1.15}px)`;
+  ring.style.left = x + 'px'; ring.style.top = y + 'px';
+  ring.style.width = ring.style.height = r * 1.1 + 'px';
+  if (holding){                                       /* the grip on the thumb, a tether up to the beam's edge */
+    grip.style.transform = `translate(${fx}px, ${fy}px)`;
+    const dx = x - fx, dy = y - fy, d = Math.hypot(dx, dy), len = Math.max(0, d - r * .55 - 19);
+    tether.style.height = len + 'px';
+    tether.style.transform = `translate(${fx + dx / (d || 1) * 19}px, ${fy + dy / (d || 1) * 19}px) rotate(${Math.atan2(dy, dx) - Math.PI / 2}rad)`;
+  }
+}
 </script>
 </body>
 </html>

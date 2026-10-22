@@ -65,6 +65,22 @@
   .touch { display:none; }
   @media (hover:none){ .fine { display:none; } .touch { display:inline; } }
   @media (max-width:700px){ .c2, .c4 { display:none; } .c3 { right:20px; } .copy { bottom:64px; } }
+  /* touch: the shop is much darker (searching with a flashlight), the copy stays easy to read,
+     and a grip ring on the thumb is tethered to the light riding above it */
+  #grip, #tether { display:none; }
+  @media (hover:none){
+    .base img { filter:brightness(.2) saturate(.7) contrast(1.05); }
+    .base::after { background:radial-gradient(120% 90% at 50% 40%, rgba(14,8,31,.45), rgba(14,8,31,.88) 78%), linear-gradient(to top, rgba(14,8,31,.75), transparent 55%); }
+    .base h1 { color:rgba(234,231,244,.86); }
+    .base h1 em { color:rgba(233,161,59,.85); }
+    .base .line { color:rgba(179,170,205,.95); }
+    #grip { display:block; position:fixed; left:0; top:0; width:38px; height:38px; margin:-19px 0 0 -19px; border-radius:50%;
+      border:1px solid rgba(240,176,85,.5); box-shadow:0 0 14px rgba(233,161,59,.35), inset 0 0 10px rgba(233,161,59,.18);
+      pointer-events:none; z-index:6; opacity:0; transition:opacity .35s; will-change:transform; }
+    #tether { display:block; position:fixed; left:0; top:0; width:2px; margin-left:-1px; transform-origin:50% 0; pointer-events:none; z-index:6;
+      background:linear-gradient(rgba(240,176,85,.45), rgba(240,176,85,.06)); opacity:0; transition:opacity .35s; will-change:transform,height; }
+    .holding #grip, .holding #tether { opacity:1; }
+  }
 </style>
 </head>
 <body>
@@ -90,10 +106,12 @@
   <div class="spill" id="spill" aria-hidden="true"></div>
   <canvas id="grains" aria-hidden="true"></canvas>
   <div class="noise" aria-hidden="true"></div>
+  <div id="tether" aria-hidden="true"></div>
+  <div id="grip" aria-hidden="true"></div>
 
   <span class="mono corner c1"><b>II · The door</b> — 15/76</span>
   <span class="mono corner c2">Week one · first questions</span>
-  <span class="mono corner c3"><span class="fine">Move the mouse. You're carrying the light.</span><span class="touch">Touch and drag to look around.</span></span>
+  <span class="mono corner c3"><span class="fine">Move the mouse. You're carrying the light.</span><span class="touch">Drag · the light rides above your thumb</span></span>
   <span class="mono corner c4">Kodak, TN · 35.97° N, 83.62° W</span>
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -117,6 +135,8 @@ const lit = document.getElementById('lit'), spill = document.getElementById('spi
 const drops = document.getElementById('drops'), gf = document.getElementById('gooMask'), blurEl = gf.firstElementChild;
 const mask = document.getElementById('lightMask');
 const cv = document.getElementById('grains'), g = cv.getContext('2d');
+/* touch devices: a smaller pool, carried ~90px above the thumb, idle only over the shop (not the words) */
+const TOUCH = matchMedia('(hover: none)').matches, LIFT = 90;
 
 /* ---------- the droplet train (head first) ---------- */
 const N = 7, RATIO = [1, .78, .63, .51, .41, .33, .26];
@@ -137,7 +157,7 @@ const SPOTS = {
 let imgSpots = [], textSpots = [], curiousSpot = null;
 function layout(){
   W = innerWidth; H = innerHeight;
-  HEAD = Math.max(130, Math.min(250, Math.min(W, H) * .36));
+  HEAD = TOUCH ? Math.max(80, Math.min(150, Math.min(W, H) * .25)) : Math.max(130, Math.min(250, Math.min(W, H) * .36));
   blobs.forEach((b, i) => b.r = HEAD / 2 * RATIO[i]);
   blurEl.setAttribute('stdDeviation', (HEAD * .075).toFixed(1));
   gf.lastElementChild.setAttribute('stdDeviation', (HEAD * .036).toFixed(1));
@@ -167,6 +187,11 @@ function layout(){
   }
   const ln = document.querySelector('.base .line').getBoundingClientRect();
   textSpots.push({ x: ln.left + Math.min(ln.width, W * .5) * .45, y: ln.top + ln.height / 2 });
+  if (TOUCH){                                            /* idle on touch: shelves and jars only, clear of the copy */
+    const top = document.querySelector('.base .copy').getBoundingClientRect().top - HEAD * .7;
+    imgSpots = imgSpots.filter(p => p.y < top);
+    if (!imgSpots.length) imgSpots = [{ x: W * .3, y: top * .6 }, { x: W * .7, y: top * .75 }];
+  }
 }
 
 /* ---------- salt grains ---------- */
@@ -267,14 +292,28 @@ if (document.fonts) document.fonts.ready.then(layout);
 addEventListener('load', layout);
 
 let px = 0, py = 0, lastMove = -1e9, touching = false;
-const IDLE_MOUSE = 2600, IDLE_TOUCH = 1400;
+const IDLE_MOUSE = 2600, IDLE_TOUCH = TOUCH ? 2000 : 1400;
 let idleAfter = IDLE_MOUSE;
 function point(x, y, touch){ px = x; py = y; lastMove = performance.now(); idleAfter = touch ? IDLE_TOUCH : IDLE_MOUSE; }
-addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || touching) point(e.clientX, e.clientY, e.pointerType !== 'mouse'); });
-addEventListener('pointerdown', e => point(e.clientX, e.clientY, e.pointerType !== 'mouse'));
+const grip = document.getElementById('grip'), tether = document.getElementById('tether');
+let fx = 0, fy = 0;
+function thumb(t){                                       /* the light sits above the thumb, kept on screen */
+  fx = t.clientX; fy = t.clientY;
+  point(Math.min(W - 12, Math.max(12, fx)), Math.min(H - 12, Math.max(12, fy - LIFT)), true);
+}
+addEventListener('pointermove', e => { if (TOUCH && e.pointerType !== 'mouse') return; if (e.pointerType === 'mouse' || touching) point(e.clientX, e.clientY, e.pointerType !== 'mouse'); });
+addEventListener('pointerdown', e => { if (TOUCH && e.pointerType !== 'mouse') return; point(e.clientX, e.clientY, e.pointerType !== 'mouse'); });
+if (TOUCH){
+  addEventListener('touchstart', e => { touching = true; document.body.classList.add('holding'); thumb(e.touches[0]);
+    blobs.forEach(b => { b.x = px; b.y = py; b.sx = b.sy = 1; }); }, { passive: true });   /* snap straight to the thumb */
+  addEventListener('touchmove', e => thumb(e.touches[0]), { passive: true });
+  const lift = e => { if (e.touches.length) return; touching = false; lastMove = performance.now(); document.body.classList.remove('holding'); };
+  addEventListener('touchend', lift, { passive: true }); addEventListener('touchcancel', lift, { passive: true });
+} else {
 addEventListener('touchstart', e => { touching = true; const t = e.touches[0]; point(t.clientX, t.clientY, true); }, { passive: true });
 addEventListener('touchmove', e => { const t = e.touches[0]; point(t.clientX, t.clientY, true); }, { passive: true });
 addEventListener('touchend', () => { touching = false; lastMove = performance.now(); }, { passive: true });
+}
 document.documentElement.addEventListener('mouseleave', () => { lastMove = performance.now() - IDLE_MOUSE + 700; });
 
 /* the wanderer starts off-screen and walks in to read the sign; it strolls to a spot (eased, on a slight arc),
@@ -289,14 +328,14 @@ function goTo(p, now){
 }
 function nextSpot(now){
   wd.n++;
-  const want = wd.n % 2 ? textSpots : imgSpots, pool = want.length ? want : textSpots.concat(imgSpots);
+  const want = TOUCH ? imgSpots : wd.n % 2 ? textSpots : imgSpots, pool = want.length ? want : textSpots.concat(imgSpots);
   let p, tries = 0;
   do { p = pool[(Math.random() * pool.length) | 0]; } while (tries++ < 8 && wd.t && Math.hypot(p.x - wd.t.x, p.y - wd.t.y) < HEAD * .8);
   goTo(p || { x: W / 2, y: H / 2 }, now);
 }
 function wander(now){
-  if (!wd.t) goTo(textSpots[0] || { x: W * .3, y: H * .7 }, now);
-  if (!wd.n && !wd.dwell && textSpots[0]) wd.t = textSpots[0];   /* fonts may land mid-walk */
+  if (!wd.t) goTo((TOUCH ? imgSpots[0] : textSpots[0]) || { x: W * .3, y: H * .7 }, now);
+  if (!TOUCH && !wd.n && !wd.dwell && textSpots[0]) wd.t = textSpots[0];   /* fonts may land mid-walk */
   if (!wd.dwell){
     const u = Math.min(1, (now - wd.start) / wd.dur), e = ease(u);
     const dx = wd.t.x - wd.fx, dy = wd.t.y - wd.fy, d = Math.hypot(dx, dy) || 1, arc = Math.sin(Math.PI * e) * wd.bend;
@@ -336,6 +375,12 @@ function loop(now){
     tx = b.x; ty = b.y;
   });
   paint();
+  if (touching){                                         /* grip on the thumb, tether up to the pool's edge */
+    grip.style.transform = `translate(${fx}px, ${fy}px)`;
+    const dx = h.x - fx, dy = h.y - fy, d = Math.hypot(dx, dy) || 1, len = Math.max(0, d - h.r * .8 - 19);
+    tether.style.height = len + 'px';
+    tether.style.transform = `translate(${fx + dx / d * 19}px, ${fy + dy / d * 19}px) rotate(${Math.atan2(dy, dx) - Math.PI / 2}rad)`;
+  }
   /* salt falls from the light: a pinch while it looks, a shower when it moves */
   const v = Math.hypot(h.x - ox, h.y - oy) / dt;
   if (h.x > -HEAD * .3 && h.x < W + HEAD * .3){
