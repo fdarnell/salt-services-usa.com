@@ -774,12 +774,13 @@ WORK_ENTRIES = "".join([
 # Salt's own showcase — featured above the client grid, clearly marked as ours
 WORK_FEATURE = """<div class="card work-feature">
       <a href="/salt-effect/">
-        <img src="/images/salt-effect.jpg" alt="The Salt Effect opening screen — a hand sprinkling glowing grains of salt beside the title" width="1200" height="630">
+        <span class="work-media"><img src="/images/salt-effect.jpg" alt="The Salt Effect opening screen — a hand sprinkling glowing grains of salt beside the title" width="1200" height="630"><span class="work-play-badge" aria-hidden="true"><svg width="26" height="30" viewBox="0 0 14 16"><path d="M1 1.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 1 1.5z" fill="currentColor"/></svg></span></span>
         <div class="work-body">
           <span class="work-tag">Our own showcase &middot; not a client site</span>
           <h2>The Salt Effect</h2>
-          <p>Our own story of businesses that change the world around them, told in 76 hand-built web effects.</p>
-          <span class="card-link">Play The Salt Effect &rsaquo;</span>
+          <p>Our own story of businesses that change the world around them, told in 56 hand-built web effects.</p>
+          <span class="btn btn-accent work-play"><svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true"><path d="M1 1.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 1 1.5z" fill="currentColor"/></svg>Begin The Salt Effect</span>
+          <span class="work-play-note">56 scenes &middot; on a phone or a computer</span>
         </div>
       </a>
     </div>"""
