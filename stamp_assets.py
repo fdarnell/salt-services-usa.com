@@ -104,7 +104,7 @@ def stamp_html(root: pathlib.Path) -> int:
             return f'{m.group("a")}="{_stamp_url(root, m.group("url"))}"'
 
         text = re.sub(
-            r'(?P<a>\bsrc|\bhref|\bposter|\bios-src)="(?P<url>/(?:%s)/[^"]+?\.%s)"'
+            r'(?P<a>\bsrc|\bhref|\bposter|\bios-src)="(?P<url>/(?:%s)/[^"?]+?\.%s(?:\?v=[A-Za-z0-9]+)?)"'
             % ("|".join(ASSET_DIRS), IMG_EXT),
             one, text, flags=re.I)
 
