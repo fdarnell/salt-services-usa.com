@@ -120,7 +120,7 @@
     // iOS also scrolls a frame natively under a vertical drag, which fought the story's own
     // paging (the section jumped back), so a vertical drag never scrolls the frame itself.
     css.textContent += 'html.scene-embedded{touch-action:pan-x pinch-zoom}html.scene-embedded body{cursor:pointer}';
-    var fx = 0, fy = null, ft = 0;
+    var fx = 0, fy = null, ft = 0, free = root.hasAttribute('data-free-scroll'), edge = 0;
     addEventListener('touchmove', function (e) {
       if (fy === null || e.touches.length !== 1) return;
       var t = e.touches[0];
@@ -134,26 +134,48 @@
       if (fy === null) return;
       var t0 = e.changedTouches[0], dy = fy - t0.clientY, dx = fx - t0.clientX, dt = performance.now() - ft;
       fy = null;
-      if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx) * 1.4 && dt < 600) post({ t: 'swipe', dir: dy > 0 ? 1 : -1 });
+      var dir = dy > 0 ? 1 : -1;
+      if (free && dir !== edge) return;              // a reading scene leaves only from its own end
+      if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx) * 1.4 && dt < 600) post({ t: 'swipe', dir: dir });
     }, { passive: true });
-    // A reading scene (<html data-free-scroll>) is dragged like a normal page: the thumb moves
-    // the story 1:1 and a flick coasts. The story only pages on to the next section once the
-    // scene has been read to its bottom (or back to its top).
-    if (root.hasAttribute('data-free-scroll')) {
-      var ly = 0, lt = 0, vel = 0;
+    // A reading scene (<html data-free-scroll>) is dragged like a normal page. It scrolls ITSELF
+    // under the thumb, in the same frame, and only tells the story where it is: a round trip
+    // through the story page lagged a frame behind the thumb and judders on an iPhone. A flick
+    // coasts. The story pages on only from the scene's bottom (or, going up, its top).
+    if (free) {
+      var ly = 0, lt = 0, vel = 0, coast = 0;
+      var maxY = function () { return Math.max(0, Math.max(root.scrollHeight, document.body.scrollHeight) - innerHeight); };
+      var setY = function (y) {
+        y = Math.round(Math.max(0, Math.min(maxY(), y)));
+        if (y === Math.round(window.scrollY)) return false;
+        selfAt = performance.now();
+        window.scrollTo(0, y);
+        post({ t: 'drag', y: y });
+        return true;
+      };
       addEventListener('touchstart', function (e) {
+        cancelAnimationFrame(coast);
         if (e.touches.length !== 1) return;
         ly = e.touches[0].clientY; lt = performance.now(); vel = 0;
-        post({ t: 'grab' });
+        var y = window.scrollY, m = maxY();
+        edge = y >= m - 4 ? 1 : y <= 4 ? -1 : 0;
       }, { passive: true });
       addEventListener('touchmove', function (e) {
         if (e.touches.length !== 1) return;
         var y = e.touches[0].clientY, now = performance.now(), d = ly - y, dt = Math.max(now - lt, 1);
         vel = vel * 0.5 + (d / dt) * 0.5; ly = y; lt = now;
-        if (d) post({ t: 'drag', dy: d });
+        setY(window.scrollY + d);
       }, { passive: true });
       addEventListener('touchend', function () {
-        post({ t: 'release', v: performance.now() - lt > 120 ? 0 : vel });
+        var v = performance.now() - lt > 120 ? 0 : vel, last = performance.now();
+        if (Math.abs(v) < 0.05) return;
+        var step = function () {
+          var now = performance.now(), dt = Math.min(now - last, 40); last = now;
+          v *= Math.pow(0.94, dt / 16.7);
+          if (Math.abs(v) < 0.02 || !setY(window.scrollY + v * dt)) return;
+          coast = requestAnimationFrame(step);
+        };
+        coast = requestAnimationFrame(step);
       }, { passive: true });
     }
   } else if (!root.hasAttribute('data-own-touch')) {
@@ -183,6 +205,7 @@
     }, { passive: true });
   }
 
+  var selfAt = -1e9;
   var told = false;
   function interacted() { if (!told) { told = true; post({ t: 'interact' }); } }
   addEventListener('pointerdown', interacted, true);
@@ -220,6 +243,7 @@
     var d = e.data;
     if (!d || !d.salt || e.source !== parent) return;
     if (d.t === 'scroll') {
+      if (performance.now() - selfAt < 400) return;   // a reading scene is moving itself
       if (S.thaw && d.y !== window.scrollY) S.thaw(700, false);   // scroll scenes still follow the scroll
       window.scrollTo(0, d.y);
     }

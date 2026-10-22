@@ -511,33 +511,9 @@ function story() {
       else window.scrollBy(0, d.dy);
     }
     else if (d.t === 'stops') s.stops = d.ys;
-    else if (d.t === 'swipe' && s.free && paged) {
-      // a reading scene pages on only when the flick started at its bottom (or its top)
-      if (s.grabEdge === d.dir) { s.paged = true; go(d.dir); }
-    }
     else if (d.t === 'swipe') go(d.dir);
-    else if (d.t === 'grab' && paged) {
-      const y = scrollY(), end = s.top + Math.max(0, s.docH - vh);
-      s.grabEdge = y >= end - 6 ? 1 : y <= s.top + 6 ? -1 : 0;
-      s.paged = false;
-      if (s.coast) { s.coast = false; scrollTo(y, true); }   // a thumb on the glass stops the coast
-    }
-    else if (d.t === 'drag' && paged && !gliding) {
-      const end = s.top + Math.max(0, s.docH - vh);
-      scrollTo(Math.max(s.top, Math.min(end, scrollY() + d.dy)), true);
-    }
-    else if (d.t === 'release' && paged && !gliding) {
-      // let it coast a little, like a normal page, but never past the scene's own ends
-      setTimeout(() => {
-        if (s.paged || gliding || !d.v) return;
-        const end = s.top + Math.max(0, s.docH - vh), y = scrollY();
-        const to = Math.max(s.top, Math.min(end, y + d.v * 260));
-        if (Math.abs(to - y) < 2) return;
-        s.coast = true;
-        if (lenis) lenis.scrollTo(to, { duration: 0.7, easing: t => 1 - Math.pow(1 - t, 3), force: true, onComplete: () => { s.coast = false; } });
-        else window.scrollTo({ top: to, behavior: 'smooth' });
-      }, 0);
-    }
+    // a reading scene scrolled itself; the story follows so the header, progress and stops agree
+    else if (d.t === 'drag' && paged && !gliding) scrollTo(s.top + Math.max(0, Math.min(s.docH - vh, d.y)), true);
     else if (d.t === 'interact') hideHint(s.i);
     else if (d.t === 'touch') scrollTo(window.scrollY + d.dy, true);
     else if (d.t === 'fling') scrollTo(window.scrollY + d.v * 320);
