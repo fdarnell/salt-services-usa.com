@@ -405,6 +405,7 @@ function story() {
   const paged = matchMedia('(pointer: coarse)').matches && !matchMedia('(hover: hover)').matches;
   document.documentElement.classList.toggle('paged', paged);
   let gliding = false, swipes = 0, glideTimer = 0;
+  const pendingSize = new Map();
   function stops() {
     const out = [];
     for (const s of scenes) {
@@ -425,7 +426,12 @@ function story() {
     else for (let k = list.length - 1; k >= 0; k--) if (list[k] < y - 4) { to = list[k]; break; }
     if (to == null) return;
     gliding = true; swipes++;
-    const done = () => { gliding = false; clearTimeout(glideTimer); };
+    const done = () => {
+      if (!gliding) return;
+      gliding = false; clearTimeout(glideTimer);
+      for (const [s, [mode, docH]] of pendingSize) setHeight(s, mode, docH);
+      pendingSize.clear();
+    };
     glideTimer = setTimeout(done, 1500);            // never stay locked
     if (lenis) lenis.scrollTo(to, { duration: reduce ? 0.01 : 0.9, easing: t => 1 - Math.pow(1 - t, 3), force: true, lock: true, onComplete: done });
     else { window.scrollTo({ top: to, behavior: reduce ? 'instant' : 'smooth' }); setTimeout(done, reduce ? 50 : 800); }
@@ -457,6 +463,9 @@ function story() {
     if (lenis) lenis.resize();
   }
   function setHeight(s, mode, docH) {
+    // phones: a scene that finishes loading mid-glide waits; moving the layout under a running
+    // glide made it jump or land short (sections 21, 22 and 24, 22 Oct)
+    if (paged && gliding) { pendingSize.set(s, [mode, docH]); return; }
     const before = s.h, wasAbove = s.top + s.h <= scrollY() + 2;   // +2: smooth scroll can leave a fraction of a pixel
     s.mode = mode; s.docH = docH;
     layout();
@@ -489,7 +498,8 @@ function story() {
     if (!s) return;
     if (d.t === 'ready') { s.ready = true; s.frame.classList.add('on'); tick(true); }
     else if (d.t === 'size' && s.i === current) { document.body.classList.toggle('scroll-scene', d.mode === 'scroll'); }
-    if (d.t === 'size') { if (d.mode !== s.mode || (d.mode === 'scroll' && Math.abs(d.h - s.docH) > 2)) setHeight(s, d.mode, d.h); }
+    // a few pixels of wobble (fonts, images settling) is not worth moving the page for on phones
+    if (d.t === 'size') { if (d.mode !== s.mode || (d.mode === 'scroll' && Math.abs(d.h - s.docH) > (paged && s.docH ? 40 : 2))) setHeight(s, d.mode, d.h); }
     else if (d.t === 'wheel') {
       if (lenis) window.dispatchEvent(new WheelEvent('wheel', { deltaY: d.dy, deltaMode: 0, cancelable: true }));
       else window.scrollBy(0, d.dy);
