@@ -1,5 +1,6 @@
 /* Salt Services — particle-morph hero (adapted from Weblove Template 20).
-   14,000 particles cycle sphere → "SALT" → ring and flee the cursor.
+   14,000 particles fly in and form the Salt hand (its falling salt in amber, as in
+   The Salt Effect), then cycle sphere → "SALT" → ring → hand, and flee the cursor.
    Brand colors: bone-white grains with 14% amber sparks on the navy hero.
    The swarm is offset to the right half so the headline stays readable;
    desktop pointers only, skipped for reduced-motion — the static gradient
@@ -67,21 +68,72 @@ if (mount &&
       return a;
     }
 
+    /* the Salt hand, from the logo: the hand in bone-white grains, the falling salt (the
+       small separate shapes in the logo) in the amber sparks */
+    const spark = new Uint8Array(N);
+    for (let i = 0; i < N; i++) spark[i] = Math.random() < .14 ? 1 : 0;  /* SLOT: 14% amber sparks */
+    const logo = await new Promise(res => {
+      const im = new Image();
+      im.onload = () => res(im); im.onerror = () => res(null);
+      im.src = '/images/salt-logo.png';
+      setTimeout(() => res(null), 4000);
+    });
+    function handTargets(img) {
+      const S = 300, cv = document.createElement('canvas');
+      cv.width = cv.height = S;
+      const c2 = cv.getContext('2d');
+      c2.drawImage(img, 0, 0, S, S);
+      const px = c2.getImageData(0, 0, S, S).data;
+      const lab = new Int32Array(S * S).fill(-1), sizes = [], stack = [];
+      for (let i = 0; i < S * S; i++) {
+        if (lab[i] !== -1 || px[i * 4 + 3] < 100) continue;
+        const id = sizes.length; let n = 0; stack.push(i); lab[i] = id;
+        while (stack.length) {
+          const j = stack.pop(); n++;
+          const x = j % S, y = (j / S) | 0;
+          for (const k of [x > 0 ? j - 1 : -1, x < S - 1 ? j + 1 : -1, y > 0 ? j - S : -1, y < S - 1 ? j + S : -1])
+            if (k >= 0 && lab[k] === -1 && px[k * 4 + 3] >= 100) { lab[k] = id; stack.push(k); }
+        }
+        sizes.push(n);
+      }
+      const hand = [], grains = [], grainMax = S * S * .004;
+      for (let i = 0; i < S * S; i++) if (lab[i] !== -1)
+        (sizes[lab[i]] < grainMax ? grains : hand).push([((i % S) - S / 2) / 60, -(((i / S) | 0) - S / 2) / 60]);
+      if (!hand.length) return null;
+      const a = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const from = spark[i] && grains.length ? grains : hand;
+        const p = from[Math.floor(Math.random() * from.length)];
+        a[i * 3] = p[0] + (Math.random() - .5) * .03;
+        a[i * 3 + 1] = p[1] + (Math.random() - .5) * .03;
+        a[i * 3 + 2] = (Math.random() - .5) * .3;
+      }
+      return a;
+    }
+    const handData = logo && handTargets(logo);
+
     const TARGETS = [
+      ...(handData ? [{ name: 'HAND', data: handData, hold: 9000 }] : []),
       { name: 'SPHERE', data: sphereTargets() },
       { name: MORPH_WORD, data: textTargets(MORPH_WORD) }, /* first pass (fallback font ok) */
       { name: 'RING', data: ringTargets() }
     ];
-    document.fonts.ready.then(() => { TARGETS[1].data = textTargets(MORPH_WORD); });
+    const wordT = TARGETS.find(x => x.name === MORPH_WORD);
+    document.fonts.ready.then(() => { wordT.data = textTargets(MORPH_WORD); });
 
     /* ---------- particle buffers ---------- */
     const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
-    pos.set(TARGETS[0].data);
+    if (handData) {
+      /* start scattered well outside the frame, so the grains fly in and gather into the hand */
+      for (let i = 0; i < N; i++) {
+        const a = Math.random() * Math.PI * 2, r = 7 + Math.random() * 6;
+        pos[i * 3] = Math.cos(a) * r; pos[i * 3 + 1] = Math.sin(a) * r * .7; pos[i * 3 + 2] = (Math.random() - .5) * 4;
+      }
+    } else pos.set(TARGETS[0].data);
     for (let i = 0; i < N; i++) {
-      const spark = Math.random() < .14;  /* SLOT: 14% amber sparks, rest bone-white */
-      col[i * 3] = spark ? .91 : .93;
-      col[i * 3 + 1] = spark ? .63 : .92;
-      col[i * 3 + 2] = spark ? .23 : .87;
+      col[i * 3] = spark[i] ? .91 : .93;      /* amber sparks, rest bone-white */
+      col[i * 3 + 1] = spark[i] ? .63 : .92;
+      col[i * 3 + 2] = spark[i] ? .23 : .87;
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -101,10 +153,14 @@ if (mount &&
     /* ---------- morph cycle + cursor repel ---------- */
     let ti = 0;
     const shapeEl = document.getElementById('shape');
-    setInterval(() => {
-      ti = (ti + 1) % TARGETS.length;
-      if (shapeEl) shapeEl.textContent = TARGETS[ti].name;
-    }, 5000);
+    if (shapeEl) shapeEl.textContent = TARGETS[0].name;
+    (function next() {
+      setTimeout(() => {
+        ti = (ti + 1) % TARGETS.length;
+        if (shapeEl) shapeEl.textContent = TARGETS[ti].name;
+        next();
+      }, TARGETS[ti].hold || 5000);   /* the hand holds longer than the other shapes */
+    })();
 
     const mouse = new THREE.Vector2(-99, -99); /* far away = no repel until the mouse moves */
     let rotX = 0;                              /* rotation input starts neutral, not at -99 */
