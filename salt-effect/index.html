@@ -410,7 +410,10 @@ function story() {
     const out = [];
     for (const s of scenes) {
       out.push(s.top);
-      if (s.mode === 'scroll' && s.docH > vh) {
+      if (s.mode === 'scroll' && s.docH > vh && s.stops && s.stops.length) {
+        // the scene said where its panels, cards or chapters sit
+        for (const v of s.stops) if (v > 4) out.push(s.top + Math.min(v, s.docH - vh));
+      } else if (s.mode === 'scroll' && s.docH > vh) {
         const end = s.top + (s.docH - vh), step = Math.round(vh * 0.8);
         for (let y = s.top + step; y < end - vh * 0.25; y += step) out.push(y);
         out.push(end);
@@ -504,6 +507,7 @@ function story() {
       if (lenis) window.dispatchEvent(new WheelEvent('wheel', { deltaY: d.dy, deltaMode: 0, cancelable: true }));
       else window.scrollBy(0, d.dy);
     }
+    else if (d.t === 'stops') s.stops = d.ys;
     else if (d.t === 'swipe') go(d.dir);
     else if (d.t === 'interact') hideHint(s.i);
     else if (d.t === 'touch') scrollTo(window.scrollY + d.dy, true);
