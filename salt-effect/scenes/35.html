@@ -78,8 +78,8 @@
   <footer><span class="mono">Tap or click to reshuffle</span><span class="mono">Sevier, Knox &amp; Blount counties, TN</span></footer>
 
 <script>
-/* SLOT: the towns Salt serves, and their status */
-const TOWNS = ['KODAK', 'SEVIERVILLE', 'PIGEON FORGE', 'GATLINBURG', 'KNOXVILLE', 'MARYVILLE'];
+/* SLOT: the big cities just over the line from East Tennessee, and their status */
+const TOWNS = ['ASHEVILLE', 'ATLANTA', 'LEXINGTON', 'ROANOKE', 'CHARLOTTE', 'BIRMINGHAM'];
 const STATUS = 'OPEN';
 const CHARS = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:·-.';
 const TC = 12, SC = 4;
@@ -149,7 +149,21 @@ function start(){ clearInterval(cycle); show(); cycle = setInterval(shift, 7200)
 SCENE.onFirstEnter(start);
 addEventListener('scene:enter', start);
 addEventListener('scene:leave', () => clearInterval(cycle));
-addEventListener('click', () => { shuffle(); clearInterval(cycle); cycle = setInterval(shift, 7200); });
+/* a tap reshuffles. iPhones don't reliably send "click" for a tap on a plain board, so the
+   lifted finger counts too; whichever arrives first wins, the other is ignored */
+let lastTap = -1e9, tapDown = null;
+function tapShuffle(){
+  const now = performance.now();
+  if (now - lastTap < 400) return;
+  lastTap = now;
+  shuffle(); clearInterval(cycle); cycle = setInterval(shift, 7200);
+}
+const isTap = (x, y) => tapDown && Math.hypot(x - tapDown.x, y - tapDown.y) < 14 && performance.now() - tapDown.t < 600;
+addEventListener('pointerdown', e => { tapDown = { x:e.clientX, y:e.clientY, t:performance.now() }; });
+addEventListener('pointerup', e => { if (isTap(e.clientX, e.clientY)) tapShuffle(); });
+addEventListener('touchstart', e => { const p = e.touches[0]; if (p) tapDown = { x:p.clientX, y:p.clientY, t:performance.now() }; }, { passive:true });
+addEventListener('touchend', e => { const p = e.changedTouches[0]; if (p && isTap(p.clientX, p.clientY)) tapShuffle(); }, { passive:true });
+addEventListener('click', tapShuffle);
 </script>
 <!-- SIGNATURE CURSOR (board amber) -->
 <style>
