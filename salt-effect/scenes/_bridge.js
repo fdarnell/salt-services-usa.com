@@ -86,7 +86,7 @@
 
   root.classList.add('scene-embedded');
   function hideOwnLabel() {
-    var re = /^[^\w]*[IVX]+\s*·\s*[^—]{1,30}—\s*\d+\s*\/\s*76\b[^\n]{0,40}$/i, all = document.body.getElementsByTagName('*');
+    var re = /^[^\w]*[IVX]+\s*·\s*[^—]{1,30}—\s*\d+\s*\/\s*\d+\b[^\n]{0,40}$/i, all = document.body.getElementsByTagName('*');
     for (var i = 0; i < all.length; i++) {
       var el = all[i];
       if (el.children.length > 3 || !re.test(el.textContent)) continue;
