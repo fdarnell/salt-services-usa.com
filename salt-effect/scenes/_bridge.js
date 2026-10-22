@@ -115,8 +115,17 @@
   // scene; only a quick vertical flick lifted within 0.6 s counts as "next" or "previous".
   var coarse = matchMedia('(pointer: coarse)').matches && !matchMedia('(hover: hover)').matches;
   if (coarse) {
-    css.textContent += 'html.scene-embedded{touch-action:pan-x pinch-zoom}';
+    // iOS taps only fire click on "clickable" elements, so a scene listening on the window
+    // missed most taps; a pointer cursor makes every element clickable (nobody sees it on a phone).
+    // iOS also scrolls a frame natively under a vertical drag, which fought the story's own
+    // paging (the section jumped back), so a vertical drag never scrolls the frame itself.
+    css.textContent += 'html.scene-embedded{touch-action:pan-x pinch-zoom}html.scene-embedded body{cursor:pointer}';
     var fx = 0, fy = null, ft = 0;
+    addEventListener('touchmove', function (e) {
+      if (fy === null || e.touches.length !== 1) return;
+      var t = e.touches[0];
+      if (e.cancelable && Math.abs(t.clientY - fy) > Math.abs(t.clientX - fx)) e.preventDefault();
+    }, { passive: false });
     addEventListener('touchstart', function (e) {
       if (e.touches.length !== 1) { fy = null; return; }
       fx = e.touches[0].clientX; fy = e.touches[0].clientY; ft = performance.now();

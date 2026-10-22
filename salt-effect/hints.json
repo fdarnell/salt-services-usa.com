@@ -31,7 +31,7 @@
     "posPhone": "top"
   },
   "10": {
-    "touch": "Hold and drag to light the block",
+    "touch": "Drag to look around · tap to light the whole block",
     "mouse": "Move the lens; hold click to grow it",
     "pos": "bottom"
   },

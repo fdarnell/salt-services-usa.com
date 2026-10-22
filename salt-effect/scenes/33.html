@@ -104,6 +104,14 @@ function frame(){
   });
 }
 (function loop(){ requestAnimationFrame(loop); frame(); })();
+/* phones move one flick at a time: the intro, then each card fully landed, then the outro */
+function sendStops(){
+  const stackTop = document.getElementById('stack').offsetTop, travel = secs[0].offsetHeight;
+  const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  const ys = [0, ...secs.map((s, i) => Math.min(max, stackTop + i * travel)), max];
+  if (window.SCENE && SCENE.setStops) SCENE.setStops(ys.filter((y, i) => i === 0 || y - ys[i - 1] > 40));
+}
+addEventListener('load', sendStops); addEventListener('resize', sendStops); sendStops();
 </script>
 <!-- signature cursor, amber -->
 <style>
