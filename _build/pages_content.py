@@ -65,7 +65,7 @@ HOME_FAQS = [
 
 HOME_BODY = f"""<section class="hero hero-3d">
   <div id="hero-scene" aria-hidden="true"></div>
-  <span class="hero-hud b1" aria-hidden="true">Now forming: <span id="shape">SPHERE</span> &middot; cursor repels</span>
+  <span class="hero-hud b1" aria-hidden="true">Now forming: <span id="shape">HAND</span> &middot; cursor repels</span>
   <span class="hero-hud b2" aria-hidden="true">N = 14,000</span>
   <div class="wrap">
     <span class="hero-kicker reveal" style="animation-delay:.2s">Marketing &amp; AI implementation &middot; Kodak, TN</span>
