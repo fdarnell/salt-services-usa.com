@@ -14,7 +14,7 @@ Static marketing site for Salt Services (Kodak, TN). Plain HTML/CSS/JS — no fr
 | 3D hero scene (home page, desktop only) | `js/hero3d.js` — 14k-particle morph (sphere → SALT → ring), Three.js from CDN; skipped on mobile, reduced-motion, and no-WebGL |
 | Signature cursor (site-wide, desktop only) | `js/cursor.js` |
 | SEO roadmap for the monthly program | `content-plan.md` |
-| The Salt Effect showcase (`/salt-effect/`) | `salt-effect/` — a self-contained page copied from the salt-effect project's `dist2/` build. Not generated and not stamped; its own headers (iframe-friendly CSP) are in `vercel.json` |
+| The Salt Effect showcase (`/salt-effect/`) | `salt-effect/` — a self-contained page copied from the salt-effect project's `dist2/` build. Not generated and not stamped; its own headers (iframe-friendly CSP) are in `vercel.json`. Computers first see a welcome with two choices; `salt-effect/phone/` is the phone-frame view (noindex), which loads the story with `?frame=phone`. The live copy adds the head meta, the once-per-tab view count and Vercel Analytics to both pages |
 
 ## Making edits
 
