@@ -10,7 +10,7 @@
     "pos": "top"
   },
   "03": {
-    "touch": "Swipe up to move through it",
+    "touch": "Drag up slowly to read it through",
     "mouse": "Scroll slowly to read it through",
     "pos": "bottom"
   },
@@ -343,7 +343,7 @@
     "posPhone": "top"
   },
   "71": {
-    "touch": "Swipe up to move through it",
+    "touch": "Drag up to light each chapter",
     "mouse": "Scroll to light each chapter",
     "pos": "bottom"
   },
