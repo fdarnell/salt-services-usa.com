@@ -75,6 +75,10 @@ const count = document.getElementById('count'), hint = document.querySelector('.
 let p = 0, sp = 0;
 const read = () => { p = Math.max(0, Math.min(1, scrollY / Math.max(1, rail.offsetHeight - innerHeight))); };
 addEventListener('scroll', read, { passive:true }); read();
+/* phones move one flick at a time: each flick opens the circle all the way through and lands
+   on the next porthole with its title up (window, street, town, then the town lands) */
+function sendStops(){ const max = Math.max(1, rail.offsetHeight - innerHeight); if (window.SCENE && SCENE.setStops) SCENE.setStops([0, .40, .76, 1].map(v => v * max)); }
+addEventListener('load', sendStops); addEventListener('resize', sendStops); sendStops();
 const ease = t => t*t*(3-2*t);
 const clamp = t => Math.max(0, Math.min(1, t));
 const seg = (v, a, b) => clamp((v - a) / (b - a));
@@ -84,7 +88,7 @@ const PH = [[-1, 0, .27], [.31, .38, .62], [.66, .73, .95]];
 
 (function loop(){
   requestAnimationFrame(loop);
-  sp += (p - sp) * .08;
+  sp += (p - sp) * .12;
   const R0 = innerWidth < 600 ? 31 : 19;                 /* porthole radius, vmin */
   let active = 0;
   W.forEach((w, i) => {

@@ -57,7 +57,7 @@
 
   <div class="hud tl"><span class="mono"><b>II · The door</b> — 16/56</span><span class="big">The block, before and after <em>the lights came on.</em></span></div>
   <div class="hud tr"><span class="mono" id="stateLabel">Before · the lens shows <i>after</i></span></div>
-  <div class="hud bl"><span class="mono"><span class="fine">Hold click. The lens grows.</span><span class="touch">Press and hold. The lens grows.</span></span></div>
+  <div class="hud bl"><span class="mono"><span class="fine">Hold click. The lens grows.</span><span class="touch">Drag to look. Tap for the whole block.</span></span></div>
   <div class="hud br"><span class="mono">Kodak, TN · 35.97° N, 83.62° W</span></div>
 
 <script>
@@ -68,18 +68,33 @@ const ring = document.getElementById('lensRing'), tag = document.getElementById(
 let mx = innerWidth/2, my = innerHeight * .62, lx = mx, ly = my;
 let r = 0, held = false, lastMove = -1e9;
 const baseR = () => Math.min(150, Math.max(90, innerWidth * .26));
+/* phones: every drag is a press, so the lens never grows while a finger is down. It rides
+   above the thumb (so the thumb doesn't cover it), and a quick tap lights the whole block
+   until the next tap. */
+const touch = matchMedia('(hover: none)').matches;
+const LIFT = 90;
+let down = null;
+const aim = e => { mx = e.clientX; my = touch ? Math.max(20, e.clientY - LIFT) : e.clientY; lastMove = performance.now(); };
 
-addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
-addEventListener('pointerdown', e => { held = true; mx = e.clientX; my = e.clientY; lastMove = performance.now(); });
-addEventListener('pointerup',   () => held = false);
-addEventListener('pointercancel', () => held = false);
-addEventListener('blur', () => held = false);
+addEventListener('pointermove', aim);
+addEventListener('pointerdown', e => {
+  aim(e);
+  if (touch) down = { x: e.clientX, y: e.clientY, t: performance.now() };
+  else held = true;
+});
+addEventListener('pointerup', e => {
+  if (touch && down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 12 && performance.now() - down.t < 350) held = !held;
+  else if (!touch) held = false;
+  down = null;
+});
+addEventListener('pointercancel', () => { if (!touch) held = false; down = null; });
+addEventListener('blur', () => { if (!touch) held = false; });
 
 let lastHeld = null;
 (function loop(){
   requestAnimationFrame(loop);
   /* idle: the lens wanders along the shopfronts on its own */
-  if (performance.now() - lastMove > 2800){
+  if (performance.now() - lastMove > 2800 && !(touch && held)){
     const t = performance.now() / 1600;
     mx = innerWidth  * (.5 + Math.cos(t) * .32);
     my = innerHeight * (.62 + Math.sin(t * 1.3) * .14);
@@ -94,7 +109,7 @@ let lastHeld = null;
   tag.style.opacity = (ly - r - 40 > 0 && r < innerHeight * .6) ? 1 : 0;
   if (held !== lastHeld){
     lastHeld = held;
-    state.innerHTML = held ? 'After · let go to see <i>before</i>' : 'Before · the lens shows <i>after</i>';
+    state.innerHTML = held ? (touch ? 'After · tap again to see <i>before</i>' : 'After · let go to see <i>before</i>') : 'Before · the lens shows <i>after</i>';
   }
 })();
 </script>
