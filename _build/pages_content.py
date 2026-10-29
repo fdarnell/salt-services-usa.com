@@ -140,18 +140,8 @@ HOME_BODY = f"""<section class="hero hero-3d">
     </div>
     <ul class="card-grid">
       <li class="card work-card">
-        <a href="https://americanfireplaces.vercel.app/" target="_blank" rel="noopener">
-          <img src="/images/work/american-fireplaces.webp" alt="American Fireplaces website — dark, ember-lit hero reading 'Gather around something extraordinary'" width="640" height="400" loading="lazy">
-          <div class="work-body">
-            <h3>American Fireplaces</h3>
-            <p>A cinematic brand site for a Sevierville hearth showroom that has warmed the Smokies since 1990.</p>
-            <span class="card-link">Visit the live site &rsaquo;</span>
-          </div>
-        </a>
-      </li>
-      <li class="card work-card">
         <a href="https://www.mtnlandscapers.com/" target="_blank" rel="noopener">
-          <img src="/images/work/mountain-landscapers.webp" alt="Mountain Landscapers website — rock-garden hero with the headline 'Landscape Design and Installation, Sevierville, TN'" width="640" height="400" loading="lazy">
+          <img src="/images/work/mountain-landscapers.webp" alt="Mountain Landscapers website — a crew member finishing fresh concrete behind the headline 'Landscape Design and Installation, Sevierville, TN'" width="640" height="400" loading="lazy">
           <div class="work-body">
             <h3>Mountain Landscapers</h3>
             <p>Landscape design and hardscapes, built page by page to win Sevier County searches.</p>
@@ -160,11 +150,21 @@ HOME_BODY = f"""<section class="hero hero-3d">
         </a>
       </li>
       <li class="card work-card">
-        <a href="https://downtown-river-rentals.vercel.app/" target="_blank" rel="noopener">
-          <img src="/images/work/downtown-river-rentals.webp" alt="Downtown River Rentals website — cottage porch photo under 'Vacation Homes in Pigeon Forge'" width="640" height="400" loading="lazy">
+        <a href="https://www.downtown-riverrentals.com/" target="_blank" rel="noopener">
+          <img src="/images/work/downtown-river-rentals.webp" alt="Downtown River Rentals website — cottage porch photo under 'Riverside Vacation Homes in Pigeon Forge'" width="640" height="400" loading="lazy">
           <div class="work-body">
             <h3>Downtown River Rentals</h3>
             <p>A direct-booking site for Pigeon Forge vacation cottages — bookings without the platform commission.</p>
+            <span class="card-link">Visit the live site &rsaquo;</span>
+          </div>
+        </a>
+      </li>
+      <li class="card work-card">
+        <a href="https://www.blessedbeginningstire.com/" target="_blank" rel="noopener">
+          <img src="/images/work/blessed-beginnings.webp" alt="Blessed Beginnings Tire &amp; Service website: a tire and torque wrench beside the headline 'Every car gets treated like it's our own'" width="640" height="400" loading="lazy">
+          <div class="work-body">
+            <h3>Blessed Beginnings Tire &amp; Service</h3>
+            <p>A family-run tire shop site with a penny tread check, a sidewall size reader and two-step booking.</p>
             <span class="card-link">Visit the live site &rsaquo;</span>
           </div>
         </a>
@@ -741,24 +741,20 @@ def work_entry(href, img, alt, name, blurb):
       </li>"""
 
 WORK_ENTRIES = "".join([
-    work_entry("https://americanfireplaces.vercel.app/", "american-fireplaces",
-        "American Fireplaces website — dark, ember-lit hero reading 'Gather around something extraordinary'",
-        "American Fireplaces",
-        "A Sevierville hearth showroom that has warmed the Smokies since 1990 needed a site that felt like standing in front of one of their fireplaces. We built a cinematic brand experience — ember particles included — around their story, their process, and their brands."),
     work_entry("https://www.mtnlandscapers.com/", "mountain-landscapers",
-        "Mountain Landscapers website — rock-garden hero with the headline 'Landscape Design and Installation, Sevierville, TN'",
+        "Mountain Landscapers website — a crew member finishing fresh concrete behind the headline 'Landscape Design and Installation, Sevierville, TN'",
         "Mountain Landscapers",
         "Landscape design, hardscapes, and grounds care for the Smoky Mountain foothills. The site is organized page by page around the searches Sevier County homeowners actually type, from retaining walls to outdoor living."),
-    work_entry("https://downtown-river-rentals.vercel.app/", "downtown-river-rentals",
-        "Downtown River Rentals website — cottage porch photo under 'Vacation Homes in Pigeon Forge'",
+    work_entry("https://www.downtown-riverrentals.com/", "downtown-river-rentals",
+        "Downtown River Rentals website — cottage porch photo under 'Riverside Vacation Homes in Pigeon Forge'",
         "Downtown River Rentals",
         "Vacation cottages a short walk from the Pigeon Forge Parkway. The site has one job: direct bookings that skip the booking platforms and their commission."),
     work_entry("https://www.ahappyhost.com/", "a-happy-host",
         "A Happy Host website — concierge services hero for short-term rental owners",
         "A Happy Host",
         "A services hub for the short-term rental owners who keep the Smokies' cabins running — cleaning, concierge, and project work, presented so owners can act fast."),
-    work_entry("https://smoky-mountain-espresso.vercel.app/", "smoky-mountain-espresso",
-        "Smoky Mountain Espresso website — warm coffee shop home page for Sevierville",
+    work_entry("https://www.smokymountainespresso.com/", "smoky-mountain-espresso",
+        "Smoky Mountain Espresso website — the shop's timber building under 'A Sevierville coffee shop worth slowing down for'",
         "Smoky Mountain Espresso",
         "A Sevierville coffee shop with regulars to match. Fast, warm, and built to show up when travelers on the Parkway corridor search for coffee worth stopping for."),
     work_entry("https://www.cpaservicessevierville.com/", "sevier-cpas",
@@ -770,7 +766,7 @@ WORK_ENTRIES = "".join([
         "Colortec Powder Coating",
         "Sandblasting and powder coating out of Sevierville, serving everyone from gearheads with a single part to industrial contractors with a full run. A working site for a working shop."),
     work_entry("https://www.blessedbeginningstire.com/", "blessed-beginnings",
-        "Blessed Beginnings Tire & Service website: the shop's roll-up door behind the headline 'Every car gets treated like it's our own'",
+        "Blessed Beginnings Tire & Service website: a tire and torque wrench beside the headline 'Every car gets treated like it's our own'",
         "Blessed Beginnings Tire &amp; Service",
         "A family-run, appointment-only tire shop in Sevierville. Customers can check their tread with a penny, decode the size on their sidewall and see whether the shop is open right now, then book through a two-step request that lands straight in the owners' inbox."),
     work_entry("https://www.cr-moving.com/", "cr-moving",
@@ -800,11 +796,10 @@ WORK_LD = {
     "itemListElement": [
         {"@type": "ListItem", "position": i + 1, "name": n, "url": u}
         for i, (n, u) in enumerate([
-            ("American Fireplaces", "https://americanfireplaces.vercel.app/"),
             ("Mountain Landscapers", "https://www.mtnlandscapers.com/"),
-            ("Downtown River Rentals", "https://downtown-river-rentals.vercel.app/"),
+            ("Downtown River Rentals", "https://www.downtown-riverrentals.com/"),
             ("A Happy Host", "https://www.ahappyhost.com/"),
-            ("Smoky Mountain Espresso", "https://smoky-mountain-espresso.vercel.app/"),
+            ("Smoky Mountain Espresso", "https://www.smokymountainespresso.com/"),
             ("Sevier CPAs", "https://www.cpaservicessevierville.com/"),
             ("Colortec Powder Coating", "https://www.colorteccoatings.com/"),
             ("Blessed Beginnings Tire & Service", "https://www.blessedbeginningstire.com/"),
