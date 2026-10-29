@@ -151,7 +151,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
       </li>
       <li class="card work-card">
         <a href="https://www.downtown-riverrentals.com/" target="_blank" rel="noopener">
-          <img src="/images/work/downtown-river-rentals.webp" alt="Downtown River Rentals website — cottage porch photo under 'Riverside Vacation Homes in Pigeon Forge'" width="640" height="400" loading="lazy">
+          <img src="/images/work/downtown-river-rentals.webp" alt="Downtown River Rentals website — cottage porch photo behind 'Riverside Vacation Homes in Pigeon Forge' with Check availability and See the cottages buttons" width="640" height="400" loading="lazy">
           <div class="work-body">
             <h3>Downtown River Rentals</h3>
             <p>A direct-booking site for Pigeon Forge vacation cottages — bookings without the platform commission.</p>
@@ -161,7 +161,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
       </li>
       <li class="card work-card">
         <a href="https://www.blessedbeginningstire.com/" target="_blank" rel="noopener">
-          <img src="/images/work/blessed-beginnings.webp" alt="Blessed Beginnings Tire &amp; Service website: a tire and torque wrench beside the headline 'Every car gets treated like it's our own'" width="640" height="400" loading="lazy">
+          <img src="/images/work/blessed-beginnings.webp" alt="Blessed Beginnings Tire &amp; Service website: the shop's roll-up door and a tire beside the headline 'Every car gets treated like it's our own'" width="640" height="400" loading="lazy">
           <div class="work-body">
             <h3>Blessed Beginnings Tire &amp; Service</h3>
             <p>A family-run tire shop site with a penny tread check, a sidewall size reader and two-step booking.</p>
@@ -745,14 +745,22 @@ WORK_ENTRIES = "".join([
         "Mountain Landscapers website — a crew member finishing fresh concrete behind the headline 'Landscape Design and Installation, Sevierville, TN'",
         "Mountain Landscapers",
         "Landscape design, hardscapes, and grounds care for the Smoky Mountain foothills. The site is organized page by page around the searches Sevier County homeowners actually type, from retaining walls to outdoor living."),
+    work_entry("https://www.blessedbeginningstire.com/", "blessed-beginnings",
+        "Blessed Beginnings Tire & Service website: the shop's roll-up door and a tire beside the headline 'Every car gets treated like it's our own'",
+        "Blessed Beginnings Tire &amp; Service",
+        "A family-run, appointment-only tire shop in Sevierville. Customers can check their tread with a penny, decode the size on their sidewall and see whether the shop is open right now, then book through a two-step request that lands straight in the owners' inbox."),
     work_entry("https://www.downtown-riverrentals.com/", "downtown-river-rentals",
-        "Downtown River Rentals website — cottage porch photo under 'Riverside Vacation Homes in Pigeon Forge'",
+        "Downtown River Rentals website — cottage porch photo behind 'Riverside Vacation Homes in Pigeon Forge' with Check availability and See the cottages buttons",
         "Downtown River Rentals",
         "Vacation cottages a short walk from the Pigeon Forge Parkway. The site has one job: direct bookings that skip the booking platforms and their commission."),
     work_entry("https://www.ahappyhost.com/", "a-happy-host",
         "A Happy Host website — concierge services hero for short-term rental owners",
         "A Happy Host",
         "A services hub for the short-term rental owners who keep the Smokies' cabins running — cleaning, concierge, and project work, presented so owners can act fast."),
+    work_entry("https://www.cr-moving.com/", "cr-moving",
+        "C&amp;R Moving website: a moving truck at a mountain cabin under 'Sevierville movers who don't scratch a thing', with the quote form beside it",
+        "C&amp;R Moving",
+        "A veteran-owned moving crew from Sevierville that moves houses, cabins and apartments across Sevier County and Knoxville. Every page leads to a short quote form, and every call and request comes into one place so no move gets missed."),
     work_entry("https://www.smokymountainespresso.com/", "smoky-mountain-espresso",
         "Smoky Mountain Espresso website — the shop's timber building under 'A Sevierville coffee shop worth slowing down for'",
         "Smoky Mountain Espresso",
@@ -765,14 +773,6 @@ WORK_ENTRIES = "".join([
         "Colortec Powder Coating website — technician spraying a part in the coating booth",
         "Colortec Powder Coating",
         "Sandblasting and powder coating out of Sevierville, serving everyone from gearheads with a single part to industrial contractors with a full run. A working site for a working shop."),
-    work_entry("https://www.blessedbeginningstire.com/", "blessed-beginnings",
-        "Blessed Beginnings Tire & Service website: a tire and torque wrench beside the headline 'Every car gets treated like it's our own'",
-        "Blessed Beginnings Tire &amp; Service",
-        "A family-run, appointment-only tire shop in Sevierville. Customers can check their tread with a penny, decode the size on their sidewall and see whether the shop is open right now, then book through a two-step request that lands straight in the owners' inbox."),
-    work_entry("https://www.cr-moving.com/", "cr-moving",
-        "C&amp;R Moving website: a moving truck at a mountain cabin under 'Sevierville movers who don't scratch a thing', with the quote form beside it",
-        "C&amp;R Moving",
-        "A veteran-owned moving crew from Sevierville that moves houses, cabins and apartments across Sevier County and Knoxville. Every page leads to a short quote form, and every call and request comes into one place so no move gets missed."),
 ])
 
 # Salt's own showcase — featured above the client grid, clearly marked as ours
@@ -797,13 +797,13 @@ WORK_LD = {
         {"@type": "ListItem", "position": i + 1, "name": n, "url": u}
         for i, (n, u) in enumerate([
             ("Mountain Landscapers", "https://www.mtnlandscapers.com/"),
+            ("Blessed Beginnings Tire & Service", "https://www.blessedbeginningstire.com/"),
             ("Downtown River Rentals", "https://www.downtown-riverrentals.com/"),
             ("A Happy Host", "https://www.ahappyhost.com/"),
+            ("C&R Moving", "https://www.cr-moving.com/"),
             ("Smoky Mountain Espresso", "https://www.smokymountainespresso.com/"),
             ("Sevier CPAs", "https://www.cpaservicessevierville.com/"),
             ("Colortec Powder Coating", "https://www.colorteccoatings.com/"),
-            ("Blessed Beginnings Tire & Service", "https://www.blessedbeginningstire.com/"),
-            ("C&R Moving", "https://www.cr-moving.com/"),
         ])
     ],
 }
