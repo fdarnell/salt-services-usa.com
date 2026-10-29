@@ -769,6 +769,14 @@ WORK_ENTRIES = "".join([
         "Colortec Powder Coating website — technician spraying a part in the coating booth",
         "Colortec Powder Coating",
         "Sandblasting and powder coating out of Sevierville, serving everyone from gearheads with a single part to industrial contractors with a full run. A working site for a working shop."),
+    work_entry("https://www.blessedbeginningstire.com/", "blessed-beginnings",
+        "Blessed Beginnings Tire & Service website: the shop's roll-up door behind the headline 'Every car gets treated like it's our own'",
+        "Blessed Beginnings Tire &amp; Service",
+        "A family-run, appointment-only tire shop in Sevierville. Customers can check their tread with a penny, decode the size on their sidewall and see whether the shop is open right now, then book through a two-step request that lands straight in the owners' inbox."),
+    work_entry("https://www.cr-moving.com/", "cr-moving",
+        "C&amp;R Moving website: a moving truck at a mountain cabin under 'Sevierville movers who don't scratch a thing', with the quote form beside it",
+        "C&amp;R Moving",
+        "A veteran-owned moving crew from Sevierville that moves houses, cabins and apartments across Sevier County and Knoxville. Every page leads to a short quote form, and every call and request comes into one place so no move gets missed."),
 ])
 
 # Salt's own showcase — featured above the client grid, clearly marked as ours
@@ -799,6 +807,8 @@ WORK_LD = {
             ("Smoky Mountain Espresso", "https://smoky-mountain-espresso.vercel.app/"),
             ("Sevier CPAs", "https://www.cpaservicessevierville.com/"),
             ("Colortec Powder Coating", "https://www.colorteccoatings.com/"),
+            ("Blessed Beginnings Tire & Service", "https://www.blessedbeginningstire.com/"),
+            ("C&R Moving", "https://www.cr-moving.com/"),
         ])
     ],
 }
