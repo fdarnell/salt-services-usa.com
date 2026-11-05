@@ -16,9 +16,9 @@ Ongoing SEO/AEO program: **3 new pages per month**, each genuinely unique (no sw
 | 10 | Knoxville | /service-areas/knoxville/ | digital marketing knoxville | city | Initial build | Live |
 | 11 | About | /about/ | (trust page) | core | Initial build | Live |
 | 12 | Contact | /contact/ | (conversion page) | core | Initial build | Live |
-| 13 | Pigeon Forge | /service-areas/pigeon-forge/ | marketing agency pigeon forge tn | city | Month 1 | Planned |
-| 14 | Gatlinburg | /service-areas/gatlinburg/ | marketing agency gatlinburg tn | city | Month 1 | Planned |
-| 15 | Guide: What does SEO cost in East Tennessee? | /guides/seo-cost-east-tennessee/ | how much does seo cost | auxiliary | Month 1 | Planned |
+| 13 | Pigeon Forge | /service-areas/pigeon-forge/ | marketing agency pigeon forge tn | city | Month 1 | In review (PR) |
+| 14 | Gatlinburg | /service-areas/gatlinburg/ | marketing agency gatlinburg tn | city | Month 1 | In review (PR) |
+| 15 | Guide: What does SEO cost in East Tennessee? | /guides/seo-cost-east-tennessee/ | how much does seo cost | auxiliary | Month 1 | In review (PR) |
 | 16 | Maryville | /service-areas/maryville/ | marketing agency maryville tn | city | Month 2 | Planned |
 | 17 | Dandridge | /service-areas/dandridge/ | marketing agency dandridge tn | city | Month 2 | Planned |
 | 18 | Guide: What is AEO? | /guides/what-is-aeo/ | what is answer engine optimization | auxiliary | Month 2 | Planned |
