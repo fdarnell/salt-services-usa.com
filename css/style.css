@@ -37,6 +37,7 @@
   --line: #ddd8cc;
   --accent: #e9a13b;      /* amber — CTAs and accent words only */
   --accent-hover: #f0b055;
+  --accent-ink: #94570a;  /* darker amber for accent TEXT on ivory (WCAG AA 4.5:1); dark surfaces reset it to --accent */
   --on-brand: #eae7f4;    /* body text on brand purple */
   --border-ondark: rgba(255, 255, 255, 0.08);   /* hairline on navy surfaces */
   --highlight-ondark: rgba(255, 255, 255, 0.06); /* top-edge sheen on navy cards */
@@ -91,7 +92,7 @@ h2 { font-size: clamp(1.6rem, 3.6vw, 2.4rem); font-weight: 500; letter-spacing: 
 h3 { font-size: 1.25rem; font-weight: 600; }
 /* editorial accent word — italic serif in amber */
 h1 em, h2 em, .accent-em {
-  font-style: italic; font-weight: 500; color: var(--accent);
+  font-style: italic; font-weight: 500; color: var(--accent-ink);
 }
 p { margin: 0 0 1em; }
 a { color: var(--brand-soft); }
@@ -278,7 +279,7 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
   font-style: italic;
   font-size: 2.6rem;
   line-height: 1;
-  color: var(--accent);
+  color: var(--accent-ink);
   padding-bottom: 0.4rem;
   margin-bottom: 0.9rem;
   border-bottom: 1px solid var(--line);
@@ -286,6 +287,8 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 .section-navy .step-num { border-bottom-color: var(--border-ondark); }
 .section-alt { background: var(--bg-alt); }
 .section-navy { background: var(--brand); color: var(--on-brand); }
+/* accent text keeps the bright amber on dark surfaces */
+.hero, .section-navy, .site-header, .site-footer, .sw-hero, .callbar, .work-feature { --accent-ink: var(--accent); }
 .section-navy h2, .section-navy h3 { color: #fff; }
 .section-head { max-width: 60ch; margin-bottom: 2rem; }
 .section-head p { color: var(--muted); }
@@ -368,7 +371,7 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 }
 .work-tag {
   font-family: 'Space Mono', ui-monospace, monospace;
-  font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-ink);
 }
 .work-subhead { margin: 0 0 1.25rem; }
 @media (max-width: 760px) {
@@ -583,7 +586,7 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 .showcase-head p { color: #b3a9cf; margin: 0 auto; max-width: 56ch; }
 .showcase-kicker, .sw-kicker {
   font-family: 'Space Mono', ui-monospace, monospace;
-  font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-ink);
 }
 .showcase-kicker::before { content: "\2014\00a0\00a0"; }
 .showcase-kicker::after { content: "\00a0\00a0\2014"; }
@@ -813,10 +816,10 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
   text-decoration: none; font-weight: 600; transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
 .sw-jump a:hover { border-color: var(--accent); background: rgba(233,161,59,.08); color: #fff; }
-.sw-jump span { font-family: 'Space Mono', ui-monospace, monospace; font-size: 0.72rem; color: var(--accent); }
+.sw-jump span { font-family: 'Space Mono', ui-monospace, monospace; font-size: 0.72rem; color: var(--accent-ink); }
 .sw-cat { scroll-margin-top: 72px; }
 .sw-cat-head { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start; max-width: 62rem; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
-.sw-cat-num { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: clamp(3rem, 7vw, 5rem); line-height: 0.9; color: var(--accent); }
+.sw-cat-num { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: clamp(3rem, 7vw, 5rem); line-height: 0.9; color: var(--accent-ink); }
 .sw-cat-head h2 { margin: 0.35rem 0 0.6rem; }
 .sw-cat-head p { margin: 0; color: var(--muted); max-width: 60ch; }
 .sw-cat .sw-feature:first-of-type { padding-top: 0; }

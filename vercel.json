@@ -84,6 +84,16 @@
       "source": "/salt-effect/phone",
       "destination": "/salt-effect/phone/",
       "permanent": true
+    },
+    {
+      "source": "/(.*)index.html",
+      "destination": "/$1",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?!api)[^.]*[^/])",
+      "destination": "/:path/",
+      "permanent": true
     }
   ],
   "headers": [

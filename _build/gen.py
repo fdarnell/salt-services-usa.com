@@ -238,13 +238,18 @@ def local_business_ld():
         "image": DOMAIN + "/og-image.png",
         "logo": DOMAIN + "/images/salt-logo.png",
         "address": {"@type": "PostalAddress", "addressLocality": "Kodak",
-                    "addressRegion": "TN", "addressCountry": "US"},
+                    "addressRegion": "TN", "postalCode": "37764", "addressCountry": "US"},
+        # town-level point (Kodak), not the street address
+        "geo": {"@type": "GeoCoordinates", "latitude": 35.97, "longitude": -83.62},
+        "hasMap": BIZ["profiles"][0][1],
+        "priceRange": "$$",
         "areaServed": [{"@type": "City", "name": c + ", TN"} for c in BIZ["areas"]],
         "founder": {"@type": "Person", "name": "Franklin Darnell"},
         "sameAs": [u for _, u in BIZ["profiles"]],
     }
 
-def service_ld(name, desc, url):
+def service_ld(name, desc, url, areas=None):
+    """areas: limit areaServed to these towns (city pages name only their own town)."""
     return {
         "@context": "https://schema.org",
         "@type": "Service",
@@ -252,7 +257,7 @@ def service_ld(name, desc, url):
         "description": desc,
         "url": DOMAIN + url,
         "provider": {"@id": DOMAIN + "/#business"},
-        "areaServed": [{"@type": "City", "name": c + ", TN"} for c in BIZ["areas"]],
+        "areaServed": [{"@type": "City", "name": c + ", TN"} for c in (areas or BIZ["areas"])],
     }
 
 def faq_ld(faqs):
