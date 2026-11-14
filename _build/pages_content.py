@@ -69,8 +69,8 @@ HOME_BODY = f"""<section class="hero hero-3d">
   <span class="hero-hud b1" aria-hidden="true">Now forming: <span id="shape">HAND</span> &middot; cursor repels</span>
   <span class="hero-hud b2" aria-hidden="true">N = 14,000</span>
   <div class="wrap">
-    <span class="hero-kicker reveal" style="animation-delay:.2s">Marketing &amp; AI implementation &middot; Kodak, TN</span>
-    <h1 class="reveal" style="animation-delay:.4s">Get found.<br>Get <span class="accent">answered</span>.<br>Get more leads.</h1><!-- accent word renders italic serif amber -->
+    <h1 class="hero-kicker reveal" style="animation-delay:.2s">Marketing &amp; web design agency &middot; Kodak &amp; Sevierville, TN</h1>
+    <p class="hero-title reveal" style="animation-delay:.4s">Get found.<br>Get <span class="accent">answered</span>.<br>Get more leads.</p><!-- accent word renders italic serif amber -->
     <p class="lead reveal" style="animation-delay:.6s">Salt Services is a marketing and AI implementation agency in Kodak, Tennessee. We build websites that rank on Google and get cited by AI, run ads that pay for themselves, and set up CRMs and AI so no lead ever slips through the cracks.</p>
     <p class="reveal" style="animation-delay:.8s">
       <a class="btn btn-accent" href="/contact/#form">Get your free growth plan</a>
@@ -308,7 +308,7 @@ CRM_FAQS = [
 
 CRM_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>CRM implementation for <em>small businesses</em></h1>
+    <h1>CRM implementation for <em>Tennessee</em> small businesses</h1>
     {SPRINKLE}
     <p>Right now, your leads probably live in five places: missed calls, text threads, a Facebook inbox, somebody's email, and a legal pad by the register. Every one of those is a place where a paying customer can quietly disappear. A CRM puts every lead in one pipeline where nothing gets forgotten — and we do the part nobody has time for: setting it up so it actually works.</p>
 
@@ -352,7 +352,7 @@ AI_FAQS = [
 
 AI_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1><em>AI</em> implementation for small businesses</h1>
+    <h1><em>AI</em> implementation for Tennessee small businesses</h1>
     {SPRINKLE}
     <p>Forget the hype for a minute. For a local business, AI is useful for one plain reason: it answers in seconds, at 2 a.m., on a Sunday, while you're on a ladder. Speed wins leads — the first business to respond usually gets the job — and AI is how a small team responds first every single time.</p>
 
@@ -395,7 +395,7 @@ ADS_FAQS = [
 
 ADS_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>Google &amp; Meta ads management in <em>East Tennessee</em></h1>
+    <h1>Google &amp; Meta ads management in <em>Sevierville</em> &amp; East Tennessee</h1>
     {SPRINKLE}
     <p>Paid ads are the fastest way to put your business in front of people who are ready to buy — and the fastest way to burn money if nobody's watching the account. We run Google and Meta campaigns for East Tennessee businesses with one rule: every dollar gets tracked all the way to a lead in your CRM, so "is it working?" always has a real answer.</p>
 
@@ -434,7 +434,7 @@ WEB_FAQS = [
 
 WEB_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>Web design for <em>local businesses</em></h1>
+    <h1>Web design for <em>Sevierville</em> &amp; Pigeon Forge businesses</h1>
     {SPRINKLE}
     <p>Your website has two jobs: get found, and get the phone to ring. Pretty matters — you should be proud to put the URL on your truck — but pretty is third on the list. We hand-build fast, lean sites structured so Google can rank them, AI assistants can cite them, and a visitor on a phone in a parking lot can call you in two taps.</p>
 
@@ -474,7 +474,7 @@ SEO_FAQS = [
 
 SEO_BODY = f"""<section class="section">
   <div class="wrap prose">
-    <h1>SEO and <em>AEO</em> services in East Tennessee</h1>
+    <h1>SEO and <em>AEO</em> services in Sevierville &amp; East Tennessee</h1>
     {SPRINKLE}
     <p>SEO is how your business shows up when someone searches Google. AEO — answer engine optimization — is how you show up when someone asks ChatGPT or another AI assistant for a recommendation instead. Same goal, new referee. We do both at once, because the pages that win them are built the same way: specific, useful, and honest.</p>
 
@@ -1244,22 +1244,22 @@ NOTFOUND_BODY = f"""<section class="section">
 PAGES = [
     {
         "path": "/", "nav": "home",
-        "title": "Salt Services | Marketing & AI Agency in Kodak, TN",
+        "title": "Salt Services | Marketing Agency in Kodak & Sevierville, TN",
         "desc": "Marketing and AI implementation for East Tennessee small businesses — websites, Google & Meta ads, CRM, SEO and AEO. Call (866) 721-7258.",
         "jsonld": [faq_ld(HOME_FAQS)],
         "body": HOME_BODY,
     },
     {
         "path": "/services/", "nav": "services",
-        "title": "Marketing Services for Local Businesses | Salt Services",
+        "title": "Marketing Services in Sevierville & Kodak, TN | Salt Services",
         "desc": "CRM implementation, AI, Google & Meta ads, web design, and SEO/AEO — five services that work as one lead pipeline for East Tennessee businesses.",
         "crumbs": [["Home", "/"], ["Services", "/services/"]],
         "body": SERVICES_HUB_BODY,
     },
     {
         "path": "/services/crm-implementation/", "nav": "services",
-        "title": "CRM Implementation for Small Businesses | Salt Services",
-        "desc": "We set up your CRM so every lead gets tracked, followed up, and closed — pipelines, automations, missed-call text-back, and team training included.",
+        "title": "CRM Setup & Implementation in Tennessee | Salt Services",
+        "desc": "CRM setup for Tennessee small businesses: every lead tracked, followed up and closed, with pipelines, automations, missed-call text-back and training.",
         "crumbs": [["Home", "/"], ["Services", "/services/"], ["CRM implementation", "/services/crm-implementation/"]],
         "jsonld": [service_ld("CRM implementation",
                               "CRM setup and implementation for small businesses: pipeline design, lead capture, automated follow-up, missed-call text-back, contact migration, and team training.",
@@ -1269,7 +1269,7 @@ PAGES = [
     },
     {
         "path": "/services/ai-implementation/", "nav": "services",
-        "title": "AI Implementation for Small Businesses | Salt Services",
+        "title": "AI Implementation for Small Businesses in TN | Salt Services",
         "desc": "Practical AI for local businesses: answer missed calls, reply to leads in seconds, draft follow-ups, and book appointments — wired into your CRM.",
         "crumbs": [["Home", "/"], ["Services", "/services/"], ["AI implementation", "/services/ai-implementation/"]],
         "jsonld": [service_ld("AI implementation",
@@ -1280,8 +1280,8 @@ PAGES = [
     },
     {
         "path": "/services/digital-advertising/", "nav": "services",
-        "title": "Google & Meta Ads Management in East TN | Salt Services",
-        "desc": "We run Google Ads and Meta campaigns for East Tennessee businesses and track every dollar to a real lead — with honest budget advice before you spend.",
+        "title": "Google Ads Management in Sevierville, TN | Salt Services",
+        "desc": "We run Google Ads and Meta campaigns for Sevierville and East TN businesses and tie every dollar to a real lead — with honest budget advice before you spend.",
         "crumbs": [["Home", "/"], ["Services", "/services/"], ["Digital advertising", "/services/digital-advertising/"]],
         "jsonld": [service_ld("Digital advertising management",
                               "Google Ads and Meta (Facebook and Instagram) advertising management for local businesses: research, creative, landing pages, conversion and call tracking, and plain-English reporting.",
@@ -1291,8 +1291,8 @@ PAGES = [
     },
     {
         "path": "/services/web-design/", "nav": "services",
-        "title": "Web Design for Local Businesses in East TN | Salt Services",
-        "desc": "Hand-built websites that load fast, rank on Google, get cited by AI search, and feed every lead into your CRM. Own it outright or rent it monthly.",
+        "title": "Web Design in Sevierville & Pigeon Forge, TN | Salt Services",
+        "desc": "Hand-built websites for Sevierville and Pigeon Forge businesses that load fast, rank on Google, get cited by AI search, and feed leads into your CRM.",
         "crumbs": [["Home", "/"], ["Services", "/services/"], ["Web design", "/services/web-design/"]],
         "jsonld": [service_ld("Web design",
                               "Hand-built, fast-loading websites for local businesses, structured for Google rankings and AI search citations, with CRM-integrated forms. Build-and-own or monthly plans.",
@@ -1302,7 +1302,7 @@ PAGES = [
     },
     {
         "path": "/services/seo-aeo/", "nav": "services",
-        "title": "SEO & AEO Services in East Tennessee | Salt Services",
+        "title": "SEO & AEO Services in Sevierville, TN | Salt Services",
         "desc": "Monthly SEO and AEO program: three genuinely useful pages a month that win Google searches and AI citations. You approve every page before it's live.",
         "crumbs": [["Home", "/"], ["Services", "/services/"], ["SEO & AEO", "/services/seo-aeo/"]],
         "jsonld": [service_ld("SEO and AEO",

@@ -5,7 +5,8 @@
    The swarm is offset to the right half so the headline stays readable;
    desktop pointers only, skipped for reduced-motion — the static gradient
    hero underneath is the fallback for everyone else (and for crawlers). */
-import * as THREE from 'three';
+/* three.js (1.2 MB) is fetched only when the swarm will actually run, so phones,
+   tablets and reduced-motion visitors never download it. */
 
 const MORPH_WORD = 'SALT';      /* SLOT: MORPH_WORD */
 const N = 14000;                /* SLOT: PARTICLE_COUNT */
@@ -15,6 +16,9 @@ if (mount &&
     matchMedia('(pointer:fine)').matches &&
     matchMedia('(prefers-reduced-motion: no-preference)').matches &&
     innerWidth >= 900) {
+  /* let the headline paint first, then fetch the library */
+  await new Promise((r) => (window.requestIdleCallback ? requestIdleCallback(r, { timeout: 1200 }) : setTimeout(r, 200)));
+  const THREE = await import('three');
   try {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     const size = () => [mount.clientWidth, mount.clientHeight];

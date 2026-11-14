@@ -168,7 +168,7 @@ a:hover { color: var(--brand); }
   position: relative;
   overflow: hidden;
 }
-.hero h1 { color: #fff; max-width: 21ch; }
+.hero h1, .hero .hero-title { color: #fff; max-width: 21ch; }
 .hero p.lead { font-size: 1.2rem; max-width: 54ch; color: var(--on-brand); }
 .hero .btn { margin-right: 0.75rem; margin-top: 0.5rem; }
 .hero-kicker {
@@ -194,7 +194,7 @@ a:hover { color: var(--brand); }
   pointer-events: none;
 }
 .hero-3d .wrap { position: relative; z-index: 2; width: 100%; }
-.hero-3d h1 {
+.hero-3d h1, .hero-3d .hero-title {
   font-family: 'Fraunces', Georgia, serif;
   font-weight: 500;
   letter-spacing: -0.025em;
@@ -202,7 +202,11 @@ a:hover { color: var(--brand); }
   font-size: clamp(2.6rem, 5.4vw, 4.75rem);
   max-width: 15ch;
 }
-.hero h1 .accent { color: var(--accent); font-style: italic; }
+.hero h1 .accent, .hero .hero-title .accent { color: var(--accent); font-style: italic; }
+/* home: the kicker line is the h1 (what + where); the slogan is a styled p */
+.hero .hero-title { font-family: 'Fraunces', Georgia, serif; margin: 0 0 0.6em; overflow-wrap: break-word; }
+.hero h1.hero-kicker { color: var(--accent); max-width: none; line-height: 1.5; margin: 0 0 1rem; font-weight: 700; hyphens: manual; }
+.hero-3d h1.hero-kicker { font-family: 'Space Mono', ui-monospace, monospace; font-size: 0.66rem; letter-spacing: 0.22em; }
 .hero-3d .hero-kicker {
   font-family: 'Space Mono', ui-monospace, monospace;
   font-size: 0.66rem;

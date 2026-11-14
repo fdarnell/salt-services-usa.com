@@ -168,21 +168,30 @@ SHOWCASE = f"""
 # Captured from each app running locally on made-up sample data (no real
 # customers). Files live in images/software/.
 
+def _src(src, w, sizes):
+    """src + srcset: the -half.webp copy (half width) lets phones skip the full-size file."""
+    half = src.replace(".webp", "-half.webp")
+    return (f'src="/images/software/{src}" srcset="/images/software/{half} {w // 2}w, '
+            f'/images/software/{src} {w}w" sizes="{sizes}"')
+
+SHOT_SIZES = "(max-width: 900px) 92vw, 660px"
+SMALL_SIZES = "(max-width: 900px) 45vw, 300px"
+
 def shot(src, alt, url, w, h, cls=""):
     return f"""<figure class="shot{(' ' + cls) if cls else ''}">
   <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i>{("<span>" + url + "</span>") if url else ""}</div>
-  <img src="/images/software/{src}" alt="{alt}" width="{w}" height="{h}" loading="lazy">
+  <img {_src(src, w, SMALL_SIZES if "shot-small" in cls else SHOT_SIZES)} alt="{alt}" width="{w}" height="{h}" loading="lazy">
 </figure>"""
 
 def scroll_shot(src, alt, w, h, cls=""):
     """A tall page in a short window; it scrolls itself on hover."""
     return f"""<figure class="shot shot-scroll{(' ' + cls) if cls else ''}" tabindex="0">
-  <img src="/images/software/{src}" alt="{alt}" width="{w}" height="{h}" loading="lazy">
+  <img {_src(src, w, SMALL_SIZES)} alt="{alt}" width="{w}" height="{h}" loading="lazy">
 </figure>"""
 
 def phone_shot(src, alt, w, h, cls=""):
     return f"""<figure class="phone-shot{(' ' + cls) if cls else ''}">
-  <img src="/images/software/{src}" alt="{alt}" width="{w}" height="{h}" loading="lazy">
+  <img {_src(src, w, SMALL_SIZES)} alt="{alt}" width="{w}" height="{h}" loading="lazy">
 </figure>"""
 
 SHOT_CRM = shot("crm-inbox.webp", "The lead inbox for a sample lawn company: a website lead gets an automatic text within the minute and books an estimate", "", 1600, 1000)
