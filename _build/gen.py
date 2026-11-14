@@ -29,8 +29,8 @@ DOMAIN = "https://www.saltservicesusa.com"  # no trailing slash
 # ---------------- Business facts (must match site.config.json) ----------------
 BIZ = {
     "name": "Salt Services",
-    "phone_display": "(866) 721-7258",
-    "phone_tel": "+18667217258",
+    "phone_display": "(865) 505-7096",
+    "phone_tel": "+18655057096",
     "email": "info@saltservicesusa.com",
     "city": "Kodak",
     "state": "TN",

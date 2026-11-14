@@ -1245,7 +1245,7 @@ PAGES = [
     {
         "path": "/", "nav": "home",
         "title": "Salt Services | Marketing Agency in Kodak & Sevierville, TN",
-        "desc": "Marketing and AI implementation for East Tennessee small businesses — websites, Google & Meta ads, CRM, SEO and AEO. Call (866) 721-7258.",
+        "desc": "Marketing and AI implementation for East Tennessee small businesses — websites, Google & Meta ads, CRM, SEO and AEO. Call (865) 505-7096.",
         "jsonld": [faq_ld(HOME_FAQS)],
         "body": HOME_BODY,
     },
@@ -1416,15 +1416,15 @@ PAGES = [
     },
     {
         "path": "/contact/", "nav": "contact",
-        "title": "Contact Salt Services | (866) 721-7258 | Kodak, TN",
-        "desc": "Call (866) 721-7258, email info@saltservicesusa.com, or start with our two-minute inquiry form. Based in Kodak, serving all of East Tennessee.",
+        "title": "Contact Salt Services | (865) 505-7096 | Kodak, TN",
+        "desc": "Call (865) 505-7096, email info@saltservicesusa.com, or start with our two-minute inquiry form. Based in Kodak, serving all of East Tennessee.",
         "crumbs": [["Home", "/"], ["Contact", "/contact/"]],
         "body": CONTACT_BODY,
     },
     {
         "path": "/form-completion/", "nav": "",
         "title": "Got It — Your Inquiry Is In | Salt Services",
-        "desc": "Your inquiry landed in our pipeline. A real person reads it today — or skip the line and call (866) 721-7258 right now.",
+        "desc": "Your inquiry landed in our pipeline. A real person reads it today — or skip the line and call (865) 505-7096 right now.",
         "noindex": True,
         "extra_head": '<meta name="robots" content="noindex">\n',
         "body": FORM_DONE_BODY,
@@ -1453,7 +1453,7 @@ PAGES = [
     {
         "path": "/404.html", "nav": "",
         "title": "Page Not Found | Salt Services",
-        "desc": "That page doesn't exist. Head back to the Salt Services home page, browse our services, or call (866) 721-7258.",
+        "desc": "That page doesn't exist. Head back to the Salt Services home page, browse our services, or call (865) 505-7096.",
         "body": NOTFOUND_BODY,
     },
 ]
