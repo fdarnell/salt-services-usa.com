@@ -14,7 +14,7 @@ Enforced by construction:
 - BreadcrumbList JSON-LD generated from "crumbs" (never hand-written)
 - Duplicate titles/descriptions refuse to build
 """
-import hashlib, json, pathlib, sys, datetime
+import hashlib, json, pathlib, re, sys, datetime
 
 # cache-buster: short hash of the stylesheet, appended as ?v= to its link,
 # so browsers always pick up CSS changes immediately after a deploy
@@ -36,6 +36,12 @@ BIZ = {
     "state": "TN",
     "areas": ["Kodak", "Sevierville", "Pigeon Forge", "Gatlinburg", "Knoxville",
               "Maryville", "Dandridge"],
+    # Salt's own profiles — listed in the footer and as sameAs in the business schema
+    "profiles": [
+        ("Google", "https://www.google.com/maps?cid=17728582365371956942"),
+        ("Instagram", "https://www.instagram.com/saltservicesusa/"),
+        ("YouTube", "https://www.youtube.com/@saltservicesusa"),
+    ],
 }
 
 # Coraline embed (client-specific — from the embed code Franklin provided)
@@ -141,7 +147,8 @@ FOOTER = f"""</main>
         <address>
           Based in {BIZ['city']}, {BIZ['state']} &middot; serving East Tennessee<br>
           Phone: <a href="tel:{BIZ['phone_tel']}">{BIZ['phone_display']}</a><br>
-          Email: <a href="mailto:{BIZ['email']}">{BIZ['email']}</a>
+          Email: <a href="mailto:{BIZ['email']}">{BIZ['email']}</a><br>
+          Find us: {' &middot; '.join(f'<a href="{u}" rel="noopener" target="_blank">{n}</a>' for n, u in BIZ['profiles'])}
         </address>
       </div>
       <div>
@@ -159,6 +166,8 @@ FOOTER = f"""</main>
         <h3>Service areas</h3>
         <ul>
           <li><a href="/service-areas/sevierville/">Sevierville</a></li>
+          <li><a href="/service-areas/pigeon-forge/">Pigeon Forge</a></li>
+          <li><a href="/service-areas/gatlinburg/">Gatlinburg</a></li>
           <li><a href="/service-areas/knoxville/">Knoxville</a></li>
           <li><a href="/service-areas/">All service areas</a></li>
           <li><a href="/work/">Our work</a></li>
@@ -231,6 +240,8 @@ def local_business_ld():
         "address": {"@type": "PostalAddress", "addressLocality": "Kodak",
                     "addressRegion": "TN", "addressCountry": "US"},
         "areaServed": [{"@type": "City", "name": c + ", TN"} for c in BIZ["areas"]],
+        "founder": {"@type": "Person", "name": "Franklin Darnell"},
+        "sameAs": [u for _, u in BIZ["profiles"]],
     }
 
 def service_ld(name, desc, url):
@@ -301,14 +312,40 @@ def build(spec, seen_titles, seen_descs, outdir="."):
     out = pathlib.Path(outdir + p + ("index.html" if p.endswith("/") else ""))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
+    PAGE_HASHES[p] = hashlib.sha256(re.sub(r"\?v=[0-9a-zA-Z]+", "", html).encode()).hexdigest()[:16]
     print(f"wrote {out}")
     return p
 
-def write_sitemap(paths, outdir="."):
+# Sitemap <lastmod> moves only when a page's HTML really changes (asset ?v= stamps
+# ignored). _build/lastmod.json keeps each page's content hash and the date it last changed.
+PAGE_HASHES = {}
+LASTMOD_FILE = pathlib.Path(__file__).with_name("lastmod.json")
+
+def page_lastmods(paths):
     today = datetime.date.today().isoformat()
+    try:
+        seen = json.loads(LASTMOD_FILE.read_text())
+    except (FileNotFoundError, ValueError):
+        seen = {}
+    out = {}
+    for p in paths:
+        h = PAGE_HASHES.get(p)
+        prev = seen.get(p)
+        if h is None:  # standalone page (e.g. /salt-effect/): keep its date, or today if new
+            out[p] = prev or {"hash": None, "date": today}
+        elif prev and prev.get("hash") == h:
+            out[p] = prev
+        else:
+            out[p] = {"hash": h, "date": today}
+    LASTMOD_FILE.write_text(json.dumps(dict(sorted(out.items())), indent=1) + "\n")
+    return {p: v["date"] for p, v in out.items()}
+
+def write_sitemap(paths, outdir="."):
+    paths = [p for p in sorted(paths) if p != "/404.html"]
+    dates = page_lastmods(paths)
     urls = "\n".join(
-        f"  <url><loc>{DOMAIN}{p}</loc><lastmod>{today}</lastmod></url>"
-        for p in sorted(paths) if p != "/404.html")
+        f"  <url><loc>{DOMAIN}{p}</loc><lastmod>{dates[p]}</lastmod></url>"
+        for p in paths)
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {urls}

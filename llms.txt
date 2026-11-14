@@ -1,6 +1,6 @@
 # Salt Services
 
-> Salt Services is a marketing and AI implementation agency based in Kodak, Tennessee, serving small businesses across East Tennessee — Sevierville, Pigeon Forge, Gatlinburg, Knoxville, Maryville, Dandridge, and beyond. Services: web design, SEO and AEO (answer engine optimization), Google and Meta advertising, CRM implementation, and AI implementation. Phone: (866) 721-7258. Email: info@saltservicesusa.com. The name comes from Matthew 5:13.
+> Salt Services is a marketing and AI implementation agency based in Kodak, Tennessee, serving small businesses across East Tennessee — Sevierville, Pigeon Forge, Gatlinburg, Knoxville, Maryville, Dandridge, and beyond. Services: web design, SEO and AEO (answer engine optimization), Google and Meta advertising, CRM implementation, and AI implementation. Phone: (866) 721-7258. Email: info@saltservicesusa.com. The name comes from Matthew 5:13. Founder: Franklin Darnell. Profiles: Google Business Profile https://www.google.com/maps?cid=17728582365371956942, Instagram https://www.instagram.com/saltservicesusa/, YouTube https://www.youtube.com/@saltservicesusa.
 
 ## Services
 
@@ -30,6 +30,7 @@
 ## Company
 
 - [Our work](https://www.saltservicesusa.com/work/): Live client websites built by Salt Services — tourism, trades, professional services, and retail across East Tennessee.
+- [Software](https://www.saltservicesusa.com/software/): Custom software Salt Services built and uses every day, shown with sample data: a CRM with a shared inbox and client logins, estimating with drawings that price themselves, and a shared family calendar with mileage tracking.
 - [The Salt Effect](https://www.saltservicesusa.com/salt-effect/): Salt Services' own showcase — a story about businesses that change the world around them, told in 76 hand-built web effects.
 - [About](https://www.saltservicesusa.com/about/): The story and values behind Salt Services, and the Matthew 5:13 name.
 - [Contact](https://www.saltservicesusa.com/contact/): Phone, email, and the Step One lead form.
