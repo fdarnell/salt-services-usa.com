@@ -2,6 +2,7 @@
 # Edit copy here, then run: python3 _build/gen.py
 from gen import (SPRINKLE, icon, check_li, coraline_section, faq_html, faq_ld,
                  service_ld, BIZ)
+from showcase_content import SHOWCASE, SOFTWARE_TEASER, SOFTWARE_BODY
 
 PHONE = BIZ["phone_display"]
 TEL = BIZ["phone_tel"]
@@ -82,6 +83,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
 {{ "imports": {{ "three": "/js/vendor/three.module.js" }} }}
 </script>
 <script type="module" src="/js/hero3d.js"></script>
+{SHOWCASE}
 
 <section class="section">
   <div class="wrap">
@@ -174,6 +176,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
   </div>
 </section>
 
+{SOFTWARE_TEASER}
 <section class="section section-alt">
   <div class="wrap">
     <div class="section-head">
@@ -1394,6 +1397,15 @@ PAGES = [
         "crumbs": [["Home", "/"], ["Our work", "/work/"]],
         "jsonld": [WORK_LD],
         "body": WORK_BODY,
+    },
+    {
+        "path": "/software/", "nav": "software",
+        "title": "Custom Software for Small Businesses | Salt Services",
+        "desc": "CRM, estimating and lifestyle software we built ourselves and run every day, shown with sample data. See what we could build for your business.",
+        "crumbs": [["Home", "/"], ["Software", "/software/"]],
+        "body": SOFTWARE_BODY + cta_band("Got a job you still do by hand?",
+                                         f"Tell us what eats your week and we'll tell you honestly whether software can fix it. Or call {PHONE}.",
+                                         "Tell us what you need built"),
     },
     {
         "path": "/about/", "nav": "about",
