@@ -297,7 +297,7 @@ SERVICES_HUB_BODY = f"""<section class="section">
 # ============================================================ CRM
 CRM_FAQS = [
     ("How much does CRM implementation cost?",
-     "It depends on how many pipelines, automations and connections your business needs, so we quote it flat and in writing after a short call. You'll know the setup price and the monthly price before we start. No hourly meter running."),
+     "Setup starts at $1,000. Where it lands above that depends on how many pipelines, automations and connections your business needs, so we quote it flat and in writing after a short call. You'll know the setup price and the monthly price before we start. No hourly meter running."),
     ("We're a two-person shop. Do we really need a CRM?",
      "If you've ever forgotten to call a lead back, yes. Small teams feel the benefit fastest, because one missed follow-up is a bigger share of the month. A basic setup, leads in and reminders out, is cheap insurance."),
     ("Can the CRM text customers for us?",
@@ -339,7 +339,7 @@ CRM_BODY = f"""<section class="section">
     <p>If you want an all-in-one platform with a website builder and online booking in the same login, there's <a href="/coraline/">Coraline</a>. Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
 
     <h2>How long does implementation take?</h2>
-    <p>A standard setup takes weeks, not months. We go in this order, so the system starts paying for itself while the rest is still being built:</p>
+    <p>A simple setup can go live in as little as three days. Bigger ones, with several pipelines or connections to other software, take longer, but never months. We go in this order, so the system starts paying for itself while the rest is still being built:</p>
     <ul class="checklist">
       {check_li("A short call to map how leads reach you today and where they slip through")}
       {check_li("Lead capture and missed-call text-back first, because that's where the money leaks")}
@@ -349,7 +349,7 @@ CRM_BODY = f"""<section class="section">
     </ul>
 
     <h2>What does CRM setup cost?</h2>
-    <p>You get two numbers in writing before we start: a flat price for the setup and a monthly price for the CRM. What moves the setup price is mostly how many pipelines you need, how many contacts we're moving, and whether we're connecting other software. A two-person shop that wants leads in one place and missed-call text-back is a much smaller job than a company with sales, scheduling and crews all in one system. If a smaller setup will do the job, we'll tell you.</p>
+    <p>CRM setup starts at $1,000. You get two numbers in writing before we start: a flat price for the setup and a monthly price for the CRM. What moves the setup price above that is mostly how many pipelines you need, how many contacts we're moving, and whether we're connecting other software. A two-person shop that wants leads in one place and missed-call text-back is a much smaller job than a company with sales, scheduling and crews all in one system. If a smaller setup will do the job, we'll tell you.</p>
 
     <h2>CRM setup in Knoxville, Sevierville and across Tennessee</h2>
     <p>We're based in Kodak, between Knoxville and Sevierville, and most of our clients are close enough that we can sit down at their counter and set it up with them. Contractors, landscapers, fence companies, cabin rentals and shops along the Parkway all lose leads the same way: the phone rings while everyone's busy. Outside East Tennessee we set up remotely and train over a screen share. Wherever you are in the state, you get the same CRM and the same people answering when you call <a href="tel:{BIZ['phone_tel']}">{BIZ['phone_display']}</a>.</p>
@@ -1287,7 +1287,8 @@ PAGES = [
         "crumbs": [["Home", "/"], ["Services", "/services/"], ["CRM implementation", "/services/crm-implementation/"]],
         "jsonld": [service_ld("CRM implementation",
                               "CRM setup and implementation for small businesses: pipeline design, lead capture, automated follow-up, missed-call text-back, contact migration, and team training.",
-                              "/services/crm-implementation/"),
+                              "/services/crm-implementation/") | {"offers": {"@type": "Offer",
+                       "priceSpecification": {"@type": "PriceSpecification", "minPrice": 1000, "priceCurrency": "USD"}}},
                    faq_ld(CRM_FAQS)],
         "body": CRM_BODY,
     },
