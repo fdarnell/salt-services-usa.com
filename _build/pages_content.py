@@ -244,7 +244,7 @@ HOME_BODY = f"""<section class="hero hero-3d">
     <div class="section-head">
       <h2>Where we work</h2>
       {SPRINKLE}
-      <p>Based in Kodak, serving businesses across East Tennessee: <a href="/service-areas/sevierville/">Sevierville</a>, <a href="/service-areas/knoxville/">Knoxville</a>, Pigeon Forge, Gatlinburg, Maryville, Dandridge, and beyond. Websites and SEO clients come from anywhere. See all <a href="/service-areas/">service areas</a>.</p>
+      <p>Based in Kodak, serving businesses across East Tennessee: <a href="/service-areas/sevierville/">Sevierville</a>, <a href="/service-areas/knoxville/">Knoxville</a>, <a href="/service-areas/pigeon-forge/">Pigeon Forge</a>, <a href="/service-areas/gatlinburg/">Gatlinburg</a>, Maryville, Dandridge, and beyond. Websites and SEO clients come from anywhere. See all <a href="/service-areas/">service areas</a>.</p>
       <p>Kodak puts us fifteen minutes from Sevierville's Parkway, about twenty-five from downtown Knoxville, and roughly the same from Dandridge's courthouse square — close enough to meet every client face to face, and far enough into the county to know what a small-town budget actually looks like.</p>
     </div>
   </div>
@@ -492,6 +492,7 @@ SEO_BODY = f"""<section class="section">
     </ul>
 
     <h2>How long until SEO produces leads?</h2>
+    <p>Wondering what this should cost? We wrote an honest guide to <a href="/guides/seo-cost-east-tennessee/">what SEO costs in East Tennessee</a>, including the red flags to watch for in anyone's proposal, ours included.</p>
     <p>Months, not days — usually three to six before the movement is obvious, faster in small-town markets like Dandridge and slower in crowded ones like <a href="/service-areas/knoxville/">Knoxville</a>. That runway is exactly why the roadmap exists: you can see the work compounding page by page instead of taking it on faith. Need the phone ringing before then? That's the case for running <a href="/services/digital-advertising/">ads</a> alongside — paid traffic now, free traffic forever after.</p>
 
     <h2>It starts with the site under the SEO</h2>
@@ -521,10 +522,20 @@ AREAS_BODY = f"""<section class="section">
         <p>The big market. More customers, more competition — and more reward for businesses that get specific about who they serve.</p>
         <a class="card-link" href="/service-areas/knoxville/">Marketing in Knoxville &rsaquo;</a>
       </li>
+      <li class="card">{icon('map')}
+        <h3>Pigeon Forge</h3>
+        <p>Shows and attractions strung along one long Parkway, where the event calendar decides when every ad dollar should run.</p>
+        <a class="card-link" href="/service-areas/pigeon-forge/">Marketing in Pigeon Forge &rsaquo;</a>
+      </li>
+      <li class="card">{icon('map')}
+        <h3>Gatlinburg</h3>
+        <p>A walking town at the park entrance: storefronts, wedding chapels, cabins in the hills, and the craft studios out on Glades Road.</p>
+        <a class="card-link" href="/service-areas/gatlinburg/">Marketing in Gatlinburg &rsaquo;</a>
+      </li>
     </ul>
     <div class="prose" style="margin-top:2rem">
       <h2>Also serving</h2>
-      <p>Pigeon Forge, Gatlinburg, Maryville, Dandridge, Seymour, Jefferson City, Newport, and the rest of East Tennessee. Dedicated pages for these towns are on the way as part of our own monthly content program — the same one we <a href="/services/seo-aeo/">sell to clients</a>, practiced on ourselves. Don't see your town? <a href="/contact/">We almost certainly still serve it.</a></p>
+      <p>Maryville, Dandridge, Seymour, Jefferson City, Newport, and the rest of East Tennessee. Dedicated pages for these towns are on the way as part of our own monthly content program — the same one we <a href="/services/seo-aeo/">sell to clients</a>, practiced on ourselves. Don't see your town? <a href="/contact/">We almost certainly still serve it.</a></p>
     </div>
   </div>
 </section>
@@ -562,7 +573,7 @@ SEV_BODY = f"""<section class="section">
       {check_li("AEO so AI trip-planners cite your business, not just the big aggregators")}
       {check_li("CRM and AI follow-up, because a lead answered in seconds books; one answered tomorrow already booked elsewhere")}
     </ul>
-    <p>We serve all of Sevier County from here — <a href="/service-areas/">Pigeon Forge, Gatlinburg, Seymour</a>, and the communities between.</p>
+    <p>We serve all of Sevier County from here — <a href="/service-areas/pigeon-forge/">Pigeon Forge</a>, <a href="/service-areas/gatlinburg/">Gatlinburg</a> and Seymour included.</p>
   </div>
 </section>
 """ + faq_html(SEV_FAQS, "Sevierville questions we get asked") + cta_band(
@@ -606,6 +617,154 @@ KNOX_BODY = f"""<section class="section">
 """ + faq_html(KNOX_FAQS, "Knoxville marketing, asked and answered") + cta_band(
     "Bring us your Knoxville market and we'll find the gap",
     "Tell us your industry and your part of town. We'll come back with the specific searches and neighborhoods we'd attack first — that plan is free either way.")
+
+# ============================================================ PIGEON FORGE
+PF_FAQS = [
+    ("Rod Run weekends bring the Parkway to a standstill. Should my ads run then?",
+     "Usually less than you'd think. During the spring and fall Rod Runs, the people already in town are stuck in traffic, and your cheapest customers are the ones who searched you before they left home. We push budget into the weeks before an event and trim it during, unless you sell something people buy on the spot."),
+    ("Can a vacation rental in Pigeon Forge really get direct bookings?",
+     "Yes, from repeat guests and from searches the big platforms answer badly. A guest who stayed once and liked it is the easiest booking you'll ever get, if you have their email and a site that takes a reservation without the platform fee. That's exactly the job we built the Downtown River Rentals site to do."),
+    ("My show or attraction sells tickets online. What does a marketing agency add?",
+     "Mostly the stretch before the purchase. Families compare three or four shows from the cabin the night before, so we build pages that answer what they're actually asking (run time, whether a toddler will sit through it, what dinner includes) and track which ads and searches end in a ticket sale."),
+    ("Do you work with Pigeon Forge businesses that aren't tourist-facing?",
+     "We do. Plenty of Pigeon Forge businesses mostly serve the people who live here and the cabin owners: cleaners, maintenance crews, property managers, contractors. For them it's local search and fast follow-up, and a CRM that keeps owner leads from getting buried under guest calls."),
+]
+
+PF_BODY = f"""<section class="section">
+  <div class="wrap prose">
+    <h1>Marketing for <em>Pigeon Forge</em> businesses</h1>
+    {SPRINKLE}
+    <p>Pigeon Forge is a city of about 6,000 people that gives directions by traffic light. Ask where a show or a pancake house is and you'll hear "between light 3 and light 4," because everything here lines up along five-plus miles of Parkway. That's the whole marketing problem in one picture: dozens of businesses on one road, competing for the same visitor in the same weekend, and most of those visitors decided where they're going before they turned off I-40.</p>
+
+    <h2>Pigeon Forge runs on a calendar</h2>
+    <p>Most towns have a busy season. Pigeon Forge has a schedule. Dollywood's openings and festivals, the spring and fall Rod Runs, Winterfest lights from November into February, holiday weekends: each one changes who's in town and what they're searching for. So a flat monthly ad budget is the most common money-waster we'd expect to find here. We plan spend around the calendar instead, heavier in the weeks when people are booking and lighter when they're already sitting in Parkway traffic.</p>
+
+    <h2>Win the night-before search</h2>
+    <p>A family in a cabin up on the ridge picks tomorrow's dinner show, mini golf course and breakfast spot on a phone after the kids are asleep. They type things like "dinner show pigeon forge with kids" or "breakfast near the island," and more of them ask ChatGPT the same question. The businesses that win that moment have a fast site that answers the exact question, current hours, real photos, and a stack of recent Google reviews. That's buildable, and it's where we'd start with most Parkway businesses.</p>
+    <ul class="checklist">
+      {check_li("Pages that answer the questions visitors type, written for your show, shop or restaurant")}
+      {check_li("Google Business Profile cleanup, so hours and photos match what people find when they arrive")}
+      {check_li("<a href='/services/seo-aeo/'>AEO</a> work so AI trip planners can name you, not just the big ticket sites")}
+      {check_li("Ad budgets timed to the event calendar instead of spread evenly across the year")}
+    </ul>
+
+    <h2>Direct bookings for cabins and cottages</h2>
+    <p>Rental owners here pay the booking platforms a cut of every stay. You can't skip the platforms entirely, and we won't tell you to. What you can do is own the second booking: collect the guest's email, follow up after checkout, and send them to a site of your own that takes the reservation. We built <a href="/work/">Downtown River Rentals</a>, riverside cottages a short walk off the Parkway, around exactly that job. The <a href="/services/crm-implementation/">CRM</a> side is what makes it work, because a returning guest you never contact again is just a platform customer.</p>
+
+    <h2>When the phone rings during a rush</h2>
+    <p>On a Saturday in October, nobody at a busy attraction or rental office is free to answer every call. Missed-call text-back and an <a href="/services/ai-implementation/">AI assistant</a> that answers the routine questions (parking, check-in time, pets) keep those callers from dialing the next listing. Kodak is close enough that we'll come set it up in person and train whoever answers your phones.</p>
+  </div>
+</section>
+""" + faq_html(PF_FAQS, "What Pigeon Forge owners ask us") + cta_band(
+    "Plan around the next big weekend",
+    f"Tell us what you run on the Parkway and which weekends make your year. We'll come back with a calendar and a budget built around them. Or call {PHONE}.")
+
+# ============================================================ GATLINBURG
+GAT_FAQS = [
+    ("Is marketing in Gatlinburg different from Pigeon Forge?",
+     "Yes. Pigeon Forge visitors drive the Parkway from stop to stop, but Gatlinburg visitors park once and walk. So in Gatlinburg your sidewalk and your Google listing do the selling together, and searches lean on words like \"downtown\" and \"walking distance.\" We write pages for that."),
+    ("Can you help a wedding chapel or elopement business book more couples?",
+     "Yes, and it's one of the most search-driven businesses in town. Couples plan months out, compare packages online, and ask very specific questions about guest counts, outdoor ceremonies and what happens if it rains. Clear package pages, honest answers, and fast follow-up on every inquiry decide who books."),
+    ("My shop is in the Arts and Crafts Community, not downtown. Is it worth marketing?",
+     "More than downtown, honestly. Visitors don't stumble onto Glades Road the way they stumble onto the Parkway, so they have to find you before they drive out. A Google profile with good photos, your hours, and a page about what you make is often the difference between a planned stop and a missed one."),
+    ("Can you reach Gatlinburg in person?",
+     "Yes. We're in Kodak, on the same side of Sevier County, and we'd rather walk your shop or chapel than do the first meeting over a video call. Seeing how customers actually find you tells us more than any form."),
+]
+
+GAT_BODY = f"""<section class="section">
+  <div class="wrap prose">
+    <h1>Marketing for <em>Gatlinburg</em> shops and chapels</h1>
+    {SPRINKLE}
+    <p>Gatlinburg has about 3,600 residents and sits right at the edge of the most-visited national park in the country. Visitors park once, then walk the Parkway and River Road for the rest of the day, so a business here sells to people already on foot, already hungry, and checking their phones between storefronts. Your Google listing is effectively the second sign on your door.</p>
+
+    <h2>A walking town searches differently</h2>
+    <p>Someone standing near the Space Needle doesn't search "restaurant." They search "lunch downtown gatlinburg," "fudge near me," or ask an AI assistant what's open after 9 p.m. Those searches are decided by distance, current hours and fresh reviews more than by whoever has the prettiest homepage. For most downtown businesses the first job is the plain one: a Google Business Profile that's complete and correct, and a fast site that answers the question on a phone with one bar of signal. Rainy days help, too. When the trails are washed out, "things to do in gatlinburg when it rains" picks up, and an indoor attraction with a page answering that question gets the crowd.</p>
+
+    <h2>Wedding chapels live and die on search</h2>
+    <p>Gatlinburg is one of the best-known places in the South to get married, which means a lot of chapels chasing the same couples. Couples book months ahead and compare packages line by line. They want prices or at least ranges, photos of the actual space, guest limits, and what happens if it rains on an outdoor ceremony. Chapels that answer all of that in writing, and reply to an inquiry the same hour, take the booking. Chapels that say "call for details" get skipped. A <a href="/services/crm-implementation/">CRM</a> with automatic replies and a follow-up sequence is where we'd start, with <a href="/services/seo-aeo/">package pages</a> built for the searches couples run.</p>
+
+    <h2>Beyond downtown: Glades Road and the cabin hills</h2>
+    <p>Half of Gatlinburg's business isn't on the main strip. The Arts and Crafts Community loop off Glades Road has potters, woodworkers, painters and candle makers who need visitors to plan a drive out. The hills above town are full of rental cabins, and their owners need two things: guests, and reliable people to clean and fix things between stays. Those businesses depend on being found before anyone leaves the cabin, which makes <a href="/services/web-design/">a site</a> and search presence matter more out there than downtown.</p>
+    <ul class="checklist">
+      {check_li("Google Business Profile setup and cleanup for walk-in shops and restaurants")}
+      {check_li("Package and FAQ pages for chapels, cabins and attractions")}
+      {check_li("Instant replies and follow-up for wedding and booking inquiries")}
+      {check_li("Pages that put an off-strip business on a visitor's plan before they drive")}
+    </ul>
+  </div>
+</section>
+""" + faq_html(GAT_FAQS, "Gatlinburg questions, answered") + cta_band(
+    "Show us where your customers find you",
+    f"Downtown storefront, chapel or a studio up Glades Road, tell us what you run. We'll look at what visitors search before they reach you and send back a plan. Or call {PHONE}.")
+
+# ============================================================ GUIDE: SEO COST
+SEO_COST_FAQS = [
+    ("How much does SEO cost per month for a small business?",
+     "Most small local businesses end up paying somewhere in the hundreds to low thousands per month for an ongoing program. In Ahrefs' poll of SEO providers, the most common monthly retainer was $501 to $1,000. Where you land depends on how many pages and towns need work and how crowded your search results are."),
+    ("Is SEO cheaper in a small town than in Knoxville?",
+     "Usually the work to win is smaller. A Dandridge or Jefferson City business is often competing with a handful of rivals, while a Knoxville roofer is up against dozens plus national chains. Fewer pages and less time get you to page one, so the total cost tends to be lower even if the monthly rate is similar."),
+    ("Can I do SEO myself instead of paying someone?",
+     "Some of it, yes. Claiming and filling out your Google Business Profile, asking every happy customer for a review, and writing a clear page for each service you offer cost nothing but time. Paying someone makes sense when you don't have that time, or when the technical side of your site is holding you back."),
+    ("Is cheap SEO worth it?",
+     "Rarely. A $99-a-month package can't pay for anyone to write real pages for your business, so it usually means automated reports, directory submissions, or bought links. Google's spam policies specifically target link schemes and mass-produced pages, so cheap SEO can cost you rankings you already have."),
+]
+
+SEO_COST_BODY = f"""<section class="section">
+  <div class="wrap prose">
+    <h1>What does SEO cost in <em>East Tennessee</em>?</h1>
+    {SPRINKLE}
+    <p class="hero-note" style="color:inherit">By Franklin Darnell, Salt Services &middot; Kodak, TN &middot; November 2026</p>
+    <p>For a small East Tennessee business, an ongoing SEO program usually runs from a few hundred dollars to a couple thousand a month, and a one-time cleanup or rebuild is priced as a project. That's a wide range on purpose. A Sevierville coffee shop and a Knoxville personal injury firm both "need SEO," but they're buying very different amounts of work. Here's what moves the price, and what to watch for before you sign anything.</p>
+
+    <h2>What you're actually paying for</h2>
+    <p>SEO is labor. Google doesn't charge for organic rankings, so every dollar goes to someone's time. In a local program that time usually goes to four things:</p>
+    <ul class="checklist">
+      {check_li("Writing new pages: one per service and per town you want to win, each one different")}
+      {check_li("Fixing the site underneath: speed, structure, schema markup, broken pages")}
+      {check_li("Your Google Business Profile and reviews, which decide the map results")}
+      {check_li("Reporting, so you can see which searches moved and which pages brought calls")}
+    </ul>
+    <p>If a proposal can't tell you how its hours split across those, ask. "Ongoing optimization" with no list of deliverables is where small-business money disappears.</p>
+
+    <h2>The four ways agencies price it</h2>
+    <p><strong>Monthly retainer.</strong> The most common setup. In <a href="https://ahrefs.com/blog/seo-pricing/" rel="noopener">Ahrefs' poll of 439 SEO providers</a>, most charged a monthly retainer, and the single most common band was $501 to $1,000 a month. Agencies and consultants tended to sit higher than freelancers.</p>
+    <p><strong>Project price.</strong> A fixed fee for a defined job, such as an audit, a site migration or a batch of pages. Good when you know exactly what's broken.</p>
+    <p><strong>Hourly.</strong> Common for consultants and for one-off advice. Fine for a second opinion, hard to budget for an ongoing program.</p>
+    <p><strong>"Pay for rankings."</strong> You pay only when a keyword hits page one. It sounds safe. In practice the provider picks keywords that are easy to rank and nobody searches, and you pay for trophies.</p>
+
+    <h2>Why East Tennessee can cost less than a big metro</h2>
+    <p>Price follows competition. Winning "plumber Knoxville" means beating dozens of plumbers plus the national lead-gen sites, which takes a lot of pages and a long time. Winning "plumber Dandridge" might take a few strong pages and a well-kept Google profile. Most of the towns around here are in the second group, and that's good news for a local business. The exception is tourism around Pigeon Forge and Gatlinburg, where you're competing with booking giants and ticket sites on the broad searches. There, the affordable play is the narrower question those giants answer badly.</p>
+
+    <h2>Red flags in an SEO proposal</h2>
+    <p>Google publishes its own advice on hiring an SEO, and it says plainly that <a href="https://developers.google.com/search/docs/fundamentals/do-i-need-seo" rel="noopener">no one can guarantee a #1 ranking</a>. Walk away from:</p>
+    <ul class="checklist">
+      {check_li("Ranking guarantees, especially &ldquo;page one in 30 days&rdquo;")}
+      {check_li("Link packages (&ldquo;500 backlinks&rdquo;), which Google's spam policies treat as link schemes")}
+      {check_li("Long contracts with no written list of what gets done each month")}
+      {check_li("The agency owning your Google Business Profile, analytics or website instead of you")}
+    </ul>
+
+    <h2>When SEO isn't worth paying for yet</h2>
+    <p>If your website is slow, thin or a single page, SEO on top of it is wasted money; fix <a href="/services/web-design/">the site</a> first. If you need calls this month, <a href="/services/digital-advertising/">paid ads</a> work faster and SEO can follow. And if leads already come in but nobody calls them back, more traffic won't help. That's a follow-up problem, and a <a href="/services/crm-implementation/">CRM with missed-call text-back</a> is the cheaper fix.</p>
+
+    <h2>How we price it at Salt Services</h2>
+    <p>We quote a flat monthly price in writing after a short call, based on how many towns and services you need to win. Our <a href="/services/seo-aeo/">monthly program</a> builds three new pages a month, every page written from scratch and approved by you on a preview link before it goes live, plus a plain-English report each month. You're reading one of those pages right now: this guide is part of the same program, run on our own site.</p>
+  </div>
+</section>
+""" + faq_html(SEO_COST_FAQS, "SEO cost questions") + cta_band(
+    "Get a real number for your business",
+    f"Tell us your business and the towns you serve. We'll look at who you're up against and send a flat written quote. Or call {PHONE}.")
+
+GUIDE_SEO_COST_LD = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "What does SEO cost in East Tennessee?",
+    "description": "What small businesses in East Tennessee typically pay for SEO, how agencies price it, and the red flags to avoid.",
+    "author": {"@type": "Person", "name": "Franklin Darnell", "worksFor": {"@id": "https://www.saltservicesusa.com/#business"}},
+    "publisher": {"@id": "https://www.saltservicesusa.com/#business"},
+    "datePublished": "2026-11-05",
+    "mainEntityOfPage": "https://www.saltservicesusa.com/guides/seo-cost-east-tennessee/",
+}
 
 # ============================================================ CORALINE
 CORALINE_CHECKOUT = "https://coraline.saltservicesusa.com"
@@ -1180,6 +1339,36 @@ PAGES = [
                               "/service-areas/knoxville/"),
                    faq_ld(KNOX_FAQS)],
         "body": KNOX_BODY,
+    },
+    {
+        "path": "/service-areas/pigeon-forge/", "nav": "areas",
+        "title": "Marketing Agency for Pigeon Forge, TN | Salt Services",
+        "desc": "Marketing for Pigeon Forge shows, cabins and Parkway shops: ad budgets timed to Rod Run and Winterfest, direct bookings, and fast follow-up.",
+        "crumbs": [["Home", "/"], ["Service areas", "/service-areas/"], ["Pigeon Forge", "/service-areas/pigeon-forge/"]],
+        "jsonld": [service_ld("Marketing services in Pigeon Forge, TN",
+                              "Marketing for Pigeon Forge businesses: event-timed advertising, direct-booking websites for rentals, SEO/AEO for trip-planning searches, and CRM and AI follow-up.",
+                              "/service-areas/pigeon-forge/"),
+                   faq_ld(PF_FAQS)],
+        "body": PF_BODY,
+    },
+    {
+        "path": "/service-areas/gatlinburg/", "nav": "areas",
+        "title": "Marketing Agency for Gatlinburg, TN | Salt Services",
+        "desc": "Marketing for Gatlinburg's walk-in shops, wedding chapels, cabins and Arts and Crafts Community studios, from a Kodak team that comes to you.",
+        "crumbs": [["Home", "/"], ["Service areas", "/service-areas/"], ["Gatlinburg", "/service-areas/gatlinburg/"]],
+        "jsonld": [service_ld("Marketing services in Gatlinburg, TN",
+                              "Marketing for Gatlinburg businesses: Google Business Profile and local search for walk-in shops, package pages and inquiry follow-up for wedding chapels and cabins.",
+                              "/service-areas/gatlinburg/"),
+                   faq_ld(GAT_FAQS)],
+        "body": GAT_BODY,
+    },
+    {
+        "path": "/guides/seo-cost-east-tennessee/", "nav": "",
+        "title": "What Does SEO Cost in East Tennessee? | Salt Services",
+        "desc": "What small businesses in East Tennessee pay for SEO, the four ways agencies price it, and the red flags to walk away from before you sign.",
+        "crumbs": [["Home", "/"], ["SEO cost guide", "/guides/seo-cost-east-tennessee/"]],
+        "jsonld": [GUIDE_SEO_COST_LD, faq_ld(SEO_COST_FAQS)],
+        "body": SEO_COST_BODY,
     },
     {
         "path": "/coraline/", "nav": "",
