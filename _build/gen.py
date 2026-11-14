@@ -103,6 +103,7 @@ HEAD = """<!DOCTYPE html>
 NAV_ITEMS = [("home", "/", "Home"),
              ("services", "/services/", "Services"),
              ("work", "/work/", "Our work"),
+             ("software", "/software/", "Software"),
              ("areas", "/service-areas/", "Service areas"),
              ("about", "/about/", "About"),
              ("contact", "/contact/", "Contact")]
