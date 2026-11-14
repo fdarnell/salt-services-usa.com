@@ -297,46 +297,70 @@ SERVICES_HUB_BODY = f"""<section class="section">
 # ============================================================ CRM
 CRM_FAQS = [
     ("How much does CRM implementation cost?",
-     "It depends on how many pipelines, automations, and integrations your business needs, so we quote it flat and in writing after a short call. You'll know the full price before we start — no hourly meter running."),
+     "Setup starts at $1,000. Where it lands above that depends on how many pipelines, automations and connections your business needs, so we quote it flat and in writing after a short call. You'll know the setup price and the monthly price before we start. No hourly meter running."),
     ("We're a two-person shop. Do we really need a CRM?",
-     "If you've ever forgotten to call a lead back, yes. Small teams actually feel the benefit fastest, because one missed follow-up is a bigger share of your revenue. A basic setup — leads in, reminders out — is cheap insurance."),
+     "If you've ever forgotten to call a lead back, yes. Small teams feel the benefit fastest, because one missed follow-up is a bigger share of the month. A basic setup, leads in and reminders out, is cheap insurance."),
     ("Can the CRM text customers for us?",
-     "Yes. Texting is usually the highest-impact automation we set up: missed-call text-back alone rescues leads who would otherwise just call the next business on the list. Review requests and appointment reminders ride the same rails."),
+     "Yes. Texting is usually the highest-impact automation we set up. Missed-call text-back alone rescues callers who would otherwise just try the next business on the list. Review requests and appointment reminders go out the same way."),
     ("What happens to the contacts in our spreadsheet or old system?",
-     "We migrate them. Part of every implementation is importing your existing contacts and job history so you start with your whole book of business in one place, not an empty database."),
+     "We move them. Every setup includes importing your existing contacts and job history, so you start with your whole book of business in one place instead of an empty database."),
+    ("Can the CRM connect to our estimating or job software?",
+     "Often, yes. For a Sevier County landscaping company we built the estimating app to talk to the CRM directly, so a booked visit or a signed estimate moves the deal forward without anyone dragging a card. If you already use a tool you like, we check what it can connect to before we promise anything."),
+    ("Do you set up CRMs outside East Tennessee?",
+     "Yes. We're in Kodak, so owners in Sevier, Knox, Blount and Jefferson counties usually get their training in person. For the rest of Tennessee we do the setup remotely and train your team over a screen share, and the CRM works the same either way."),
 ]
 
 CRM_BODY = f"""<section class="section">
   <div class="wrap prose">
     <h1>CRM implementation for <em>Tennessee</em> small businesses</h1>
     {SPRINKLE}
-    <p>Right now, your leads probably live in five places: missed calls, text threads, a Facebook inbox, somebody's email, and a legal pad by the register. Every one of those is a place where a paying customer can quietly disappear. A CRM puts every lead in one pipeline where nothing gets forgotten — and we do the part nobody has time for: setting it up so it actually works.</p>
+    <p>Right now your leads probably live in five places: missed calls, text threads, a Facebook inbox, somebody's email, and a legal pad by the register. Every one of those is a spot where a paying customer can quietly disappear. A CRM puts every lead in one pipeline where nothing gets forgotten. We do the part nobody has time for, which is setting it up so your team actually uses it.</p>
 
     <h2>What does CRM implementation include?</h2>
-    <p>Everything between "we should get organized" and your team using it daily without thinking about it:</p>
+    <p>Everything between "we should get organized" and your team using it every day without thinking about it:</p>
     <ul class="checklist">
       {check_li("Pipeline design that matches how your business actually sells")}
       {check_li("Lead capture wired in from your website, Google Business Profile, and social pages")}
       {check_li("Missed-call text-back, so a call you can't take still becomes a conversation")}
-      {check_li("Automated follow-up sequences by text and email")}
-      {check_li("Review requests that go out automatically after a job wraps")}
+      {check_li("Calls and texts from the CRM on your business number, on a laptop or a phone")}
+      {check_li("Automated follow-up by text and email, plus reminders that keep coming back until someone calls")}
+      {check_li("Review requests that go out after a job wraps, with a polite follow-up if they forget")}
       {check_li("Contact migration from spreadsheets or your old system")}
       {check_li("Training for your team, in person if you're in East Tennessee")}
     </ul>
 
+    <h2>What a real CRM setup looks like</h2>
+    <p>Here's one we run every day. A landscaping company in Sevier County was losing jobs in the gap between "can you come look at my yard?" and a signed estimate. Leads came in by phone, website and Facebook, and whoever answered kept the details in their head.</p>
+    <p>Now every lead lands in one inbox. A missed call gets a text back within seconds. When the estimate visit is booked, the deal moves to the next stage on its own. The crew draws the yard on a tablet in our <a href="/software/">estimating app</a>, the price book does the math, and the customer signs on their phone. That signature moves the deal again, and nobody has to remember to update anything. When the job is finished, one tap sends a review request. Up to two reminders follow a few days apart, and they stop as soon as the customer opens the link.</p>
+    <p>The owner can see every open lead, every estimate waiting on a signature and every job on the calendar from one login. That's the bar we set for every CRM we build.</p>
+
     <h2>Which CRM do you set up?</h2>
-    <p>Our go-to platform is <a href="/coraline/">Coraline</a>, the all-in-one CRM we run our own business on — calls, texts, email, pipelines, and automation in one place, priced for small businesses rather than enterprise sales teams. Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
+    <p>For most clients it's our own CRM, the one Salt Services runs on. We built it, we answer our own leads in it, and we fix it ourselves when something needs changing, so you're never stuck waiting on a help desk in another time zone. You can see the screens on our <a href="/software/#crm">software page</a>.</p>
+    <p>If you want an all-in-one platform with a website builder and online booking in the same login, there's <a href="/coraline/">Coraline</a>. Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
 
     <h2>How long does implementation take?</h2>
-    <p>A standard setup takes weeks, not months. We start with the piece that recovers revenue fastest — usually lead capture and missed-call text-back — so the system starts paying for itself while the rest is still being built.</p>
+    <p>A simple setup can go live in as little as three days. Bigger ones, with several pipelines or connections to other software, take longer, but never months. We go in this order, so the system starts paying for itself while the rest is still being built:</p>
+    <ul class="checklist">
+      {check_li("A short call to map how leads reach you today and where they slip through")}
+      {check_li("Lead capture and missed-call text-back first, because that's where the money leaks")}
+      {check_li("Your contacts moved over, then the pipeline stages and follow-up")}
+      {check_li("Review requests and any connections to your estimating or job software")}
+      {check_li("Training for whoever answers the phone, and a check-in after the first few weeks")}
+    </ul>
+
+    <h2>What does CRM setup cost?</h2>
+    <p>CRM setup starts at $1,000. You get two numbers in writing before we start: a flat price for the setup and a monthly price for the CRM. What moves the setup price above that is mostly how many pipelines you need, how many contacts we're moving, and whether we're connecting other software. A two-person shop that wants leads in one place and missed-call text-back is a much smaller job than a company with sales, scheduling and crews all in one system. If a smaller setup will do the job, we'll tell you.</p>
+
+    <h2>CRM setup in Knoxville, Sevierville and across Tennessee</h2>
+    <p>We're based in Kodak, between Knoxville and Sevierville, and most of our clients are close enough that we can sit down at their counter and set it up with them. Contractors, landscapers, fence companies, cabin rentals and shops along the Parkway all lose leads the same way: the phone rings while everyone's busy. Outside East Tennessee we set up remotely and train over a screen share. Wherever you are in the state, you get the same CRM and the same people answering when you call <a href="tel:{BIZ['phone_tel']}">{BIZ['phone_display']}</a>.</p>
 
     <h2>Where a CRM fits in the bigger picture</h2>
-    <p>A CRM catches leads; it doesn't create them. That's what your <a href="/services/web-design/">website</a>, <a href="/services/seo-aeo/">SEO</a>, and <a href="/services/digital-advertising/">ad campaigns</a> are for. And once the pipeline is full, <a href="/services/ai-implementation/">AI</a> can work it faster than any human — answering new leads in seconds and drafting follow-ups your team just approves. We build all of it, which is exactly why the pieces fit.</p>
+    <p>A CRM catches leads; it doesn't create them. That's what your <a href="/services/web-design/">website</a>, <a href="/services/seo-aeo/">SEO</a>, and <a href="/services/digital-advertising/">ad campaigns</a> are for. Once the pipeline is full, <a href="/services/ai-implementation/">AI</a> can work it faster than any person, answering new leads in seconds and drafting follow-ups your team just approves. We build all of it, which is why the pieces fit.</p>
   </div>
 </section>
 """ + faq_html(CRM_FAQS, "CRM questions, answered straight") + cta_band(
     "Stop losing leads you already paid for",
-    "Tell us how leads reach you today and we'll show you where they're leaking — before you spend a dollar on new marketing.")
+    "Tell us how leads reach you today and we'll show you where they're leaking, before you spend a dollar on new marketing.")
 
 # ============================================================ AI
 AI_FAQS = [
@@ -1263,7 +1287,8 @@ PAGES = [
         "crumbs": [["Home", "/"], ["Services", "/services/"], ["CRM implementation", "/services/crm-implementation/"]],
         "jsonld": [service_ld("CRM implementation",
                               "CRM setup and implementation for small businesses: pipeline design, lead capture, automated follow-up, missed-call text-back, contact migration, and team training.",
-                              "/services/crm-implementation/"),
+                              "/services/crm-implementation/") | {"offers": {"@type": "Offer",
+                       "priceSpecification": {"@type": "PriceSpecification", "minPrice": 1000, "priceCurrency": "USD"}}},
                    faq_ld(CRM_FAQS)],
         "body": CRM_BODY,
     },
@@ -1325,7 +1350,7 @@ PAGES = [
         "crumbs": [["Home", "/"], ["Service areas", "/service-areas/"], ["Sevierville", "/service-areas/sevierville/"]],
         "jsonld": [service_ld("Marketing services in Sevierville, TN",
                               "Marketing, advertising, web design, SEO/AEO, CRM, and AI implementation for businesses in Sevierville, Tennessee — tourist-facing and local alike.",
-                              "/service-areas/sevierville/"),
+                              "/service-areas/sevierville/", areas=["Sevierville"]),
                    faq_ld(SEV_FAQS)],
         "body": SEV_BODY,
     },
@@ -1336,7 +1361,7 @@ PAGES = [
         "crumbs": [["Home", "/"], ["Service areas", "/service-areas/"], ["Knoxville", "/service-areas/knoxville/"]],
         "jsonld": [service_ld("Digital marketing in Knoxville, TN",
                               "Digital marketing for Knoxville businesses: neighborhood-level advertising, SEO/AEO content, conversion-focused websites, and CRM/AI follow-up systems.",
-                              "/service-areas/knoxville/"),
+                              "/service-areas/knoxville/", areas=["Knoxville"]),
                    faq_ld(KNOX_FAQS)],
         "body": KNOX_BODY,
     },
@@ -1347,7 +1372,7 @@ PAGES = [
         "crumbs": [["Home", "/"], ["Service areas", "/service-areas/"], ["Pigeon Forge", "/service-areas/pigeon-forge/"]],
         "jsonld": [service_ld("Marketing services in Pigeon Forge, TN",
                               "Marketing for Pigeon Forge businesses: event-timed advertising, direct-booking websites for rentals, SEO/AEO for trip-planning searches, and CRM and AI follow-up.",
-                              "/service-areas/pigeon-forge/"),
+                              "/service-areas/pigeon-forge/", areas=["Pigeon Forge"]),
                    faq_ld(PF_FAQS)],
         "body": PF_BODY,
     },
@@ -1358,7 +1383,7 @@ PAGES = [
         "crumbs": [["Home", "/"], ["Service areas", "/service-areas/"], ["Gatlinburg", "/service-areas/gatlinburg/"]],
         "jsonld": [service_ld("Marketing services in Gatlinburg, TN",
                               "Marketing for Gatlinburg businesses: Google Business Profile and local search for walk-in shops, package pages and inquiry follow-up for wedding chapels and cabins.",
-                              "/service-areas/gatlinburg/"),
+                              "/service-areas/gatlinburg/", areas=["Gatlinburg"]),
                    faq_ld(GAT_FAQS)],
         "body": GAT_BODY,
     },
@@ -1377,10 +1402,11 @@ PAGES = [
         "crumbs": [["Home", "/"], ["Coraline", "/coraline/"]],
         "jsonld": [{
             "@context": "https://schema.org",
-            "@type": "Product",
+            "@type": "Service",
             "name": "Coraline",
+            "serviceType": "CRM and marketing platform",
             "description": "All-in-one CRM and marketing platform: lead capture, pipelines, text and email automation, online booking, website builder, and AI conversation bot.",
-            "brand": {"@type": "Brand", "name": "Coraline"},
+            "provider": {"@id": "https://www.saltservicesusa.com/#business"},
             "url": "https://www.saltservicesusa.com/coraline/",
             "offers": [
                 {"@type": "Offer", "name": "Starter", "price": "197.00", "priceCurrency": "USD", "url": CORALINE_CHECKOUT},
