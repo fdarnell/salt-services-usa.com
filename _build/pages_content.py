@@ -795,7 +795,7 @@ CORALINE_FAQS = [
     ("Do I have to set Coraline up myself?",
      "No. We set it up for you: a pipeline built around how you sell, your contacts moved over, your website forms and business number connected, and your team trained. A simple setup can go live in as little as three days."),
     ("What does Coraline cost?",
-     "There are three plans: Starter at $99 a month, Growth at $297 and Pro at $497, with a one-time setup of $1,000, $1,500 or $2,500. Every plan includes some texting and calling each month. Anything past that comes out of a prepaid balance, and you'll have both numbers in writing before we start."),
+     "There are three plans: Starter at $99 a month, Growth at $297 and Pro at $497, with a one-time setup of $1,000, $1,500 or $2,500, half off this winter. Paying for a year up front gets you two months free. Every plan includes some texting and calling each month. Anything past that comes out of a prepaid balance, and you'll have both numbers in writing before we start."),
     ("Will my customers see the name Coraline?",
      "No. Your texts and emails go out under your business name, from your business number. Your customers only ever see you."),
     ("Does Coraline work on a phone?",
@@ -817,7 +817,7 @@ CORALINE_BODY = f"""<section class="hero">
       <a class="btn btn-accent" href="/contact/#form">Get a setup quote</a>
       <a class="btn btn-ghost" href="#screens">See the screens</a>
     </p>
-    <p class="hero-note">Plans from $99 a month. Setup from $1,000, and a simple one can be live in as little as three days.</p>
+    <p class="hero-note">Plans from $99 a month. Setup is half off this winter, from $500, and a simple one can be live in as little as three days.</p>
   </div>
 </section>
 
@@ -875,13 +875,15 @@ CORALINE_BODY = f"""<section class="hero">
     <div class="section-head">
       <h2>What does Coraline cost?</h2>
       {SPRINKLE}
-      <p>One flat monthly price for your business, not a charge for every person who logs in. We set it up for you either way.</p>
+      <p>One flat monthly price for your business, not a charge for every person who logs in. Pay for a year up front and you get two months free. We set it up for you either way.</p>
+      <p class="winter-deal"><b>Winter offer:</b> half off setup on every plan.</p>
     </div>
     <ul class="card-grid">
       <li class="card price-card">
         <h3>Starter</h3>
         <p class="price-tag">$99<span class="per">/month</span></p>
-        <p class="price-note">Setup $1,000 &middot; up to 3 users<br>For a small crew that keeps missing calls.</p>
+        <p class="price-year">or $990 a year, two months free</p>
+        <p class="price-note">Setup <s>$1,000</s> <b class="price-deal">$500 this winter</b> &middot; up to 3 users<br>For a small crew that keeps missing calls.</p>
         <ul class="checklist">
           {check_li("One inbox for calls, texts, email and website forms")}
           {check_li("Your business number, with missed-call text-back")}
@@ -896,7 +898,8 @@ CORALINE_BODY = f"""<section class="hero">
         <span class="price-badge">Our recommendation</span>
         <h3>Growth</h3>
         <p class="price-tag">$297<span class="per">/month</span></p>
-        <p class="price-note">Setup $1,500 &middot; up to 10 users<br>For a business with a crew, an office and a sales process.</p>
+        <p class="price-year">or $2,970 a year, two months free</p>
+        <p class="price-note">Setup <s>$1,500</s> <b class="price-deal">$750 this winter</b> &middot; up to 10 users<br>For a business with a crew, an office and a sales process.</p>
         <ul class="checklist">
           {check_li("Everything in Starter")}
           {check_li("Follow-ups by text and email that send themselves")}
@@ -913,7 +916,8 @@ CORALINE_BODY = f"""<section class="hero">
       <li class="card price-card">
         <h3>Pro</h3>
         <p class="price-tag">$497<span class="per">/month</span></p>
-        <p class="price-note">Setup $2,500 &middot; unlimited users<br>For an owner who wants the whole front office in one place.</p>
+        <p class="price-year">or $4,970 a year, two months free</p>
+        <p class="price-note">Setup <s>$2,500</s> <b class="price-deal">$1,250 this winter</b> &middot; unlimited users<br>For an owner who wants the whole front office in one place.</p>
         <ul class="checklist">
           {check_li("Everything in Growth")}
           {check_li("An assistant that answers from all your records")}
