@@ -2,7 +2,7 @@
 # Edit copy here, then run: python3 _build/gen.py
 from gen import (SPRINKLE, icon, check_li, coraline_section, faq_html, faq_ld,
                  service_ld, BIZ)
-from showcase_content import SHOWCASE, SOFTWARE_TEASER, SOFTWARE_BODY, SHOT_CRM, SHOT_CRM_2, sw_feature
+from showcase_content import SHOWCASE, SOFTWARE_TEASER, SOFTWARE_BODY, SHOT_CRM, SHOT_CRM_2, sw_feature, shot, phone_shot
 
 PHONE = BIZ["phone_display"]
 TEL = BIZ["phone_tel"]
@@ -859,14 +859,42 @@ CORALINE_BODY = f"""<section class="hero">
 
 <section class="section section-alt" id="screens">
   <div class="wrap">
-    """ + sw_feature("Inside Coraline", "Built for the truck, not the desk",
-               "These are real Coraline screens, shown with a sample lawn company. The owner sees every open lead, every estimate waiting on a signature and every job on the calendar from one login.",
-               ["Missed-call text-back within seconds, day or night",
-                "Calls and texts from the browser, iPhone or iPad, from your business number",
-                "A pipeline from new lead to won, with the next step on every card",
-                "Review requests by text or email, with follow-ups",
-                "Your customers see your business name, never ours"],
-               'More screens on our <a href="/software/#crm">software page</a>.', f'<div class="shot-stack">{SHOT_CRM}{SHOT_CRM_2}</div>') + f"""
+    <div class="section-head">
+      <h2>Five things Coraline does for a small business</h2>
+      {SPRINKLE}
+      <p>These are real Coraline screens, shown with a sample lawn company. They're the five things that make the biggest difference for a crew that's busy doing the work.</p>
+    </div>
+    """ + sw_feature("Never miss a lead", "A missed call gets a text back in seconds",
+               "When you're on a roof or under a sink, the caller hears back from your business number before they dial the next company. Their reply lands in one inbox with your calls, emails, website forms and chats, instead of getting buried in someone's personal phone.",
+               ["Missed-call text-back, day or night",
+                "Calls, texts, email, forms and chat in one list",
+                "Answer from a laptop, iPhone or iPad, from your business number"],
+               "", f'<div class="shot-stack">{SHOT_CRM}' + phone_shot("crm-phone.webp", "The Coraline inbox on an iPhone", 780, 1688, "shot-overlap") + '</div>') + """
+    """ + sw_feature("Your schedule", "See the whole month, and let customers book the open times",
+               "Estimates, installs and phone calls sit on one calendar, each in its own color. Hide the ones you don't need or look at one at a time. Customers pick a time from your booking page, and a reminder goes out the day before.",
+               ["A color for every calendar, with show and hide",
+                "A booking page that keeps to your hours and leaves a gap between jobs",
+                "Text reminders the day before, so fewer people forget"],
+               "", '<div class="shot-stack">' + shot("cor-calendar.webp", "The Coraline calendar for a sample lawn company: a month of installs, estimates and phone calls, each calendar in its own color", "", 1600, 1000) + phone_shot("cor-calendar-phone.webp", "The Coraline calendar on an iPhone: colored dots for each booked day and the list for the chosen day", 780, 1688, "shot-overlap shot-left") + '</div>', flip=True) + """
+    """ + sw_feature("Every job", "Every job, from the first call to paid",
+               "Each lead is a card that moves across the board: new, quoted, accepted, scheduled, won. You see what every job is worth and what has to happen next, so a quote doesn't sit for two weeks because nobody remembered it.",
+               ["What's open, and what it's worth",
+                "The next step and its date on every card",
+                "Call the customer straight from the card"],
+               "", shot("crm-pipeline.webp", "The Coraline pipeline for a sample lawn company: jobs moving from new lead to quote sent, accepted, scheduled and won", "", 1600, 1000)) + """
+    """ + sw_feature("Follow-up", "Follow-ups that send themselves",
+               "Most jobs are lost to silence, not to price. Coraline sends the thank-you to a new lead, the nudge two days after a quote and the reminder before a visit, written in your words. You can see how many people each one is waiting on.",
+               ["Texts new website leads back within a minute",
+                "Nudges quotes that haven't been answered",
+                "Checks in with leads that went quiet"],
+               "", shot("cor-automations.webp", "Coraline automations for a sample lawn company: text back new leads, follow up on estimates, remind before appointments, ask for reviews and check in on quiet leads", "", 1600, 1000), flip=True) + """
+    """ + sw_feature("Reviews", "More five-star reviews, without the awkward ask",
+               "When a job's done, one tap sends the customer your Google review link by text or email, with up to two polite reminders. You can see how many people you asked, how many opened the link and how your rating is moving.",
+               ["Ask by text or email in one tap",
+                "Up to two polite reminders, then it stops",
+                "See who opened the link"],
+               "", shot("cor-reviews.webp", "Coraline reviews for a sample lawn company: 64 customers asked, 64 percent opened the link, a 4.8 star rating and new five-star reviews", "", 1600, 1000)) + f"""
+    <p class="sw-who" style="text-align:center;margin-top:2rem">More screens on our <a href="/software/#crm">software page</a>.</p>
   </div>
 </section>
 

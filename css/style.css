@@ -845,3 +845,13 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 .price-card .price-deal { color: var(--accent-ink, #94570a); font-weight: 700; }
 .section-head .winter-deal, .winter-deal { display: inline-block; margin-top: 0.6rem; padding: 0.5rem 1rem; border-radius: 14px; background: var(--accent); color: #1c1030; font-weight: 600; }
 .winter-deal b { color: inherit; }
+
+/* A phone laid over a laptop screen (Coraline features). A phone is tall, so
+   it stays narrow and hangs below the screen instead of covering it. */
+.shot-stack:has(.phone-shot.shot-overlap) { padding-bottom: 22%; }
+.phone-shot.shot-overlap { width: 25%; max-width: 170px; padding: 6px; border-radius: 26px; bottom: 0; }
+.phone-shot.shot-overlap img { border-radius: 20px; }
+@media (max-width: 640px) {
+  .phone-shot.shot-overlap { width: 27%; right: -2%; }
+  .phone-shot.shot-overlap.shot-left { right: auto; left: -2%; }
+}
