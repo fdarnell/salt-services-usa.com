@@ -837,3 +837,6 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 }
 .cal-stack.phone-left { margin-right: 0; margin-left: 6%; }
 .cal-stack.phone-left .phone-shot { right: auto; left: -6%; }
+
+/* Coraline product logo in the /coraline/ hero */
+.product-logo { display: block; width: 72px; height: 72px; margin: 0 0 1.25rem; }

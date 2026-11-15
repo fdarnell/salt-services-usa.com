@@ -26,9 +26,9 @@
     "form_height": 770
   },
   "chat": {
-    "provider": "Salt CRM website assistant (replaced Coraline's SALT AI)",
+    "provider": "Coraline website assistant (our own CRM, crm.saltservicesusa.com)",
     "embed": "https://crm.saltservicesusa.com/api/widget.js?site=saltservicesusa.com",
-    "note": "Loaded site-wide by js/main.js, deferred until page load + 2.5s or first interaction. Set up in Salt CRM: Marketing → Website chat."
+    "note": "Loaded site-wide by js/main.js, deferred until page load + 2.5s or first interaction. Set up in Coraline: Marketing → Website chat."
   },
   "name_origin": "Matthew 5:13"
 }
