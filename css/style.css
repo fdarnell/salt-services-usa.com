@@ -840,3 +840,4 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 
 /* Coraline product logo in the /coraline/ hero */
 .product-logo { display: block; width: 72px; height: 72px; margin: 0 0 1.25rem; }
+.price-card .price-year { color: var(--muted); font-size: 0.9rem; font-weight: 600; margin: 0 0 0.4rem; }

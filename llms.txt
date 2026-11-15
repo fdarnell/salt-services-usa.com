@@ -25,7 +25,7 @@
 
 ## Product
 
-- [Coraline](https://www.saltservicesusa.com/coraline/): the CRM Salt Services wrote and runs on — one inbox for calls, texts, email, website forms and Google reviews, a sales pipeline, missed-call text-back, reminders, contracts and review requests. Plans: Starter $99/month, Growth $297/month, Pro $497/month, with one-time setup of $1,000, $1,500 or $2,500; a simple setup can go live in as little as three days.
+- [Coraline](https://www.saltservicesusa.com/coraline/): the CRM Salt Services wrote and runs on — one inbox for calls, texts, email, website forms and Google reviews, a sales pipeline, missed-call text-back, reminders, contracts and review requests. Plans: Starter $99/month, Growth $297/month, Pro $497/month, with one-time setup of $1,000, $1,500 or $2,500 (yearly: $990, $2,970 or $4,970, two months free); a simple setup can go live in as little as three days.
 
 ## Company
 
