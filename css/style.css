@@ -841,3 +841,7 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 /* Coraline product logo in the /coraline/ hero */
 .product-logo { display: block; width: 72px; height: 72px; margin: 0 0 1.25rem; }
 .price-card .price-year { color: var(--muted); font-size: 0.9rem; font-weight: 600; margin: 0 0 0.4rem; }
+.price-card .price-note s { opacity: 0.75; }
+.price-card .price-deal { color: var(--accent-ink, #94570a); font-weight: 700; }
+.section-head .winter-deal, .winter-deal { display: inline-block; margin-top: 0.6rem; padding: 0.5rem 1rem; border-radius: 14px; background: var(--accent); color: #1c1030; font-weight: 600; }
+.winter-deal b { color: inherit; }
