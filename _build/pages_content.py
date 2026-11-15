@@ -2,7 +2,7 @@
 # Edit copy here, then run: python3 _build/gen.py
 from gen import (SPRINKLE, icon, check_li, coraline_section, faq_html, faq_ld,
                  service_ld, BIZ)
-from showcase_content import SHOWCASE, SOFTWARE_TEASER, SOFTWARE_BODY
+from showcase_content import SHOWCASE, SOFTWARE_TEASER, SOFTWARE_BODY, SHOT_CRM, SHOT_CRM_2, sw_feature
 
 PHONE = BIZ["phone_display"]
 TEL = BIZ["phone_tel"]
@@ -335,8 +335,8 @@ CRM_BODY = f"""<section class="section">
     <p>The owner can see every open lead, every estimate waiting on a signature and every job on the calendar from one login. That's the bar we set for every CRM we build.</p>
 
     <h2>Which CRM do you set up?</h2>
-    <p>For most clients it's our own CRM, the one Salt Services runs on. We built it, we answer our own leads in it, and we fix it ourselves when something needs changing, so you're never stuck waiting on a help desk in another time zone. You can see the screens on our <a href="/software/#crm">software page</a>.</p>
-    <p>If you want an all-in-one platform with a website builder and online booking in the same login, there's <a href="/coraline/">Coraline</a>. Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
+    <p>For most clients it's <a href="/coraline/">Coraline</a>, the CRM we wrote ourselves and run Salt Services on. We answer our own leads in it, and we fix it ourselves when something needs changing, so you're never stuck waiting on a help desk in another time zone. You can see the screens on our <a href="/software/#crm">software page</a>.</p>
+    <p>Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
 
     <h2>How long does implementation take?</h2>
     <p>A simple setup can go live in as little as three days. Bigger ones, with several pipelines or connections to other software, take longer, but never months. We go in this order, so the system starts paying for itself while the rest is still being built:</p>
@@ -371,7 +371,7 @@ AI_FAQS = [
     ("What if the AI gives a customer a wrong answer?",
      "We build guardrails for exactly this. The AI only answers from information you've approved, and anything outside its lane — pricing edge cases, complaints, emergencies — gets routed to a person immediately. You review transcripts, and its answers tighten up over time."),
     ("Do we need to buy new software for this?",
-     "Usually not. Most of what we implement runs inside the CRM, which you likely need anyway. If you're already set up on a platform like our own Coraline, AI is an upgrade to what you have, not another subscription to babysit."),
+     "Usually not. Most of what we implement runs inside the CRM, which you likely need anyway. If you're already on Coraline, our CRM, AI is an upgrade to what you have, not another subscription to babysit."),
 ]
 
 AI_BODY = f"""<section class="section">
@@ -791,30 +791,33 @@ GUIDE_SEO_COST_LD = {
 }
 
 # ============================================================ CORALINE
-CORALINE_CHECKOUT = "https://coraline.saltservicesusa.com"
-
 CORALINE_FAQS = [
     ("Do I have to set Coraline up myself?",
-     "No — that's the point of buying it from us. Every Coraline plan can come with our implementation: pipelines built for how you sell, your contacts migrated, automations wired, and your team trained. You log in to a working system, not an empty one."),
-    ("Do I need Coraline to work with Salt Services?",
-     "No. Our web design, SEO, and advertising work stands on its own. Coraline is simply the platform we recommend when a client needs a CRM, because it's the one we run our own business on and can support the deepest."),
-    ("What's actually different between the three plans?",
-     "Starter is the full core platform for a single account. Unlimited removes the ceilings — unlimited contacts and users — and adds a branded desktop app. Pro adds the operator tools: email, phone, and text rebilling, split testing, agent reporting, and advanced API access."),
+     "No. We set it up for you: a pipeline built around how you sell, your contacts moved over, your website forms and business number connected, and your team trained. A simple setup can go live in as little as three days."),
+    ("What does Coraline cost?",
+     "Setup starts at $1,000. The monthly price depends on your setup and how much your business texts and calls, and you'll have both numbers in writing before we start."),
+    ("Will my customers see the name Coraline?",
+     "No. Your texts and emails go out under your business name, from your business number. Your customers only ever see you."),
+    ("Does Coraline work on a phone?",
+     "Yes. It runs on a laptop, an iPhone or an iPad, and you can add it to your home screen like an app. A version for the App Store is on the way."),
     ("Will Coraline work with my existing website?",
-     "Yes. Coraline's forms, chat, and booking calendars embed into any site — including sites we didn't build. If we built yours, the wiring is already our standard practice."),
+     "Yes. Coraline's forms and website chat go on any site, including ones we didn't build. Every form fill and chat lands in the same inbox as your calls and texts."),
+    ("Do I need Coraline to work with Salt Services?",
+     "No. Our web design, SEO and advertising work stands on its own. Coraline is what we recommend when a business needs a CRM, because we wrote it and we run our own business on it."),
 ]
 
 CORALINE_BODY = f"""<section class="hero">
   <div class="wrap">
-    <span class="hero-kicker">Coraline &middot; the platform behind our client work</span>
+    <img class="product-logo" src="/images/coraline-logo.svg" alt="" width="72" height="72">
+    <span class="hero-kicker">Coraline &middot; the CRM we built in Kodak, TN</span>
     <h1>One login for your <span class="accent">whole</span> pipeline.</h1>
     {SPRINKLE}
-    <p class="lead">Coraline is the all-in-one CRM and marketing platform we run our own business on and implement for clients: lead capture, pipelines, booking, text and email automation, and an AI conversation bot — in one place, priced for small businesses.</p>
+    <p class="lead">Coraline is the CRM Salt Services wrote and runs its own business on. Calls, texts, email, website forms and Google reviews land in one inbox. Every job moves down one pipeline, and the follow-ups go out without anyone having to remember them.</p>
     <p>
-      <a class="btn btn-accent" href="{CORALINE_CHECKOUT}">Sign up for Coraline</a>
-      <a class="btn btn-ghost" href="/contact/#form">Talk to us first</a>
+      <a class="btn btn-accent" href="/contact/#form">Get a setup quote</a>
+      <a class="btn btn-ghost" href="#screens">See the screens</a>
     </p>
-    <p class="hero-note">Not sure which plan fits? Start with the form and we'll tell you honestly — including if the answer is the cheapest one.</p>
+    <p class="hero-note">Setup starts at $1,000, and a simple one can be live in as little as three days.</p>
   </div>
 </section>
 
@@ -823,95 +826,65 @@ CORALINE_BODY = f"""<section class="hero">
     <div class="section-head">
       <h2>What's inside</h2>
       {SPRINKLE}
-      <p>Most businesses run this stack as four or five separate subscriptions that don't talk to each other. Coraline is the same stack as one system.</p>
+      <p>Most small businesses glue four or five apps together and still copy things by hand. Coraline is one system, and we can change it when your business needs something it doesn't do yet.</p>
     </div>
     <ul class="card-grid">
       <li class="card">{icon('crm')}
-        <h3>Leads &amp; pipelines</h3>
-        <p>Every lead from your website, ads, and Google profile lands in one pipeline — tracked from first contact to closed job.</p>
+        <h3>One inbox</h3>
+        <p>Website forms, calls, texts, email and Google reviews in one list, answered from your business number on a laptop or a phone.</p>
       </li>
       <li class="card">{icon('ads')}
-        <h3>Marketing automation</h3>
-        <p>Text and email follow-up sequences, review requests, and appointment reminders that run themselves.</p>
+        <h3>Follow-up that runs itself</h3>
+        <p>A missed call gets a text back within seconds. Follow-ups go out by text and email, and reminders keep coming back until someone makes the call.</p>
       </li>
       <li class="card">{icon('map')}
-        <h3>Online booking</h3>
-        <p>Calendars your customers book directly, synced to your team, with reminders that cut no-shows.</p>
-      </li>
-      <li class="card">{icon('ai')}
-        <h3>AI conversation bot</h3>
-        <p>Answers missed calls and website chats in seconds, qualifies the lead, and books the appointment — with a human handoff.</p>
+        <h3>Pipeline and calendar</h3>
+        <p>Every job from new lead to won, with the next step on every card and estimate visits on a shared calendar.</p>
       </li>
       <li class="card">{icon('web')}
-        <h3>Website &amp; funnel builder</h3>
-        <p>Landing pages and funnels with split testing on the Pro plan — or keep the site you have and just embed the forms.</p>
+        <h3>Contracts and reviews</h3>
+        <p>Customers sign on their phone. When the job's done, one tap sends a review request, with up to two polite reminders.</p>
+      </li>
+      <li class="card">{icon('ai')}
+        <h3>A built-in assistant</h3>
+        <p>Ask it who's waiting on a callback and it answers from your own records. It also answers chats on your website and hands off to a person.</p>
       </li>
       <li class="card">{icon('seo')}
-        <h3>Reporting</h3>
-        <p>Contact management, social calendar, agent reporting, and API access — so you can see what's working without exporting spreadsheets.</p>
+        <h3>Reports</h3>
+        <p>Where your leads came from and what's still open, without exporting a spreadsheet.</p>
       </li>
     </ul>
   </div>
 </section>
 
-<section class="section section-alt">
+<section class="section section-alt" id="screens">
   <div class="wrap">
-    <div class="section-head">
-      <h2>Plans and pricing</h2>
-      {SPRINKLE}
-      <p>Flat monthly pricing, no per-seat surprises. Every plan links to the same secure checkout.</p>
-    </div>
-    <ul class="card-grid">
-      <li class="card price-card">
-        <h3>Starter</h3>
-        <p class="price-tag">$197<span class="per">/month</span></p>
-        <p class="price-note">The core platform, single account.</p>
-        <ul class="checklist">
-          {check_li("Lead capture, pipelines, and contact management")}
-          {check_li("Text and email marketing automation")}
-          {check_li("Online booking and calendars")}
-          {check_li("Website and funnel builder")}
-        </ul>
-        <a class="btn btn-navy" href="{CORALINE_CHECKOUT}">Choose Starter</a>
-      </li>
-      <li class="card price-card price-featured">
-        <span class="price-badge">Our recommendation</span>
-        <h3>Unlimited</h3>
-        <p class="price-tag">$297<span class="per">/month</span></p>
-        <p class="price-note">Everything in Starter, without ceilings.</p>
-        <ul class="checklist">
-          {check_li("Unlimited contacts and users")}
-          {check_li("Branded desktop app on your own domain")}
-          {check_li("Everything in Starter, unrestricted")}
-        </ul>
-        <a class="btn btn-accent" href="{CORALINE_CHECKOUT}">Choose Unlimited</a>
-      </li>
-      <li class="card price-card">
-        <h3>Pro</h3>
-        <p class="price-tag">$497<span class="per">/month</span></p>
-        <p class="price-note">Everything in Unlimited, plus operator tools.</p>
-        <ul class="checklist">
-          {check_li("Email, phone, and text rebilling")}
-          {check_li("Split testing and agent reporting")}
-          {check_li("Advanced API access")}
-        </ul>
-        <a class="btn btn-navy" href="{CORALINE_CHECKOUT}">Choose Pro</a>
-      </li>
-    </ul>
+    """ + sw_feature("Inside Coraline", "Built for the truck, not the desk",
+               "These are real Coraline screens, shown with a sample lawn company. The owner sees every open lead, every estimate waiting on a signature and every job on the calendar from one login.",
+               ["Missed-call text-back within seconds, day or night",
+                "Calls and texts from the browser, iPhone or iPad, from your business number",
+                "A pipeline from new lead to won, with the next step on every card",
+                "Review requests by text or email, with follow-ups",
+                "Your customers see your business name, never ours"],
+               'More screens on our <a href="/software/#crm">software page</a>.', f'<div class="shot-stack">{SHOT_CRM}{SHOT_CRM_2}</div>') + f"""
   </div>
 </section>
 
 <section class="section">
   <div class="wrap prose">
-    <h2>Software plus the people who set it up</h2>
+    <h2>What does Coraline cost?</h2>
     {SPRINKLE}
-    <p>Plenty of platforms can do what Coraline does on paper. What makes it work in practice is implementation — and that's the difference between buying Coraline from a website and buying it from us. We <a href="/services/crm-implementation/">build your pipelines, migrate your contacts, and train your team</a>, wire in <a href="/services/ai-implementation/">AI that answers in seconds</a>, and stay fifteen minutes away when you'd rather talk across a table. The software comes with a team.</p>
+    <p>Setup starts at $1,000. That covers building your pipeline, moving your contacts over, connecting your website forms and business number, and training your team. A simple setup can go live in as little as three days. One with several pipelines, or a connection to software you already use, takes longer.</p>
+    <p>The monthly price depends on your setup and how much your business texts and calls. You'll have it in writing before we start, and there's no hourly meter running.</p>
+
+    <h2>Software plus the people who wrote it</h2>
+    <p>Plenty of CRMs can do this on paper. The difference with Coraline is who's behind it. We wrote it, so when your business needs something changed, we change it ourselves instead of opening a ticket with a help desk in another time zone. We <a href="/services/crm-implementation/">build your pipelines, move your contacts and train your team</a>, add <a href="/services/ai-implementation/">AI that answers in seconds</a>, and we're in Kodak when you'd rather talk across a table.</p>
   </div>
 </section>
 """ + faq_html(CORALINE_FAQS, "Coraline questions, answered") + cta_band(
     "Ready to run your business from one login?",
-    f"Sign up and we'll take it from there — or call {PHONE} and we'll help you pick a plan.",
-    "Sign up for Coraline", CORALINE_CHECKOUT)
+    f"Tell us how you sell today and we'll show you what Coraline would look like for your business. Or call {PHONE}.",
+    "Get a setup quote")
 
 # ============================================================ OUR WORK
 def work_entry(href, img, alt, name, blurb):
@@ -1090,24 +1063,24 @@ PRIVACY_BODY = f"""<section class="section">
   <div class="wrap prose">
     <h1>Privacy policy</h1>
     {SPRINKLE}
-    <p><em>Effective September 16, 2026</em></p>
+    <p><em>Effective November 15, 2026</em></p>
     <p>This policy describes how Salt Services ("we," "us"), a marketing agency based in Kodak, Tennessee, collects and uses information through saltservicesusa.com, our client portal, and our related services. Short version: we collect what you send us so we can respond and do our work, we don't sell it, and we don't share your mobile number with anyone for their marketing.</p>
 
     <h2>Information you give us</h2>
-    <p>When you fill out a form, start a chat, call, email, or sign up for Coraline, you may provide your name, email address, phone number, business name, address, and details about your business and goals. We use this to respond to you, prepare recommendations and quotes, provide services you've engaged us for, and communicate with you about them.</p>
+    <p>When you fill out a form, start a chat, call, email, or set up a Coraline account with us, you may provide your name, email address, phone number, business name, address, and details about your business and goals. We use this to respond to you, prepare recommendations and quotes, provide services you've engaged us for, and communicate with you about them.</p>
 
     <h2>Information collected automatically</h2>
-    <p>Like nearly every website, our hosting provider (Vercel) keeps standard server logs, which include IP addresses, browser type, and pages requested. We also use Vercel's privacy-friendly, cookieless analytics to count visits and page views in aggregate; it does not identify individual visitors or follow you across other sites. Our chat and form widgets (provided by our CRM platform) may set functional cookies so a conversation can continue across pages. We do not run advertising trackers or third-party ad pixels on this site. Fonts and a graphics library are loaded from content-delivery networks (Google Fonts, jsDelivr), which receive your IP address as a technical necessity of serving the files.</p>
+    <p>Like nearly every website, our hosting provider (Vercel) keeps standard server logs, which include IP addresses, browser type, and pages requested. We also use Vercel's privacy-friendly, cookieless analytics to count visits and page views in aggregate; it does not identify individual visitors or follow you across other sites. Our chat and form widgets (part of Coraline, our CRM) may set functional cookies so a conversation can continue across pages. We do not run advertising trackers or third-party ad pixels on this site. Fonts and a graphics library are loaded from content-delivery networks (Google Fonts, jsDelivr), which receive your IP address as a technical necessity of serving the files.</p>
 
     <h2>Text messaging (SMS) terms</h2>
     <p>We text you only if you have agreed to it: by checking the SMS consent box on our contact form, by telling us on a call that we may text you, or by giving us a mobile number on a signed services agreement. Those messages are about your own inquiry, project, or account — replies to your inquiry, appointment and call-back confirmations, account and billing notices for the client portal, one-time sign-in codes, and a reply if we miss your call. We do not send marketing or promotional texts, and providing a phone number on its own does not opt you in.</p>
     <p>Message frequency varies; message and data rates may apply. Reply STOP at any time to opt out of texts, or HELP for help; text HELP to <a href="tel:{TEL}">{PHONE}</a> for assistance. Opting out of texts does not stop us from calling or emailing you about work you have asked us to do. <strong>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes.</strong> Opt-in data and consent are not shared with any third party. The full SMS program terms are in our <a href="/terms-of-service/">Terms of Service</a>.</p>
 
     <h2>Client portal accounts</h2>
-    <p>If you're a hosting client, you have an account in our client portal at portal.saltservicesusa.com, protected by a password and a one-time code we send by text or email through Coraline each time you log in. Your portal account shows your own website's traffic and search performance (from Vercel Analytics and Google Search Console), your billing status, and the monthly work we're doing for your site — information about your own account and your own website, not collected from anyone else. Payments for hosting are processed by Stripe; we never see or store your card details ourselves. The portal has its own privacy policy at <a href="https://portal.saltservicesusa.com/privacy-policy/">portal.saltservicesusa.com/privacy-policy/</a> with the full detail.</p>
+    <p>If you're a hosting client, you have an account in our client portal at portal.saltservicesusa.com, protected by a password and a one-time code we send by text or email each time you log in. Your portal account shows your own website's traffic and search performance (from Vercel Analytics and Google Search Console), your billing status, and the monthly work we're doing for your site — information about your own account and your own website, not collected from anyone else. Payments for hosting are processed by Stripe; we never see or store your card details ourselves. The portal has its own privacy policy at <a href="https://portal.saltservicesusa.com/privacy-policy/">portal.saltservicesusa.com/privacy-policy/</a> with the full detail.</p>
 
     <h2>How we share information</h2>
-    <p>We share information only with service providers who help us operate — our CRM and communications platform (Coraline, built on LeadConnector/HighLevel infrastructure), our hosting provider (Vercel), our payment processor (Stripe, for hosting clients' subscriptions), and similar processors bound to use it only on our behalf — or when the law requires it, or as part of a business transfer. We do not sell personal information, and we do not share it with anyone for their own marketing.</p>
+    <p>We share information only with service providers who help us operate — the providers behind Coraline, the CRM we build and run ourselves (Twilio for calls and texts, Resend for email, Neon for its database, and an AI provider that powers the website chat assistant), our hosting provider (Vercel), our payment processor (Stripe, for hosting clients' subscriptions), and similar processors bound to use it only on our behalf — or when the law requires it, or as part of a business transfer. We do not sell personal information, and we do not share it with anyone for their own marketing.</p>
 
     <h2>Cookies and your choices</h2>
     <p>The cookies on this site are functional (chat and form continuity), not advertising cookies. You can block or delete cookies in your browser settings; the site will still work, though chat conversations may not persist across visits.</p>
@@ -1122,7 +1095,7 @@ PRIVACY_BODY = f"""<section class="section">
     <p>You may request a copy of the personal information we hold about you, ask us to correct it, or ask us to delete it, by emailing <a href="mailto:{BIZ['email']}">{BIZ['email']}</a> or calling <a href="tel:{TEL}">{PHONE}</a>. We honor such requests regardless of where you live, subject to records we're required to keep.</p>
 
     <h2>Third-party links</h2>
-    <p>Our site links to other websites — including client websites in our portfolio and the Coraline sign-up service — which have their own privacy practices. This policy covers only saltservicesusa.com.</p>
+    <p>Our site links to other websites — including client websites in our portfolio — which have their own privacy practices. This policy covers only saltservicesusa.com.</p>
 
     <h2>Changes and contact</h2>
     <p>If we change this policy, we'll update it here with a new effective date. Questions: <a href="mailto:{BIZ['email']}">{BIZ['email']}</a>, <a href="tel:{TEL}">{PHONE}</a>, Salt Services, Kodak, TN.</p>
@@ -1134,17 +1107,17 @@ TERMS_BODY = f"""<section class="section">
   <div class="wrap prose">
     <h1>Terms of service</h1>
     {SPRINKLE}
-    <p><em>Effective September 14, 2026</em></p>
+    <p><em>Effective November 15, 2026</em></p>
     <p>These terms govern your use of saltservicesusa.com and set the baseline for how Salt Services ("we," "us") does business. By using this site, you accept them. If you sign a service agreement or proposal with us, that signed document controls wherever it differs from these terms.</p>
 
     <h2>What we do</h2>
-    <p>Salt Services provides marketing services — website design, SEO and AEO, digital advertising management, CRM implementation, and AI implementation — and offers subscriptions to Coraline, our CRM and marketing platform. The specifics of any engagement (scope, price, timeline, deliverables) are defined in the written quote or agreement for that engagement, not on this website.</p>
+    <p>Salt Services provides marketing services — website design, SEO and AEO, digital advertising management, CRM implementation, and AI implementation — and sets up and runs Coraline, the CRM software we build. The specifics of any engagement (scope, price, timeline, deliverables) are defined in the written quote or agreement for that engagement, not on this website.</p>
 
     <h2>No guarantee of results</h2>
     <p>Marketing outcomes depend on factors nobody fully controls — search engines change algorithms, advertising costs fluctuate, markets shift. We commit to doing the work we agree to, skillfully and on schedule. We do not guarantee specific rankings, traffic, lead volume, or revenue, and nothing on this site is a promise of specific results. Examples of client work shown on this site illustrate what we build; every business and market is different.</p>
 
-    <h2>Coraline subscriptions</h2>
-    <p>Coraline plans are billed as described at sign-up through our checkout at coraline.saltservicesusa.com. The pricing, billing cycle, and cancellation terms presented at checkout govern your subscription. Coraline is built on third-party infrastructure, and its availability depends in part on those providers; we'll always do our part to keep your account running and your data accessible.</p>
+    <h2>Coraline accounts</h2>
+    <p>Coraline is CRM software we build and run. Setup, the monthly price, and any charges for texts, calls, or email are set out in your written quote or agreement, which governs your account. Coraline relies on third-party providers for phone, text, email, and hosting, so its availability depends in part on them; we'll always do our part to keep your account running and your data accessible.</p>
 
     <h2>Client portal &amp; hosting subscriptions</h2>
     <p>Hosting clients get access to our client portal at portal.saltservicesusa.com for account management, billing, and website performance data. Portal access, suspension for non-payment, and restoration on payment are handled as described in your hosting agreement. Hosting subscriptions are billed through Stripe and can be managed — including updating your card — through the secure billing portal linked from your account; we never see or store your card details ourselves. The portal has its own terms of service at <a href="https://portal.saltservicesusa.com/terms-of-service/">portal.saltservicesusa.com/terms-of-service/</a>.</p>
@@ -1397,22 +1370,19 @@ PAGES = [
     },
     {
         "path": "/coraline/", "nav": "",
-        "title": "Coraline | All-in-One CRM from Salt Services",
-        "desc": "Coraline is the CRM and marketing platform behind our client work — pipelines, automation, booking, and AI chat. Plans from $197/month, set up by us.",
+        "title": "Coraline CRM | Built and Set Up by Salt Services",
+        "desc": "Coraline is the CRM Salt Services wrote and runs on: one inbox for calls, texts and email, a pipeline, reminders and review requests. Setup from $1,000.",
         "crumbs": [["Home", "/"], ["Coraline", "/coraline/"]],
         "jsonld": [{
             "@context": "https://schema.org",
             "@type": "Service",
             "name": "Coraline",
-            "serviceType": "CRM and marketing platform",
-            "description": "All-in-one CRM and marketing platform: lead capture, pipelines, text and email automation, online booking, website builder, and AI conversation bot.",
+            "serviceType": "CRM software and setup",
+            "description": "CRM software written and run by Salt Services: one inbox for calls, texts, email, website forms and Google reviews, a sales pipeline, missed-call text-back, follow-up reminders, contracts and review requests, set up and supported by Salt Services.",
             "provider": {"@id": "https://www.saltservicesusa.com/#business"},
             "url": "https://www.saltservicesusa.com/coraline/",
-            "offers": [
-                {"@type": "Offer", "name": "Starter", "price": "197.00", "priceCurrency": "USD", "url": CORALINE_CHECKOUT},
-                {"@type": "Offer", "name": "Unlimited", "price": "297.00", "priceCurrency": "USD", "url": CORALINE_CHECKOUT},
-                {"@type": "Offer", "name": "Pro", "price": "497.00", "priceCurrency": "USD", "url": CORALINE_CHECKOUT},
-            ],
+            "offers": {"@type": "Offer", "name": "Coraline setup",
+                       "priceSpecification": {"@type": "PriceSpecification", "minPrice": 1000, "priceCurrency": "USD"}},
         }, faq_ld(CORALINE_FAQS)],
         "body": CORALINE_BODY,
     },
@@ -1465,7 +1435,7 @@ PAGES = [
     {
         "path": "/terms-of-service/", "nav": "",
         "title": "Terms of Service | Salt Services",
-        "desc": "The terms that govern use of saltservicesusa.com and Salt Services engagements: scope, results, Coraline subscriptions, liability, and Tennessee law.",
+        "desc": "The terms that govern use of saltservicesusa.com and Salt Services engagements: scope, results, Coraline accounts, liability, and Tennessee law.",
         "crumbs": [["Home", "/"], ["Terms of service", "/terms-of-service/"]],
         "body": TERMS_BODY,
     },

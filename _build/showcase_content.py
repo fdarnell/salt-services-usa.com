@@ -194,10 +194,10 @@ def phone_shot(src, alt, w, h, cls=""):
   <img {_src(src, w, SMALL_SIZES)} alt="{alt}" width="{w}" height="{h}" loading="lazy">
 </figure>"""
 
-SHOT_CRM = shot("crm-inbox.webp", "The lead inbox for a sample lawn company: a website lead gets an automatic text within the minute and books an estimate", "", 1600, 1000)
+SHOT_CRM = shot("crm-inbox.webp", "The Coraline lead inbox for a sample lawn company: a website lead gets an automatic text within the minute and books an estimate", "", 1600, 1000)
 SHOT_QUOTE = shot("quote-drawing.webp", "The drawing pad: a back yard plan with a paver patio, fire pit, planting beds and a retaining wall", "", 1600, 1000)
 SHOT_QUOTE_CUSTOMER = scroll_shot("quote-customer.webp", "The estimate the customer receives: the drawing, everything on the plan, the price and the payment schedule", 720, 2155, "shot-overlap")
-SHOT_CRM_2 = shot("crm-pipeline.webp", "The sales pipeline: jobs moving from new lead to quote sent, accepted, scheduled and won", "", 1600, 1000, "shot-overlap shot-small shot-left")
+SHOT_CRM_2 = shot("crm-pipeline.webp", "The Coraline sales pipeline: jobs moving from new lead to quote sent, accepted, scheduled and won", "", 1600, 1000, "shot-overlap shot-small shot-left")
 SHOT_PORTAL = shot("portal-dashboard.webp", "The client portal: a sample roofing company&rsquo;s leads from its website", "", 1600, 1000)
 SHOT_PORTAL_2 = shot("portal-billing.webp", "Billing in the client portal: plans, paid invoices and the signed services agreement", "", 1600, 1000, "shot-overlap shot-small")
 SHOT_CAL = shot("cal-month.webp", "The family calendar for a sample family: a busy month of school, sports, church and date nights", "", 1600, 1000)
@@ -205,7 +205,7 @@ SHOT_CAL_MILES = shot("cal-mileage.webp", "The mileage log: trips grouped by day
 SHOT_CAL_ASK = shot("cal-assistant.webp", "The calendar assistant adding what is missing for taco night to the grocery list", "", 1600, 1000)
 SHOT_CAL_GROCERY = phone_shot("cal-grocery.webp", "The shared grocery list on an iPhone, with a colored dot for who added each item", 780, 1688)
 SHOT_CAL_PHONE = phone_shot("cal-phone.webp", "The family calendar on an iPhone", 780, 1688)
-SHOT_CRM_PHONE = phone_shot("crm-phone.webp", "The lead inbox on an iPhone", 780, 1688)
+SHOT_CRM_PHONE = phone_shot("crm-phone.webp", "The Coraline lead inbox on an iPhone", 780, 1688)
 SHOT_PORTAL_PHONE = phone_shot("portal-phone.webp", "The client portal on an iPhone", 780, 1688)
 
 # ------------------------------------------------------------------ home-page teaser
@@ -216,10 +216,10 @@ SOFTWARE_TEASER = f"""
     <div class="section-head">
       <h2>We build <em>software</em>, too</h2>
       {SPRINKLE}
-      <p>Not plug-ins or a monthly subscription to somebody else&rsquo;s app. Tools we wrote ourselves and run every day: a CRM our clients answer leads from, an estimating app crews price jobs with in the driveway, and a family calendar for life at home.</p>
+      <p>Not plug-ins or a monthly subscription to somebody else&rsquo;s app. Tools we wrote ourselves and run every day: a CRM called Coraline that our clients answer leads from, an estimating app crews price jobs with in the driveway, and a family calendar for life at home.</p>
     </div>
     <ul class="sw-tiles">
-      <li><a href="/software/#crm"><div class="sw-tile-shot">{SHOT_CRM}</div><span class="sw-kicker">01</span><h3>CRM</h3><p>Every lead in one inbox, a pipeline to won, and a portal where each client sees their numbers.</p></a></li>
+      <li><a href="/software/#crm"><div class="sw-tile-shot">{SHOT_CRM}</div><span class="sw-kicker">01</span><h3>Coraline CRM</h3><p>Every lead in one inbox, a pipeline to won, and a portal where each client sees their numbers.</p></a></li>
       <li><a href="/software/#estimating"><div class="sw-tile-shot">{SHOT_QUOTE}</div><span class="sw-kicker">02</span><h3>Estimating</h3><p>Draw the job, price it from your own price book, and let the customer sign and pay online.</p></a></li>
       <li><a href="/software/#lifestyle"><div class="sw-tile-shot">{SHOT_CAL}</div><span class="sw-kicker">03</span><h3>Lifestyle</h3><p>A shared family calendar with the grocery list, mileage log and event planner built in.</p></a></li>
     </ul>
@@ -269,8 +269,8 @@ def sw_category(cid, num, name, title_html, intro, inner, alt=False):
 </section>
 """
 
-CAT_CRM = sw_category("crm", "01", "CRM", "Every lead answered, every client <em>in the loop</em>",
-    "The tools that catch a lead the moment it comes in, keep the job moving, and show the client exactly what their marketing is doing.",
+CAT_CRM = sw_category("crm", "01", "Coraline CRM", "Every lead answered, every client <em>in the loop</em>",
+    "Coraline, our CRM, catches a lead the moment it comes in and keeps the job moving. The client portal shows each client exactly what their marketing is doing.",
     sw_feature("Lead inbox", "One inbox for every lead",
                "Website forms, calls, texts, email and Google reviews all land in one place, and nothing sits unanswered. Shown with a sample lawn company.",
                ["Missed-call text-back within seconds, day or night",
@@ -279,7 +279,7 @@ CAT_CRM = sw_category("crm", "01", "CRM", "Every lead answered, every client <em
                 "Reminders that keep coming back until the job is done",
                 "Review requests by text or email, with follow-ups",
                 "A built-in assistant you can ask: who&rsquo;s waiting on a callback?"],
-               "Built and run by Salt Services for our clients.", f'<div class="shot-stack">{SHOT_CRM}{SHOT_CRM_2}</div>')
+               'Coraline, built and run by Salt Services for our clients. <a href="/coraline/">More about Coraline</a>.', f'<div class="shot-stack">{SHOT_CRM}{SHOT_CRM_2}</div>')
     + sw_feature("Client portal", "A login for every client",
                "Where every client logs in to see what their marketing is doing and pay for it, without emailing anyone for a report. Shown with a sample roofing company.",
                ["Sign in with a code to your phone or email, no password to forget",
@@ -293,7 +293,7 @@ CAT_CRM = sw_category("crm", "01", "CRM", "Every lead answered, every client <em
                ["Reply by text, email or note, or start a call, from one bar",
                 "Keep a call going while you look something up",
                 "Clients check their own leads and numbers from their phone"],
-               "The lead inbox (left) and the client portal (right). An iPhone and iPad app is on the way.", f'<div class="phone-pair">{SHOT_CRM_PHONE}{SHOT_PORTAL_PHONE}</div>'))
+               "The Coraline inbox (left) and the client portal (right). An App Store version is on the way.", f'<div class="phone-pair">{SHOT_CRM_PHONE}{SHOT_PORTAL_PHONE}</div>'))
 
 CAT_EST = sw_category("estimating", "02", "Estimating", "Quote the job <em>in the driveway</em>",
     "Built first for a Sevier County landscaping company and now running a fence company too. The crew draws the job, the price book does the math, and the customer approves on their phone.",
@@ -338,7 +338,7 @@ SOFTWARE_BODY = f"""<section class="hero sw-hero">
     {SPRINKLE}
     <p class="lead">Most small businesses glue five subscriptions together and still copy things by hand. We write the tool instead. Everything on this page is ours, built line by line, and it&rsquo;s running right now.</p>
     <nav class="sw-jump" aria-label="Software categories">
-      <a href="#crm"><span>01</span>CRM</a>
+      <a href="#crm"><span>01</span>Coraline CRM</a>
       <a href="#estimating"><span>02</span>Estimating</a>
       <a href="#lifestyle"><span>03</span>Lifestyle</a>
     </nav>
