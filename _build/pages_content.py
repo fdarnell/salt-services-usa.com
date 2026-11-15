@@ -795,7 +795,7 @@ CORALINE_FAQS = [
     ("Do I have to set Coraline up myself?",
      "No. We set it up for you: a pipeline built around how you sell, your contacts moved over, your website forms and business number connected, and your team trained. A simple setup can go live in as little as three days."),
     ("What does Coraline cost?",
-     "Setup starts at $1,000. The monthly price depends on your setup and how much your business texts and calls, and you'll have both numbers in writing before we start."),
+     "There are three plans: Starter at $99 a month, Growth at $297 and Pro at $497, with a one-time setup of $1,000, $1,500 or $2,500. Every plan includes some texting and calling each month. Anything past that comes out of a prepaid balance, and you'll have both numbers in writing before we start."),
     ("Will my customers see the name Coraline?",
      "No. Your texts and emails go out under your business name, from your business number. Your customers only ever see you."),
     ("Does Coraline work on a phone?",
@@ -817,7 +817,7 @@ CORALINE_BODY = f"""<section class="hero">
       <a class="btn btn-accent" href="/contact/#form">Get a setup quote</a>
       <a class="btn btn-ghost" href="#screens">See the screens</a>
     </p>
-    <p class="hero-note">Setup starts at $1,000, and a simple one can be live in as little as three days.</p>
+    <p class="hero-note">Plans from $99 a month. Setup from $1,000, and a simple one can be live in as little as three days.</p>
   </div>
 </section>
 
@@ -870,13 +870,70 @@ CORALINE_BODY = f"""<section class="hero">
   </div>
 </section>
 
+<section class="section section-alt" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>What does Coraline cost?</h2>
+      {SPRINKLE}
+      <p>One flat monthly price for your business, not a charge for every person who logs in. We set it up for you either way.</p>
+    </div>
+    <ul class="card-grid">
+      <li class="card price-card">
+        <h3>Starter</h3>
+        <p class="price-tag">$99<span class="per">/month</span></p>
+        <p class="price-note">Setup $1,000 &middot; up to 3 users<br>For a small crew that keeps missing calls.</p>
+        <ul class="checklist">
+          {check_li("One inbox for calls, texts, email and website forms")}
+          {check_li("Your business number, with missed-call text-back")}
+          {check_li("Contacts, a pipeline, tasks and reminders")}
+          {check_li("A calendar with an online booking page")}
+          {check_li("Review requests, with follow-ups")}
+          {check_li("$10 of texts and calls included each month")}
+        </ul>
+        <a class="btn btn-navy" href="/contact/#form">Ask about Starter</a>
+      </li>
+      <li class="card price-card price-featured">
+        <span class="price-badge">Our recommendation</span>
+        <h3>Growth</h3>
+        <p class="price-tag">$297<span class="per">/month</span></p>
+        <p class="price-note">Setup $1,500 &middot; up to 10 users<br>For a business with a crew, an office and a sales process.</p>
+        <ul class="checklist">
+          {check_li("Everything in Starter")}
+          {check_li("Follow-ups by text and email that send themselves")}
+          {check_li("As many pipelines and calendars as you need")}
+          {check_li("Contracts your customers sign on their phone")}
+          {check_li("Bulk texts and email")}
+          {check_li("Social media planner, comments and approvals")}
+          {check_li("Website chat answered by the assistant")}
+          {check_li("Call recording and reports")}
+          {check_li("$25 of texts and calls included each month")}
+        </ul>
+        <a class="btn btn-accent" href="/contact/#form">Ask about Growth</a>
+      </li>
+      <li class="card price-card">
+        <h3>Pro</h3>
+        <p class="price-tag">$497<span class="per">/month</span></p>
+        <p class="price-note">Setup $2,500 &middot; unlimited users<br>For an owner who wants the whole front office in one place.</p>
+        <ul class="checklist">
+          {check_li("Everything in Growth")}
+          {check_li("An assistant that answers from all your records")}
+          {check_li("Connections to the other software you use")}
+          {check_li("Up to 5 business numbers")}
+          {check_li("Priority support and a monthly check-in")}
+          {check_li("$50 of texts and calls included each month")}
+        </ul>
+        <a class="btn btn-navy" href="/contact/#form">Ask about Pro</a>
+      </li>
+    </ul>
+    <div class="prose" style="margin-top:2rem">
+      <p>Setup covers building your pipeline, moving your contacts over, connecting your website forms and business number, and training your team. A simple setup can go live in as little as three days. One with several pipelines, or a connection to software you already use, takes longer, and we'll quote it before we start.</p>
+      <p>Texts, calls and assistant replies past what your plan includes come out of a prepaid balance. You top it up, or set it to refill itself, and you can see every charge. There's no hourly meter running on our time.</p>
+    </div>
+  </div>
+</section>
+
 <section class="section">
   <div class="wrap prose">
-    <h2>What does Coraline cost?</h2>
-    {SPRINKLE}
-    <p>Setup starts at $1,000. That covers building your pipeline, moving your contacts over, connecting your website forms and business number, and training your team. A simple setup can go live in as little as three days. One with several pipelines, or a connection to software you already use, takes longer.</p>
-    <p>The monthly price depends on your setup and how much your business texts and calls. You'll have it in writing before we start, and there's no hourly meter running.</p>
-
     <h2>Software plus the people who wrote it</h2>
     <p>Plenty of CRMs can do this on paper. The difference with Coraline is who's behind it. We wrote it, so when your business needs something changed, we change it ourselves instead of opening a ticket with a help desk in another time zone. We <a href="/services/crm-implementation/">build your pipelines, move your contacts and train your team</a>, add <a href="/services/ai-implementation/">AI that answers in seconds</a>, and we're in Kodak when you'd rather talk across a table.</p>
   </div>
@@ -1371,7 +1428,7 @@ PAGES = [
     {
         "path": "/coraline/", "nav": "",
         "title": "Coraline CRM | Built and Set Up by Salt Services",
-        "desc": "Coraline is the CRM Salt Services wrote and runs on: one inbox for calls, texts and email, a pipeline, reminders and review requests. Setup from $1,000.",
+        "desc": "Coraline is the CRM Salt Services wrote and runs on: one inbox for calls, texts and email, a pipeline, reminders and review requests. Plans from $99 a month.",
         "crumbs": [["Home", "/"], ["Coraline", "/coraline/"]],
         "jsonld": [{
             "@context": "https://schema.org",
@@ -1381,8 +1438,13 @@ PAGES = [
             "description": "CRM software written and run by Salt Services: one inbox for calls, texts, email, website forms and Google reviews, a sales pipeline, missed-call text-back, follow-up reminders, contracts and review requests, set up and supported by Salt Services.",
             "provider": {"@id": "https://www.saltservicesusa.com/#business"},
             "url": "https://www.saltservicesusa.com/coraline/",
-            "offers": {"@type": "Offer", "name": "Coraline setup",
-                       "priceSpecification": {"@type": "PriceSpecification", "minPrice": 1000, "priceCurrency": "USD"}},
+            "offers": [
+                {"@type": "Offer", "name": f"Coraline {name}", "price": price, "priceCurrency": "USD",
+                 "priceSpecification": {"@type": "UnitPriceSpecification", "price": price, "priceCurrency": "USD",
+                                        "unitText": "MONTH", "billingDuration": "P1M"},
+                 "description": f"{name} plan, one-time setup ${setup:,}"}
+                for name, price, setup in [("Starter", 99, 1000), ("Growth", 297, 1500), ("Pro", 497, 2500)]
+            ],
         }, faq_ld(CORALINE_FAQS)],
         "body": CORALINE_BODY,
     },
