@@ -1,6 +1,6 @@
 # Salt Services
 
-> Salt Services is a marketing and AI implementation agency based in Kodak, Tennessee, serving small businesses across East Tennessee — Sevierville, Pigeon Forge, Gatlinburg, Knoxville, Maryville, Dandridge, and beyond. Services: web design, SEO and AEO (answer engine optimization), Google and Meta advertising, CRM implementation, and AI implementation. Phone: (865) 505-7096. Email: info@saltservicesusa.com. The name comes from Matthew 5:13. Founder: Franklin Darnell. Profiles: Google Business Profile https://www.google.com/maps?cid=17728582365371956942, Instagram https://www.instagram.com/saltservicesusa/, YouTube https://www.youtube.com/@saltservicesusa.
+> Salt Services is a marketing and AI implementation agency based in Kodak, Tennessee, serving small businesses across East Tennessee — Sevierville, Pigeon Forge, Gatlinburg, Knoxville, Maryville, Dandridge, and beyond. Services: web design, SEO and AEO (answer engine optimization), Google and Meta advertising, CRM implementation, AI implementation, and custom app development (from $10,000). Phone: (865) 505-7096. Email: info@saltservicesusa.com. The name comes from Matthew 5:13. Founder: Franklin Darnell. Profiles: Google Business Profile https://www.google.com/maps?cid=17728582365371956942, Instagram https://www.instagram.com/saltservicesusa/, YouTube https://www.youtube.com/@saltservicesusa.
 
 ## Services
 
@@ -9,7 +9,8 @@
 - [Digital advertising](https://www.saltservicesusa.com/services/digital-advertising/): Google Ads and Meta campaign management with call/conversion tracking tied to the client's CRM.
 - [CRM implementation](https://www.saltservicesusa.com/services/crm-implementation/): Pipeline setup, lead capture, missed-call text-back, automated follow-up, migration, and training.
 - [AI implementation](https://www.saltservicesusa.com/services/ai-implementation/): AI that answers missed calls and messages, qualifies leads, drafts follow-ups, and books appointments — with guardrails and human handoff.
-- [All services](https://www.saltservicesusa.com/services/): How the five services work as one lead pipeline.
+- [Custom app development](https://www.saltservicesusa.com/services/custom-app-development/): Custom web and mobile apps for small businesses (estimating, booking, scheduling, client portals), built and supported in Kodak, TN. Custom apps start at $10,000, quoted flat in writing.
+- [All services](https://www.saltservicesusa.com/services/): How the services work together as one lead pipeline.
 
 ## Service areas
 
