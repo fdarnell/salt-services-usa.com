@@ -279,7 +279,7 @@ CAT_CRM = sw_category("crm", "01", "Coraline CRM", "Every lead answered, every c
                 "Reminders that keep coming back until the job is done",
                 "Review requests by text or email, with follow-ups",
                 "A built-in assistant you can ask: who&rsquo;s waiting on a callback?"],
-               'Coraline, built and run by Salt Services for our clients. <a href="/coraline/">More about Coraline</a>.', f'<div class="shot-stack">{SHOT_CRM}{SHOT_CRM_2}</div>')
+               'Coraline, built and run by Salt Services for our clients. <a href="/coraline/">More about Coraline</a> or <a href="https://my.saltservicesusa.com/start/?plan=growth">try it free for 14 days</a>.', f'<div class="shot-stack">{SHOT_CRM}{SHOT_CRM_2}</div>')
     + sw_feature("Client portal", "A login for every client",
                "Where every client logs in to see what their marketing is doing and pay for it, without emailing anyone for a report. Shown with a sample roofing company.",
                ["Sign in with a code to your phone or email, no password to forget",

@@ -335,7 +335,7 @@ CRM_BODY = f"""<section class="section">
     <p>The owner can see every open lead, every estimate waiting on a signature and every job on the calendar from one login. That's the bar we set for every CRM we build.</p>
 
     <h2>Which CRM do you set up?</h2>
-    <p>For most clients it's <a href="/coraline/">Coraline</a>, the CRM we wrote ourselves and run Salt Services on. We answer our own leads in it, and we fix it ourselves when something needs changing, so you're never stuck waiting on a help desk in another time zone. You can see the screens on our <a href="/software/#crm">software page</a>.</p>
+    <p>For most clients it's <a href="/coraline/">Coraline</a>, the CRM we wrote ourselves and run Salt Services on. We answer our own leads in it, and we fix it ourselves when something needs changing, so you're never stuck waiting on a help desk in another time zone. You can see the screens on our <a href="/software/#crm">software page</a>, or <a href="https://my.saltservicesusa.com/start/?plan=growth">try Coraline free for 14 days</a>.</p>
     <p>Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
 
     <h2>How long does implementation take?</h2>
@@ -856,6 +856,7 @@ CORALINE_BODY = f"""<section class="hero">
         <p>Where your leads came from and what's still open, without exporting a spreadsheet.</p>
       </li>
     </ul>
+    <p class="trial-row"><a class="btn btn-accent" href="https://my.saltservicesusa.com/start/?plan=growth">Start your free 14-day trial</a><span>No charge for 14 days. Cancel any time before then.</span></p>
   </div>
 </section>
 
@@ -871,32 +872,33 @@ CORALINE_BODY = f"""<section class="hero">
                ["Missed-call text-back, day or night",
                 "Calls, texts, email, forms and chat in one list",
                 "Answer from a laptop, iPhone or iPad, from your business number"],
-               "", f'<div class="shot-stack">{SHOT_CRM}' + phone_shot("crm-phone.webp", "The Coraline inbox on an iPhone", 780, 1688, "shot-overlap") + '</div>') + """
+               '<a class="card-link" href="https://my.saltservicesusa.com/start/?plan=growth">Try it free for 14 days &rsaquo;</a>', f'<div class="shot-stack">{SHOT_CRM}' + phone_shot("crm-phone.webp", "The Coraline inbox on an iPhone", 780, 1688, "shot-overlap") + '</div>') + """
     """ + sw_feature("Your schedule", "See the whole month, and let customers book the open times",
                "Estimates, installs and phone calls sit on one calendar, each in its own color. Hide the ones you don't need or look at one at a time. Customers pick a time from your booking page, and a reminder goes out the day before.",
                ["A color for every calendar, with show and hide",
                 "A booking page that keeps to your hours and leaves a gap between jobs",
                 "Text reminders the day before, so fewer people forget"],
-               "", '<div class="shot-stack">' + shot("cor-calendar.webp", "The Coraline calendar for a sample lawn company: a month of installs, estimates and phone calls, each calendar in its own color", "", 1600, 1000) + phone_shot("cor-calendar-phone.webp", "The Coraline calendar on an iPhone: colored dots for each booked day and the list for the chosen day", 780, 1688, "shot-overlap shot-left") + '</div>', flip=True) + """
+               '<a class="card-link" href="https://my.saltservicesusa.com/start/?plan=growth">Try it free for 14 days &rsaquo;</a>', '<div class="shot-stack">' + shot("cor-calendar.webp", "The Coraline calendar for a sample lawn company: a month of installs, estimates and phone calls, each calendar in its own color", "", 1600, 1000) + phone_shot("cor-calendar-phone.webp", "The Coraline calendar on an iPhone: colored dots for each booked day and the list for the chosen day", 780, 1688, "shot-overlap shot-left") + '</div>', flip=True) + """
     """ + sw_feature("Every job", "Every job, from the first call to paid",
                "Each lead is a card that moves across the board: new, quoted, accepted, scheduled, won. You see what every job is worth and what has to happen next, so a quote doesn't sit for two weeks because nobody remembered it.",
                ["What's open, and what it's worth",
                 "The next step and its date on every card",
                 "Call the customer straight from the card"],
-               "", shot("crm-pipeline.webp", "The Coraline pipeline for a sample lawn company: jobs moving from new lead to quote sent, accepted, scheduled and won", "", 1600, 1000)) + """
+               '<a class="card-link" href="https://my.saltservicesusa.com/start/?plan=growth">Try it free for 14 days &rsaquo;</a>', shot("crm-pipeline.webp", "The Coraline pipeline for a sample lawn company: jobs moving from new lead to quote sent, accepted, scheduled and won", "", 1600, 1000)) + """
     """ + sw_feature("Follow-up", "Follow-ups that send themselves",
                "Most jobs are lost to silence, not to price. Coraline sends the thank-you to a new lead, the nudge two days after a quote and the reminder before a visit, written in your words. You can see how many people each one is waiting on.",
                ["Texts new website leads back within a minute",
                 "Nudges quotes that haven't been answered",
                 "Checks in with leads that went quiet"],
-               "", shot("cor-automations.webp", "Coraline automations for a sample lawn company: text back new leads, follow up on estimates, remind before appointments, ask for reviews and check in on quiet leads", "", 1600, 1000), flip=True) + """
+               '<a class="card-link" href="https://my.saltservicesusa.com/start/?plan=growth">Try it free for 14 days &rsaquo;</a>', shot("cor-automations.webp", "Coraline automations for a sample lawn company: text back new leads, follow up on estimates, remind before appointments, ask for reviews and check in on quiet leads", "", 1600, 1000), flip=True) + """
     """ + sw_feature("Reviews", "More five-star reviews, without the awkward ask",
                "When a job's done, one tap sends the customer your Google review link by text or email, with up to two polite reminders. You can see how many people you asked, how many opened the link and how your rating is moving.",
                ["Ask by text or email in one tap",
                 "Up to two polite reminders, then it stops",
                 "See who opened the link"],
                "", shot("cor-reviews.webp", "Coraline reviews for a sample lawn company: 64 customers asked, 64 percent opened the link, a 4.8 star rating and new five-star reviews", "", 1600, 1000)) + f"""
-    <p class="sw-who" style="text-align:center;margin-top:2rem">More screens on our <a href="/software/#crm">software page</a>.</p>
+    <p class="trial-row"><a class="btn btn-accent" href="https://my.saltservicesusa.com/start/?plan=growth">Try all five free for 14 days</a><a class="card-link" href="#pricing">See the plans &rsaquo;</a></p>
+    <p class="sw-who" style="text-align:center;margin-top:1rem">More screens on our <a href="/software/#crm">software page</a>.</p>
   </div>
 </section>
 
@@ -975,8 +977,8 @@ CORALINE_BODY = f"""<section class="hero">
 </section>
 """ + faq_html(CORALINE_FAQS, "Coraline questions, answered") + cta_band(
     "Ready to run your business from one login?",
-    f"Tell us how you sell today and we'll show you what Coraline would look like for your business. Or call {PHONE}.",
-    "Get a setup quote")
+    f"Try Coraline free for 14 days and set it up yourself, or call {PHONE} and we'll set it up for you.",
+    "Start your free 14-day trial", "https://my.saltservicesusa.com/start/?plan=growth")
 
 # ============================================================ OUR WORK
 def work_entry(href, img, alt, name, blurb):
@@ -1462,6 +1464,8 @@ PAGES = [
     },
     {
         "path": "/coraline/", "nav": "",
+        # Phones: the pinned bottom bar offers the trial here instead of the contact form.
+        "callbar_cta": ("Start free trial", "https://my.saltservicesusa.com/start/?plan=growth"),
         "title": "Coraline CRM | Built and Set Up by Salt Services",
         "desc": "Coraline is the CRM Salt Services wrote and runs on: one inbox for calls, texts and email, a pipeline, reminders and review requests. Plans from $99 a month.",
         "crumbs": [["Home", "/"], ["Coraline", "/coraline/"]],

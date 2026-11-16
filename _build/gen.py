@@ -316,7 +316,13 @@ def build(spec, seen_titles, seen_descs, outdir="."):
     if crumbs_html:
         html += crumbs_bar(crumbs_html)
     html += spec["body"]
-    html += FOOTER
+    footer = FOOTER
+    if spec.get("callbar_cta"):
+        text, href = spec["callbar_cta"]
+        footer = footer.replace('<a class="callbar-form" href="/contact/#form">Get started</a>',
+                                f'<a class="callbar-form callbar-trial" href="{href}">{text}</a>', 1)
+        assert "callbar-trial" in footer
+    html += footer
     out = pathlib.Path(outdir + p + ("index.html" if p.endswith("/") else ""))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
