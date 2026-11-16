@@ -792,8 +792,10 @@ GUIDE_SEO_COST_LD = {
 
 # ============================================================ CORALINE
 CORALINE_FAQS = [
+    ("Is there a free trial?",
+     "Yes. Every plan has a free 14-day trial. You add a card to start, nothing is charged until the trial ends, and you can cancel before then. Texting customers from your own business number starts once the phone carriers approve your number, which usually takes two to three weeks."),
     ("Do I have to set Coraline up myself?",
-     "No. We set it up for you: a pipeline built around how you sell, your contacts moved over, your website forms and business number connected, and your team trained. A simple setup can go live in as little as three days."),
+     "No. You can set it up yourself during the free trial, or we set it up for you: a pipeline built around how you sell, your contacts moved over, your website forms and business number connected, and your team trained. A simple setup can go live in as little as three days."),
     ("What does Coraline cost?",
      "There are three plans: Starter at $99 a month, Growth at $297 and Pro at $497, with a one-time setup of $1,000, $1,500 or $2,500, half off this winter. Paying for a year up front gets you two months free. Every plan includes some texting and calling each month. Anything past that comes out of a prepaid balance, and you'll have both numbers in writing before we start."),
     ("Will my customers see the name Coraline?",
@@ -814,8 +816,8 @@ CORALINE_BODY = f"""<section class="hero">
     {SPRINKLE}
     <p class="lead">Coraline is the CRM Salt Services wrote and runs its own business on. Calls, texts, email, website forms and Google reviews land in one inbox. Every job moves down one pipeline, and the follow-ups go out without anyone having to remember them.</p>
     <p>
-      <a class="btn btn-accent" href="/contact/#form">Get a setup quote</a>
-      <a class="btn btn-ghost" href="#screens">See the screens</a>
+      <a class="btn btn-accent" href="https://my.saltservicesusa.com/start/?plan=growth">Start your free 14-day trial</a>
+      <a class="btn btn-ghost" href="/contact/#form">Have us set it up</a>
     </p>
     <p class="hero-note">Plans from $99 a month. Setup is half off this winter, from $500, and a simple one can be live in as little as three days.</p>
   </div>
@@ -920,7 +922,7 @@ CORALINE_BODY = f"""<section class="hero">
           {check_li("Review requests, with follow-ups")}
           {check_li("$10 of texts and calls included each month")}
         </ul>
-        <a class="btn btn-navy" href="/contact/#form">Ask about Starter</a>
+        <a class="btn btn-navy" href="https://my.saltservicesusa.com/start/?plan=starter">Try Starter free for 14 days</a>
       </li>
       <li class="card price-card price-featured">
         <span class="price-badge">Our recommendation</span>
@@ -939,7 +941,7 @@ CORALINE_BODY = f"""<section class="hero">
           {check_li("Call recording and reports")}
           {check_li("$25 of texts and calls included each month")}
         </ul>
-        <a class="btn btn-accent" href="/contact/#form">Ask about Growth</a>
+        <a class="btn btn-accent" href="https://my.saltservicesusa.com/start/?plan=growth">Try Growth free for 14 days</a>
       </li>
       <li class="card price-card">
         <h3>Pro</h3>
@@ -954,11 +956,12 @@ CORALINE_BODY = f"""<section class="hero">
           {check_li("Priority support and a monthly check-in")}
           {check_li("$50 of texts and calls included each month")}
         </ul>
-        <a class="btn btn-navy" href="/contact/#form">Ask about Pro</a>
+        <a class="btn btn-navy" href="https://my.saltservicesusa.com/start/?plan=pro">Try Pro free for 14 days</a>
       </li>
     </ul>
     <div class="prose" style="margin-top:2rem">
       <p>Setup covers building your pipeline, moving your contacts over, connecting your website forms and business number, and training your team. A simple setup can go live in as little as three days. One with several pipelines, or a connection to software you already use, takes longer, and we'll quote it before we start.</p>
+      <p>Every plan starts with a free 14-day trial. You add a card to start, nothing is charged until day 15, and you can cancel before then. Set it up yourself, or <a href="/contact/#form">have us set it up for you</a>.</p>
       <p>Texts, calls and assistant replies past what your plan includes come out of a prepaid balance. You top it up, or set it to refill itself, and you can see every charge. There's no hourly meter running on our time.</p>
     </div>
   </div>
