@@ -505,6 +505,10 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
 }
 .callbar .callbar-phone { background: var(--accent); color: #1c1030; }
 .callbar .callbar-form { border: 2px solid rgba(255,255,255,0.5); color: #fff; }
+.callbar:has(.callbar-trial) { flex-direction: row-reverse; }
+.callbar:has(.callbar-trial) .callbar-phone { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.5); }
+.callbar .callbar-trial { background: var(--accent); color: #1c1030; border: 0; }
+.callbar:has(.callbar-trial) a { display: flex; align-items: center; justify-content: center; }
 
 /* ---------- Prose pages ---------- */
 .prose { max-width: 68ch; }
@@ -855,3 +859,9 @@ body.wl-cursor, body.wl-cursor * { cursor: none !important; }
   .phone-shot.shot-overlap { width: 27%; right: -2%; }
   .phone-shot.shot-overlap.shot-left { right: auto; left: -2%; }
 }
+
+/* Coraline free-trial button rows */
+.trial-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.75rem 1rem; margin: 2rem 0 0; text-align: center; }
+.trial-row span { color: var(--muted); font-size: 0.9rem; }
+.sw-copy .sw-who:has(.card-link) { font-family: inherit; font-size: 1rem; margin-top: 1rem; }
+

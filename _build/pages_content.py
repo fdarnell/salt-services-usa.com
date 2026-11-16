@@ -335,7 +335,7 @@ CRM_BODY = f"""<section class="section">
     <p>The owner can see every open lead, every estimate waiting on a signature and every job on the calendar from one login. That's the bar we set for every CRM we build.</p>
 
     <h2>Which CRM do you set up?</h2>
-    <p>For most clients it's <a href="/coraline/">Coraline</a>, the CRM we wrote ourselves and run Salt Services on. We answer our own leads in it, and we fix it ourselves when something needs changing, so you're never stuck waiting on a help desk in another time zone. You can see the screens on our <a href="/software/#crm">software page</a>.</p>
+    <p>For most clients it's <a href="/coraline/">Coraline</a>, the CRM we wrote ourselves and run Salt Services on. We answer our own leads in it, and we fix it ourselves when something needs changing, so you're never stuck waiting on a help desk in another time zone. You can see the screens on our <a href="/software/#crm">software page</a>, or <a href="https://my.saltservicesusa.com/start/?plan=growth">try Coraline free for 14 days</a>.</p>
     <p>Already on something else? If it's working, we'll build around it. If it's the reason you're reading this page, we'll move you off it carefully.</p>
 
     <h2>How long does implementation take?</h2>
@@ -792,8 +792,10 @@ GUIDE_SEO_COST_LD = {
 
 # ============================================================ CORALINE
 CORALINE_FAQS = [
+    ("Is there a free trial?",
+     "Yes. Every plan has a free 14-day trial. You add a card to start, nothing is charged until the trial ends, and you can cancel before then. Texting customers from your own business number starts once the phone carriers approve your number, which usually takes two to three weeks."),
     ("Do I have to set Coraline up myself?",
-     "No. We set it up for you: a pipeline built around how you sell, your contacts moved over, your website forms and business number connected, and your team trained. A simple setup can go live in as little as three days."),
+     "No. You can set it up yourself during the free trial, or we set it up for you: a pipeline built around how you sell, your contacts moved over, your website forms and business number connected, and your team trained. A simple setup can go live in as little as three days."),
     ("What does Coraline cost?",
      "There are three plans: Starter at $99 a month, Growth at $297 and Pro at $497, with a one-time setup of $1,000, $1,500 or $2,500, half off this winter. Paying for a year up front gets you two months free. Every plan includes some texting and calling each month. Anything past that comes out of a prepaid balance, and you'll have both numbers in writing before we start."),
     ("Will my customers see the name Coraline?",
@@ -814,8 +816,8 @@ CORALINE_BODY = f"""<section class="hero">
     {SPRINKLE}
     <p class="lead">Coraline is the CRM Salt Services wrote and runs its own business on. Calls, texts, email, website forms and Google reviews land in one inbox. Every job moves down one pipeline, and the follow-ups go out without anyone having to remember them.</p>
     <p>
-      <a class="btn btn-accent" href="/contact/#form">Get a setup quote</a>
-      <a class="btn btn-ghost" href="#screens">See the screens</a>
+      <a class="btn btn-accent" href="https://my.saltservicesusa.com/start/?plan=growth">Start your free 14-day trial</a>
+      <a class="btn btn-ghost" href="/contact/#form">Have us set it up</a>
     </p>
     <p class="hero-note">Plans from $99 a month. Setup is half off this winter, from $500, and a simple one can be live in as little as three days.</p>
   </div>
@@ -854,6 +856,7 @@ CORALINE_BODY = f"""<section class="hero">
         <p>Where your leads came from and what's still open, without exporting a spreadsheet.</p>
       </li>
     </ul>
+    <p class="trial-row"><a class="btn btn-accent" href="https://my.saltservicesusa.com/start/?plan=growth">Start your free 14-day trial</a><span>No charge for 14 days. Cancel any time before then.</span></p>
   </div>
 </section>
 
@@ -869,32 +872,33 @@ CORALINE_BODY = f"""<section class="hero">
                ["Missed-call text-back, day or night",
                 "Calls, texts, email, forms and chat in one list",
                 "Answer from a laptop, iPhone or iPad, from your business number"],
-               "", f'<div class="shot-stack">{SHOT_CRM}' + phone_shot("crm-phone.webp", "The Coraline inbox on an iPhone", 780, 1688, "shot-overlap") + '</div>') + """
+               '<a class="card-link" href="https://my.saltservicesusa.com/start/?plan=growth">Try it free for 14 days &rsaquo;</a>', f'<div class="shot-stack">{SHOT_CRM}' + phone_shot("crm-phone.webp", "The Coraline inbox on an iPhone", 780, 1688, "shot-overlap") + '</div>') + """
     """ + sw_feature("Your schedule", "See the whole month, and let customers book the open times",
                "Estimates, installs and phone calls sit on one calendar, each in its own color. Hide the ones you don't need or look at one at a time. Customers pick a time from your booking page, and a reminder goes out the day before.",
                ["A color for every calendar, with show and hide",
                 "A booking page that keeps to your hours and leaves a gap between jobs",
                 "Text reminders the day before, so fewer people forget"],
-               "", '<div class="shot-stack">' + shot("cor-calendar.webp", "The Coraline calendar for a sample lawn company: a month of installs, estimates and phone calls, each calendar in its own color", "", 1600, 1000) + phone_shot("cor-calendar-phone.webp", "The Coraline calendar on an iPhone: colored dots for each booked day and the list for the chosen day", 780, 1688, "shot-overlap shot-left") + '</div>', flip=True) + """
+               '<a class="card-link" href="https://my.saltservicesusa.com/start/?plan=growth">Try it free for 14 days &rsaquo;</a>', '<div class="shot-stack">' + shot("cor-calendar.webp", "The Coraline calendar for a sample lawn company: a month of installs, estimates and phone calls, each calendar in its own color", "", 1600, 1000) + phone_shot("cor-calendar-phone.webp", "The Coraline calendar on an iPhone: colored dots for each booked day and the list for the chosen day", 780, 1688, "shot-overlap shot-left") + '</div>', flip=True) + """
     """ + sw_feature("Every job", "Every job, from the first call to paid",
                "Each lead is a card that moves across the board: new, quoted, accepted, scheduled, won. You see what every job is worth and what has to happen next, so a quote doesn't sit for two weeks because nobody remembered it.",
                ["What's open, and what it's worth",
                 "The next step and its date on every card",
                 "Call the customer straight from the card"],
-               "", shot("crm-pipeline.webp", "The Coraline pipeline for a sample lawn company: jobs moving from new lead to quote sent, accepted, scheduled and won", "", 1600, 1000)) + """
+               '<a class="card-link" href="https://my.saltservicesusa.com/start/?plan=growth">Try it free for 14 days &rsaquo;</a>', shot("crm-pipeline.webp", "The Coraline pipeline for a sample lawn company: jobs moving from new lead to quote sent, accepted, scheduled and won", "", 1600, 1000)) + """
     """ + sw_feature("Follow-up", "Follow-ups that send themselves",
                "Most jobs are lost to silence, not to price. Coraline sends the thank-you to a new lead, the nudge two days after a quote and the reminder before a visit, written in your words. You can see how many people each one is waiting on.",
                ["Texts new website leads back within a minute",
                 "Nudges quotes that haven't been answered",
                 "Checks in with leads that went quiet"],
-               "", shot("cor-automations.webp", "Coraline automations for a sample lawn company: text back new leads, follow up on estimates, remind before appointments, ask for reviews and check in on quiet leads", "", 1600, 1000), flip=True) + """
+               '<a class="card-link" href="https://my.saltservicesusa.com/start/?plan=growth">Try it free for 14 days &rsaquo;</a>', shot("cor-automations.webp", "Coraline automations for a sample lawn company: text back new leads, follow up on estimates, remind before appointments, ask for reviews and check in on quiet leads", "", 1600, 1000), flip=True) + """
     """ + sw_feature("Reviews", "More five-star reviews, without the awkward ask",
                "When a job's done, one tap sends the customer your Google review link by text or email, with up to two polite reminders. You can see how many people you asked, how many opened the link and how your rating is moving.",
                ["Ask by text or email in one tap",
                 "Up to two polite reminders, then it stops",
                 "See who opened the link"],
                "", shot("cor-reviews.webp", "Coraline reviews for a sample lawn company: 64 customers asked, 64 percent opened the link, a 4.8 star rating and new five-star reviews", "", 1600, 1000)) + f"""
-    <p class="sw-who" style="text-align:center;margin-top:2rem">More screens on our <a href="/software/#crm">software page</a>.</p>
+    <p class="trial-row"><a class="btn btn-accent" href="https://my.saltservicesusa.com/start/?plan=growth">Try all five free for 14 days</a><a class="card-link" href="#pricing">See the plans &rsaquo;</a></p>
+    <p class="sw-who" style="text-align:center;margin-top:1rem">More screens on our <a href="/software/#crm">software page</a>.</p>
   </div>
 </section>
 
@@ -920,7 +924,7 @@ CORALINE_BODY = f"""<section class="hero">
           {check_li("Review requests, with follow-ups")}
           {check_li("$10 of texts and calls included each month")}
         </ul>
-        <a class="btn btn-navy" href="/contact/#form">Ask about Starter</a>
+        <a class="btn btn-navy" href="https://my.saltservicesusa.com/start/?plan=starter">Try Starter free for 14 days</a>
       </li>
       <li class="card price-card price-featured">
         <span class="price-badge">Our recommendation</span>
@@ -939,7 +943,7 @@ CORALINE_BODY = f"""<section class="hero">
           {check_li("Call recording and reports")}
           {check_li("$25 of texts and calls included each month")}
         </ul>
-        <a class="btn btn-accent" href="/contact/#form">Ask about Growth</a>
+        <a class="btn btn-accent" href="https://my.saltservicesusa.com/start/?plan=growth">Try Growth free for 14 days</a>
       </li>
       <li class="card price-card">
         <h3>Pro</h3>
@@ -954,11 +958,12 @@ CORALINE_BODY = f"""<section class="hero">
           {check_li("Priority support and a monthly check-in")}
           {check_li("$50 of texts and calls included each month")}
         </ul>
-        <a class="btn btn-navy" href="/contact/#form">Ask about Pro</a>
+        <a class="btn btn-navy" href="https://my.saltservicesusa.com/start/?plan=pro">Try Pro free for 14 days</a>
       </li>
     </ul>
     <div class="prose" style="margin-top:2rem">
       <p>Setup covers building your pipeline, moving your contacts over, connecting your website forms and business number, and training your team. A simple setup can go live in as little as three days. One with several pipelines, or a connection to software you already use, takes longer, and we'll quote it before we start.</p>
+      <p>Every plan starts with a free 14-day trial. You add a card to start, nothing is charged until day 15, and you can cancel before then. Set it up yourself, or <a href="/contact/#form">have us set it up for you</a>.</p>
       <p>Texts, calls and assistant replies past what your plan includes come out of a prepaid balance. You top it up, or set it to refill itself, and you can see every charge. There's no hourly meter running on our time.</p>
     </div>
   </div>
@@ -972,8 +977,8 @@ CORALINE_BODY = f"""<section class="hero">
 </section>
 """ + faq_html(CORALINE_FAQS, "Coraline questions, answered") + cta_band(
     "Ready to run your business from one login?",
-    f"Tell us how you sell today and we'll show you what Coraline would look like for your business. Or call {PHONE}.",
-    "Get a setup quote")
+    f"Try Coraline free for 14 days and set it up yourself, or call {PHONE} and we'll set it up for you.",
+    "Start your free 14-day trial", "https://my.saltservicesusa.com/start/?plan=growth")
 
 # ============================================================ OUR WORK
 def work_entry(href, img, alt, name, blurb):
@@ -1459,6 +1464,8 @@ PAGES = [
     },
     {
         "path": "/coraline/", "nav": "",
+        # Phones: the pinned bottom bar offers the trial here instead of the contact form.
+        "callbar_cta": ("Start free trial", "https://my.saltservicesusa.com/start/?plan=growth"),
         "title": "Coraline CRM | Built and Set Up by Salt Services",
         "desc": "Coraline is the CRM Salt Services wrote and runs on: one inbox for calls, texts and email, a pipeline, reminders and review requests. Plans from $99 a month.",
         "crumbs": [["Home", "/"], ["Coraline", "/coraline/"]],
