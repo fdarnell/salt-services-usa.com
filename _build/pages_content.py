@@ -45,10 +45,10 @@ SERVICE_CARDS = f"""<ul class="card-grid">
     <p>AI that answers leads in seconds, drafts follow-ups, and books appointments — wired into your CRM with a human in the loop.</p>
     <a class="card-link" href="/services/ai-implementation/">AI implementation &rsaquo;</a>
   </li>
-  <li class="card">{icon('map')}
-    <h3>East Tennessee, in person</h3>
-    <p>Based in Kodak. We meet clients face to face from <a href="/service-areas/sevierville/">Sevierville</a> to <a href="/service-areas/knoxville/">Knoxville</a> and everywhere between.</p>
-    <a class="card-link" href="/service-areas/">Service areas &rsaquo;</a>
+  <li class="card">{icon('app')}
+    <h3>Custom apps</h3>
+    <p>Software built around how your business actually works: estimating, scheduling, booking, whatever you still do by hand. From $10,000.</p>
+    <a class="card-link" href="/services/custom-app-development/">Custom apps &rsaquo;</a>
   </li>
 </ul>"""
 
@@ -286,7 +286,7 @@ SERVICES_HUB_BODY = f"""<section class="section">
     <div class="prose">
       <h2>How the pieces fit together</h2>
       {SPRINKLE}
-      <p>Think of it as a water system. Your <a href="/services/web-design/">website</a> is the well — everything else is worthless if it's dry. <a href="/services/seo-aeo/">SEO and AEO</a> keep it filling steadily and for free, month after month. <a href="/services/digital-advertising/">Advertising</a> is the pump you turn on when you want more volume right now. Your <a href="/services/crm-implementation/">CRM</a> is the tank that catches every drop, and <a href="/services/ai-implementation/">AI</a> makes sure none of it evaporates while you're busy running the business.</p>
+      <p>Think of it as a water system. Your <a href="/services/web-design/">website</a> is the well — everything else is worthless if it's dry. <a href="/services/seo-aeo/">SEO and AEO</a> keep it filling steadily and for free, month after month. <a href="/services/digital-advertising/">Advertising</a> is the pump you turn on when you want more volume right now. Your <a href="/services/crm-implementation/">CRM</a> is the tank that catches every drop, and <a href="/services/ai-implementation/">AI</a> makes sure none of it evaporates while you're busy running the business. When the job itself is the bottleneck, a <a href="/services/custom-app-development/">custom app</a> takes the hand work out of it.</p>
       <p>You don't have to buy the whole system on day one. Most clients start where the leak is worst — usually the website or the follow-up — and add from there. On the first call we'll tell you which piece we'd fix first and why.</p>
     </div>
   </div>
@@ -361,6 +361,72 @@ CRM_BODY = f"""<section class="section">
 """ + faq_html(CRM_FAQS, "CRM questions, answered straight") + cta_band(
     "Stop losing leads you already paid for",
     "Tell us how leads reach you today and we'll show you where they're leaking, before you spend a dollar on new marketing.")
+
+# ============================================================ CUSTOM APPS
+APPS_FAQS = [
+    ("How much does a custom app cost?",
+     "Custom apps start at $10,000. Where a build lands above that depends on how many screens it has, how many kinds of people log in, and what it has to connect to. We quote it flat and in writing after we've seen how you work, so you know the number before we write any code."),
+    ("Why does a custom app cost more than a website?",
+     "A website mostly shows information. An app does work: it does the math, stores your customers' records, sends texts, takes signatures and payments, and has to be right every time someone taps a button. That's more to build and a lot more to test."),
+    ("Can you just add a feature to software we already use?",
+     "Sometimes, if the software lets outside tools connect to it. We check what it allows before we promise anything. If a small tool on your website would solve the problem, we'll tell you that instead of selling you a whole app."),
+    ("Will it work on phones and tablets?",
+     "Yes. Everything we build works in the browser on a computer, an iPhone, an iPad or an Android phone. The estimating app on this page is used on a tablet in customers' driveways. Ask us about an App Store version if you need one; our own calendar app is headed there now."),
+    ("Who fixes it when something needs changing?",
+     "We do. The people who wrote it are the people who answer the phone, so a change doesn't start with a support ticket. Every quote spells out what's included after launch."),
+    ("Do you build apps for businesses outside East Tennessee?",
+     "Yes. Most of the work happens on a screen share anyway. Owners in Sevier, Knox, Blount and Jefferson counties usually get an in-person sit-down to map out the job, and everyone else gets the same thing over video."),
+]
+
+APPS_BODY = f"""<section class="section">
+  <div class="wrap prose">
+    <h1>Custom app development, <em>from $10,000</em></h1>
+    {SPRINKLE}
+    <p>Most small businesses run on five subscriptions and a lot of copying things by hand. When none of the off-the-shelf tools fit the way your business actually works, we write one that does. Custom apps start at $10,000, quoted flat and in writing before we start.</p>
+    <p><a class="btn btn-accent" href="/contact/#form">Tell us what you need built</a></p>
+
+    <h2>What does a custom app cost?</h2>
+    <p>Custom apps start at $10,000. That's the floor for a working app with logins, saved records and the screens your team uses every day. What moves the price above that:</p>
+    <ul class="checklist">
+      {check_li("How many screens and steps the job has")}
+      {check_li("How many kinds of people log in: owner, office, crew, customers")}
+      {check_li("Connections to other software, like a CRM, a payment processor or texting")}
+      {check_li("Moving your existing records in from spreadsheets or an old system")}
+      {check_li("An App Store version, if you need one on top of the browser version")}
+    </ul>
+    <p>You get the build price in writing, along with anything that runs monthly after launch, before we write a line of code. If a smaller tool on your website would fix the problem for a lot less, we'll say so.</p>
+
+    <h2>Apps we've built</h2>
+    <p>Everything on our <a href="/software/">software page</a> is ours, written line by line and in use right now:</p>
+    <ul class="checklist">
+      {check_li('<strong>An estimating app</strong> built for a Sevier County landscaping company and now running a fence company too. The crew sketches the yard on a tablet, the price book does the math, and the customer signs and pays the deposit on their phone. <a href="/software/#estimating">See the screens</a>.')}
+      {check_li('<strong><a href="/coraline/">Coraline</a></strong>, the CRM we run Salt Services on. Calls, texts, email and website leads in one inbox, with a pipeline, reminders and review requests.')}
+      {check_li('<strong>A client portal</strong> where every Salt Services client logs in to see their leads, their Google numbers and their invoices.')}
+      {check_li('<strong>A household calendar</strong> with a shared grocery list and mileage log, built for our own family and headed to the App Store.')}
+    </ul>
+    <p>Smaller tools live on client websites: <a href="https://www.mtnlandscapers.com/rent/" target="_blank" rel="noopener">equipment rental booking</a> with text reminders, a penny tread check for a tire shop, and a 3D wheel you can try powder-coat colors on.</p>
+
+    <h2>What kind of app makes sense?</h2>
+    <p>The best ones start with a job somebody does by hand every week. Writing up estimates at the kitchen table at night. Re-typing the same customer into three systems. Booking rentals over the phone. Chasing signatures by email. If you can describe the steps, we can usually build them, and the app pays for itself in hours your team gets back.</p>
+    <p>It doesn't have to be a big job. It has to be a job that comes up every week.</p>
+
+    <h2>How a custom app build works</h2>
+    <ul class="checklist">
+      {check_li("We sit down with whoever does the work today and watch how it's done, paper and all")}
+      {check_li("You get a written quote: what the app does, what it costs, and when you'll see it")}
+      {check_li("We build the part that saves the most time first, so your team is using it early")}
+      {check_li("Your team tries it on real jobs and tells us what's wrong, and we fix it")}
+      {check_li("Launch, training, and a check-in after the first few weeks")}
+    </ul>
+
+    <h2>Built in Kodak, Tennessee</h2>
+    <p>We're between Knoxville and Sevierville, and we write the software ourselves. No overseas hand-off. When something needs changing, you call <a href="tel:{TEL}">{PHONE}</a> and talk to the people who wrote it. Apps work best alongside the rest of what we do: a <a href="/services/web-design/">website</a> that brings in the leads, a <a href="/services/crm-implementation/">CRM</a> that catches them, and an app that handles the job once it's sold.</p>
+  </div>
+</section>
+""" + faq_html(APPS_FAQS, "Custom app questions, answered straight") + cta_band(
+    "Got a job you still do by hand?",
+    f"Tell us what eats your week and we'll tell you honestly whether an app can fix it. Custom apps start at $10,000. Or call {PHONE}.",
+    "Tell us what you need built")
 
 # ============================================================ AI
 AI_FAQS = [
@@ -1343,7 +1409,7 @@ PAGES = [
     {
         "path": "/services/", "nav": "services",
         "title": "Marketing Services in Sevierville & Kodak, TN | Salt Services",
-        "desc": "CRM implementation, AI, Google & Meta ads, web design, and SEO/AEO — five services that work as one lead pipeline for East Tennessee businesses.",
+        "desc": "Web design, SEO/AEO, Google & Meta ads, CRM setup, AI and custom apps: services that work as one lead pipeline for East Tennessee businesses.",
         "crumbs": [["Home", "/"], ["Services", "/services/"]],
         "body": SERVICES_HUB_BODY,
     },
@@ -1369,6 +1435,18 @@ PAGES = [
                               "/services/ai-implementation/"),
                    faq_ld(AI_FAQS)],
         "body": AI_BODY,
+    },
+    {
+        "path": "/services/custom-app-development/", "nav": "services",
+        "title": "Custom App Development in Tennessee | Salt Services",
+        "desc": "Custom apps for small businesses: estimating, booking, scheduling and portals, built in Kodak, TN. Custom apps start at $10,000, quoted flat in writing.",
+        "crumbs": [["Home", "/"], ["Services", "/services/"], ["Custom apps", "/services/custom-app-development/"]],
+        "jsonld": [service_ld("Custom app development",
+                              "Custom web and mobile apps for small businesses: estimating, booking, scheduling, client portals and internal tools, built and supported by Salt Services.",
+                              "/services/custom-app-development/") | {"serviceType": "Custom software development", "offers": {"@type": "Offer",
+                       "priceSpecification": {"@type": "PriceSpecification", "minPrice": 10000, "priceCurrency": "USD"}}},
+                   faq_ld(APPS_FAQS)],
+        "body": APPS_BODY,
     },
     {
         "path": "/services/digital-advertising/", "nav": "services",
@@ -1501,7 +1579,7 @@ PAGES = [
         "desc": "CRM, estimating and lifestyle software we built ourselves and run every day, shown with sample data. See what we could build for your business.",
         "crumbs": [["Home", "/"], ["Software", "/software/"]],
         "body": SOFTWARE_BODY + cta_band("Got a job you still do by hand?",
-                                         f"Tell us what eats your week and we'll tell you honestly whether software can fix it. Or call {PHONE}.",
+                                         f"Tell us what eats your week and we'll tell you honestly whether software can fix it. Custom apps start at $10,000. Or call {PHONE}.",
                                          "Tell us what you need built"),
     },
     {

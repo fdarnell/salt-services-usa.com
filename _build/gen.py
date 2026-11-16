@@ -68,6 +68,7 @@ def icon(name):
         "ads": '<path d="M3 11 21 4l-3 14-6-3-2 4-2-6z"/>',
         "web": '<rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h20M6 5.5h.01M9 5.5h.01"/>',
         "seo": '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 12l2 2 4-5"/>',
+        "app": '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/><path d="m10 8-2 2 2 2M14 8l2 2-2 2"/>',
         "map": '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
     }
     return ('<div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" '
@@ -159,6 +160,7 @@ FOOTER = f"""</main>
           <li><a href="/services/digital-advertising/">Digital advertising</a></li>
           <li><a href="/services/web-design/">Web design</a></li>
           <li><a href="/services/seo-aeo/">SEO &amp; AEO</a></li>
+          <li><a href="/services/custom-app-development/">Custom apps</a></li>
           <li><a href="/coraline/">Coraline CRM</a></li>
         </ul>
       </div>

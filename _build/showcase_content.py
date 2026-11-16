@@ -336,7 +336,7 @@ SOFTWARE_BODY = f"""<section class="hero sw-hero">
     <span class="hero-kicker">Custom software &middot; built in Kodak, TN</span>
     <h1>Software we&rsquo;ve built, in use <em>every day</em></h1>
     {SPRINKLE}
-    <p class="lead">Most small businesses glue five subscriptions together and still copy things by hand. We write the tool instead. Everything on this page is ours, built line by line, and it&rsquo;s running right now.</p>
+    <p class="lead">Most small businesses glue five subscriptions together and still copy things by hand. We write the tool instead. Everything on this page is ours, built line by line, and it&rsquo;s running right now. Want one for your business? <a href="/services/custom-app-development/">Custom apps start at $10,000</a>.</p>
     <nav class="sw-jump" aria-label="Software categories">
       <a href="#crm"><span>01</span>Coraline CRM</a>
       <a href="#estimating"><span>02</span>Estimating</a>
